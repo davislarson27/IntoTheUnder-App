@@ -225,7 +225,7 @@ class Iron_Ore_Block(Block):
 
     str_name = "Iron Ore"
 
-    ticks_to_mine = 70
+    ticks_to_mine = 75
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -262,7 +262,7 @@ class Gold_Ore_Block(Block):
 
     str_name = "Gold Ore"
 
-    ticks_to_mine = 60
+    ticks_to_mine = 75
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -314,7 +314,7 @@ class Diamond_Ore_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Diamond Ore"
-    ticks_to_mine = 80
+    ticks_to_mine = 85
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -348,7 +348,7 @@ class Emerald_Ore_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Emerald Ore"
-    ticks_to_mine = 70
+    ticks_to_mine = 75
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -385,7 +385,7 @@ class Mabelite_Ore_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Mabelite Ore"
-    ticks_to_mine = 80
+    ticks_to_mine = 85
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -424,7 +424,7 @@ class Coal_Ore_Block(Block):
 
     str_name = "Coal Ore"
 
-    ticks_to_mine = 64
+    ticks_to_mine = 74
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

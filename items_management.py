@@ -1164,6 +1164,13 @@ class Crafting_Slots:
                 output=Ingredient(Iron_Ingot, 1)
             ),
             Crafting_Recipe(
+                "Gold Ore Ingot",
+                [
+                    Ingredient(Gold_Ore_Block, 1), 
+                ],
+                output=Ingredient(Gold_Ingot, 1)
+            ),
+            Crafting_Recipe(
                 "Gravel",
                 [
                     Ingredient(Rock, 1), 

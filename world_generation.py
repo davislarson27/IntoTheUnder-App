@@ -1,4 +1,3 @@
-import pygame
 from math import floor
 import random
 
@@ -184,6 +183,7 @@ def generate_world_blocks(grid, world_width, world_depth): #width and height are
         find_block_vein_locations(grid, x, Coal_Ore_Block, ground_level, cur_biome.coal_ore_base_chance, cur_biome.coal_ore_min_depth, cur_biome.coal_ore_inc_chances_by_layer, cur_biome.coal_ore_vein_min_size, cur_biome.coal_ore_vein_max_size)        
         find_block_vein_locations(grid, x, Iron_Ore_Block, ground_level, cur_biome.iron_ore_base_chance, cur_biome.iron_ore_min_depth, cur_biome.iron_ore_inc_chances_by_layer, cur_biome.iron_ore_vein_min_size, cur_biome.iron_ore_vein_max_size)
         find_block_vein_locations(grid, x, Diamond_Ore_Block, ground_level, cur_biome.diamond_ore_base_chance, cur_biome.diamond_ore_min_depth, cur_biome.diamond_ore_inc_chances_by_layer, cur_biome.diamond_ore_vein_min_size, cur_biome.diamond_ore_vein_max_size)
+        find_block_vein_locations(grid, x, Gold_Ore_Block, ground_level, cur_biome.gold_ore_base_chance, cur_biome.gold_ore_min_depth, cur_biome.gold_ore_inc_chances_by_layer, cur_biome.gold_ore_vein_min_size, cur_biome.gold_ore_vein_max_size)        
         find_block_vein_locations(grid, x, Emerald_Ore_Block, ground_level, cur_biome.emerald_ore_base_chance, cur_biome.emerald_ore_min_depth, cur_biome.emerald_ore_inc_chances_by_layer, cur_biome.emerald_ore_vein_min_size, cur_biome.emerald_ore_vein_max_size)
         find_block_vein_locations(grid, x, Mabelite_Ore_Block, ground_level, cur_biome.mabelite_ore_base_chance, cur_biome.mabelite_ore_min_depth, cur_biome.mabelite_ore_inc_chances_by_layer, cur_biome.mabelite_ore_vein_min_size, cur_biome.mabelite_ore_vein_max_size)
 

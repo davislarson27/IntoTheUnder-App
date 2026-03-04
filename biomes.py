@@ -1,5 +1,7 @@
 from blocks import *
 
+GRID_HEIGHT = 100
+
 class Biome: #generic biome made so that not every type needs to be added - basicallyl 0's for everything
     
     # layer classes
@@ -27,9 +29,15 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     coal_ore_vein_min_size = 2
     coal_ore_vein_max_size = 9
 
+    gold_ore_min_depth = 54
+    gold_ore_base_chance = 0.000169
+    gold_ore_inc_chances_by_layer = (gold_ore_base_chance * 3) / (GRID_HEIGHT - gold_ore_min_depth)
+    gold_ore_vein_min_size = 1
+    gold_ore_vein_max_size = 6
+
     diamond_ore_min_depth = 56
     diamond_ore_base_chance = 0.000164
-    diamond_ore_inc_chances_by_layer = (diamond_ore_base_chance * 3) / (100 - diamond_ore_min_depth)
+    diamond_ore_inc_chances_by_layer = (diamond_ore_base_chance * 3) / (GRID_HEIGHT - diamond_ore_min_depth)
     diamond_ore_vein_min_size = 1
     diamond_ore_vein_max_size = 4
 
