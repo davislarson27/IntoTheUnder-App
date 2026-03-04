@@ -173,6 +173,171 @@ class Ingot(Item): # this is just here to help draw other ingots
         pygame.draw.rect(screen, stamp_color,
                         (ux, sy + stamp_h - stamp_w, letter_w, stamp_w))
 
+class PowderPile(Item):
+    @staticmethod
+    def draw_manual(
+        screen,
+        x,
+        y,
+        block_width,
+        powder_color=(205, 205, 65),
+        being_mined=False,
+        is_grid_coordinates=True,
+        use_alt_drawing=False
+    ):
+        """
+        Clean, Minecraft-like powder pile (same shape for all powders, only color changes),
+        but tuned to NOT read like a perfect pyramid:
+
+        - Slight asymmetry (left-lean vs right-lean depending on use_alt_drawing)
+        - Sits a tad lower so inventory count in top-left doesn't cover the peak
+        - Slightly larger footprint for readability
+        - Minimal highlights + minimal dust (not busy)
+        """
+
+        # ---------------- helpers ---------------- #
+        def clamp(v): 
+            return 0 if v < 0 else (255 if v > 255 else v)
+
+        def shade(c, d):
+            return (clamp(c[0] + d), clamp(c[1] + d), clamp(c[2] + d))
+
+        def mix(a, b, t):
+            return (
+                int(a[0] + (b[0] - a[0]) * t),
+                int(a[1] + (b[1] - a[1]) * t),
+                int(a[2] + (b[2] - a[2]) * t),
+            )
+
+        # ---------------- position ---------------- #
+        added = 18 if being_mined else 0
+
+        if is_grid_coordinates:
+            px = x * block_width
+            py = y * block_width
+        else:
+            px, py = x, y
+
+        # Slightly larger than before (was 0.92)
+        target = int(block_width * 0.95)
+        cell = max(1, target // 16)
+        size = cell * 16
+        ox = px + (block_width - size) // 2
+        oy = py + (block_width - size) // 2
+
+        def p(ix, iy, color):
+            pygame.draw.rect(
+                screen,
+                color,
+                (ox + ix * cell, oy + iy * cell, cell, cell)
+            )
+
+        # ---------------- palette (simple) ---------------- #
+        base = shade(powder_color, added)
+
+        # Strong outline to pop on light slot backgrounds
+        outline = shade(base, -40)
+
+        # Limited tones to keep it clean
+        fill = shade(base, -18)
+        highlight = shade(base, +28)
+
+        # Dust: slightly darker than slot bg + lightly tinted
+        dust_a = mix((175, 175, 182), base, 0.15)
+        dust_b = mix((145, 145, 155), base, 0.12)
+
+        # Sit lower to avoid top-left count overlap + feel grounded
+        y_shift = 2
+        def Y(v): return v + y_shift
+
+        # ---------------- fixed base shape ---------------- #
+        # Core silhouette (symmetrical template)
+        outline_px = [
+            (7, Y(2)),
+            (6, Y(3)), (7, Y(3)), (8, Y(3)),
+            (5, Y(4)), (6, Y(4)), (7, Y(4)), (8, Y(4)), (9, Y(4)),
+            (4, Y(5)), (5, Y(5)), (6, Y(5)), (7, Y(5)), (8, Y(5)), (9, Y(5)), (10, Y(5)),
+            (3, Y(6)), (4, Y(6)), (5, Y(6)), (6, Y(6)), (7, Y(6)), (8, Y(6)), (9, Y(6)), (10, Y(6)), (11, Y(6)),
+            (2, Y(7)), (3, Y(7)), (4, Y(7)), (5, Y(7)), (6, Y(7)), (7, Y(7)), (8, Y(7)), (9, Y(7)), (10, Y(7)), (11, Y(7)), (12, Y(7)),
+
+            # thick base slab
+            (1, Y(8)), (2, Y(8)), (3, Y(8)), (4, Y(8)), (5, Y(8)), (6, Y(8)),
+            (7, Y(8)), (8, Y(8)), (9, Y(8)), (10, Y(8)), (11, Y(8)), (12, Y(8)), (13, Y(8)),
+
+            # base lip
+            (0, Y(9)), (1, Y(9)), (13, Y(9)), (14, Y(9)),
+        ]
+
+        # ---------------- anti-pyramid asymmetry ---------------- #
+        # We keep the SAME "family" shape, but slightly lean it:
+        # - default: shave one pixel off upper-right shoulder + add one on lower-left
+        # - alt:     shave one pixel off upper-left shoulder + add one on lower-right
+        if not use_alt_drawing:
+            # shave right shoulder
+            if (9, Y(4)) in outline_px:
+                outline_px.remove((9, Y(4)))
+            # subtle left bulge
+            outline_px.append((1, Y(7)))
+        else:
+            # shave left shoulder
+            if (5, Y(4)) in outline_px:
+                outline_px.remove((5, Y(4)))
+            # subtle right bulge
+            outline_px.append((12, Y(7)))
+
+        # Slightly wider base feel (tiny, consistent)
+        # Helps it read like a pile instead of a perfect triangle.
+        outline_px.append((2, Y(9)))
+
+        # Draw outline
+        for ix, iy in outline_px:
+            p(ix, iy, outline)
+
+        # ---------------- fill (single clean tone) ---------------- #
+        fill_px = [
+            (7, Y(3)),
+            (6, Y(4)), (7, Y(4)), (8, Y(4)),
+            (5, Y(5)), (6, Y(5)), (7, Y(5)), (8, Y(5)), (9, Y(5)),
+            (4, Y(6)), (5, Y(6)), (6, Y(6)), (7, Y(6)), (8, Y(6)), (9, Y(6)), (10, Y(6)),
+            (3, Y(7)), (4, Y(7)), (5, Y(7)), (6, Y(7)), (7, Y(7)), (8, Y(7)), (9, Y(7)), (10, Y(7)), (11, Y(7)),
+            (2, Y(8)), (3, Y(8)), (4, Y(8)), (5, Y(8)), (6, Y(8)), (7, Y(8)),
+            (8, Y(8)), (9, Y(8)), (10, Y(8)), (11, Y(8)), (12, Y(8)),
+        ]
+        for ix, iy in fill_px:
+            p(ix, iy, fill)
+
+        # ---------------- minimal highlights ---------------- #
+        # Consistent highlight placement, but shifted with the lean
+        if not use_alt_drawing:
+            highlight_px = [(8, Y(6)), (9, Y(7))]
+        else:
+            highlight_px = [(6, Y(6)), (7, Y(7))]
+
+        for ix, iy in highlight_px:
+            p(ix, iy, highlight)
+
+        # ---------------- minimal dust ---------------- #
+        # Enough to say "powder" but not noisy.
+        dust_px = [
+            (6, Y(9)), (7, Y(9)), (8, Y(9)),  # tiny band under base
+            (2, Y(10)),                        # left stray
+            (13, Y(10)),                       # right stray
+        ]
+
+        # Slight variation so stacks don't all look identical
+        if use_alt_drawing:
+            dust_px.append((10, Y(10)))
+        else:
+            dust_px.append((4, Y(10)))
+
+        for i, (ix, iy) in enumerate(dust_px):
+            p(ix, iy, dust_a if i % 2 == 0 else dust_b)
+
+        # Optional single micro-speck for big tiles only (still subtle)
+        if block_width >= 40:
+            p(5, Y(7), shade(highlight, -20))
+
+
 class Iron_Ingot(Item):
     str_name = "Iron Ingot"
 
@@ -189,7 +354,6 @@ class Gold_Ingot(Item):
         ingot_gold_base = (210, 205, 95)
         Ingot.draw_ingot_manual(screen, x, y, block_width, ingot_gold_base, being_mined, is_grid_coordinates)
 
-    
 class Rock(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
@@ -306,8 +470,6 @@ class Gold_Ore_Block(Block):
         w2 = max(3, block_width // 6)
         h2 = w2
         draw_ore_spec(block_width * 6 // 10, block_width * 8 // 10, w2, h2, sparkle=False)
-
-
 
 class Diamond_Ore_Block(Block):
 
@@ -437,23 +599,49 @@ class Coal_Ore_Block(Block):
             x *= block_width
             y *= block_width
 
-        pygame.draw.rect(
+        pygame.draw.rect( # stone background
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),           # color
+            (70 + added_color, 75 + added_color, 80 + added_color),
             (x, y, block_width, block_width)
             
         )
-        #(215, 180, 155) (190, 155, 130)
-        pygame.draw.rect(
+        pygame.draw.rect( # coal spot
             screen,
-            (22 + added_color, 21 + added_color, 22 + added_color),           # color
+            (22 + added_color, 21 + added_color, 22 + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
-        pygame.draw.rect(
+        pygame.draw.rect( # second coal spot
             screen,
             (22 + added_color, 21 + added_color, 22 + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
+
+class Coal(Item):
+    str_name = "Coal"
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        dark = (
+            22,
+            21,
+            22
+        )
+        mid = (
+            28,
+            26,
+            28
+        )
+
+        points = [
+            (x + int(block_width*0.35), y + int(block_width*0.17)),
+            (x + int(block_width*0.65), y + int(block_width*0.22)),
+            (x + int(block_width*0.80), y + int(block_width*0.52)),
+            (x + int(block_width*0.55), y + int(block_width*0.82)),
+            (x + int(block_width*0.25), y + int(block_width*0.67)),
+        ]
+
+        pygame.draw.polygon(screen, mid, points)
+        pygame.draw.polygon(screen, dark, points, 1)
 
 class Dirt(Block):
 
@@ -1023,6 +1211,188 @@ class Wood_Planks(Block):
 
         # Bottom seam to frame the tile slightly (optional but helps readability)
         pygame.draw.rect(screen, seam, (x, y + block_width - 1, block_width, 1))
+
+class Saltpeter(Block):
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Saltpeter"
+
+    ticks_to_mine = 45
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        half_len = int(block_width / 2)
+        quarter_len = int(block_width / 4)
+
+        outline_w = 1
+
+        main_left_base = (x + outline_w, y + outline_w)
+        main_right_base = (x - outline_w + int(block_width * 0.6), y + outline_w)
+        main_triangle_tip = (x + quarter_len, y + int(block_width * 0.9) - outline_w)
+
+        main_left_base_outline = (x, y)
+        main_right_base_outline = (x + int(block_width * 0.6), y)
+        main_triangle_tip_outline = (x + quarter_len, y + int(block_width * 0.9))
+
+
+        secondary_left_base_outline = (x + half_len, y)
+        secondary_right_base_outline = (x + block_width, y)
+        secondary_triangle_tip_outline = (x + half_len + quarter_len, y + int(block_width * 0.6))
+
+        secondary_left_base = (x + outline_w + half_len, y + outline_w)
+        secondary_right_base = (x - outline_w + block_width, y + outline_w)
+        secondary_triangle_tip = (x + half_len + quarter_len, y + int(block_width * 0.6) - outline_w)
+
+
+        primary_color = (
+            205 + added_color, 
+            205 + added_color, 
+            195 + added_color
+        )
+        secondary_color = (
+            185 + added_color, 
+            185 + added_color, 
+            175 + added_color
+        )
+        outline_color = (
+            140 + added_color, 
+            140 + added_color, 
+            132 + added_color
+        )
+
+
+        # --------------- draw tall main stalactite --------------- #
+        pygame.draw.polygon( # outline
+            screen,
+            outline_color,
+            [
+                main_left_base_outline,
+                main_right_base_outline,
+                main_triangle_tip_outline
+            ]
+        )
+        pygame.draw.polygon( # body
+            screen,
+            primary_color,
+            [
+                main_left_base,
+                main_right_base,
+                main_triangle_tip
+            ]
+        )
+
+        # --------------- draw short secondary stalactite --------------- #
+        pygame.draw.polygon( # outline
+            screen,
+            outline_color,
+            points = [
+                secondary_left_base_outline,
+                secondary_right_base_outline,
+                secondary_triangle_tip_outline
+            ]
+        )
+        pygame.draw.polygon( # body
+            screen,
+            secondary_color,
+            points = [
+                secondary_left_base,
+                secondary_right_base,
+                secondary_triangle_tip
+            ]
+        )
+
+class Saltpeter_Powder(Item):
+    str_name = "Saltpeter Powder"
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        powder_color = (
+            205, 
+            205, 
+            195
+        )
+
+        PowderPile.draw_manual(screen, x, y, block_width, powder_color, being_mined, is_grid_coordinates, use_alt_drawing)
+
+
+class Sulfur_Flakes_Block(Block):
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Sulfur Flakes"
+
+    ticks_to_mine = 70
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added_color = 20 if being_mined else 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        # base stone
+        pygame.draw.rect(
+            screen,
+            (70 + added_color, 75 + added_color, 80 + added_color),
+            (x, y, block_width, block_width)
+        )
+
+        # subtle sulfur color (muted)
+        sulfur_speck = (
+            min(160 + added_color, 255),
+            min(170 + added_color, 255),
+            min(60 + added_color, 255)
+        )
+
+        # base speck size
+        base_speck = max(1, block_width // 14)
+
+        # consistent speck layout (x, y, size multiplier)
+        specks = [
+            (2, 4, 1),
+            (5, 3, 2),   # slightly bigger
+            (8, 6, 1),
+            (4, 8, 1),
+            (7, 9, 2),   # slightly bigger
+            (10, 5, 1),
+        ]
+
+        for sx, sy, mult in specks:
+            size = base_speck * mult
+
+            pygame.draw.rect(
+                screen,
+                sulfur_speck,
+                (
+                    x + sx * block_width // 12,
+                    y + sy * block_width // 12,
+                    size,
+                    size
+                )
+            )
+
+class Sulfur_Powder(Item):
+
+    str_name = "Sulfur Powder"
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        powder_color = (
+            160,
+            170,
+            60
+        )
+
+        PowderPile.draw_manual(screen, x, y, block_width, powder_color, being_mined, is_grid_coordinates, use_alt_drawing)
 
 
 class MutliBlock(Block):
@@ -1745,6 +2115,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Emerald_Ore_Block,
         Mabelite_Ore_Block,
         Coal_Ore_Block,
+        Coal,
         Dirt,
         Grass,
         Log,
@@ -1761,6 +2132,10 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Door_Top,
         Door_Bottom,
         Wood_Planks,
+        Saltpeter,
+        Saltpeter_Powder,
+        Sulfur_Flakes_Block,
+        Sulfur_Powder,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

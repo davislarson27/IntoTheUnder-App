@@ -1191,6 +1191,27 @@ class Crafting_Slots:
                 ],
                 output=Ingredient(Wood_Planks, 3)
             ),
+            Crafting_Recipe(
+                "Sulfur Powder",
+                [
+                    Ingredient(Sulfur_Flakes_Block, 3), 
+                ],
+                output=Ingredient(Sulfur_Powder, 1)
+            ),
+            Crafting_Recipe(
+                "Saltpeter Powder",
+                [
+                    Ingredient(Saltpeter, 1), 
+                ],
+                output=Ingredient(Saltpeter_Powder, 5)
+            ),
+            Crafting_Recipe(
+                "Coal",
+                [
+                    Ingredient(Coal_Ore_Block, 1), 
+                ],
+                output=Ingredient(Coal, 1)
+            ),
         ]
 
     def close(self, inventory_object):

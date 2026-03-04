@@ -4,6 +4,7 @@ import random
 from biomes import *
 from blocks import *
 
+# helper functions for world generation
 
 def generate_tree(grid, grid_x, grid_y, height = 2):
     # stops generation if anything is in the way of the tree
