@@ -1,12 +1,12 @@
 import pygame
-from math import floor
+from math import floor, pi
 
 from blocks import *
 from entity_health import Entity_Health
 
 
 class Player:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 1, ticks_inc = True, inventory_bar_height = 100, health_bar_height = 25):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 1, ticks_inc = True, inventory_bar_height = 100, health_bar_height = 25, images = None, is_left_facing = True):
         MAX_HEALTH = 100
         
         self.grid = grid
@@ -24,6 +24,8 @@ class Player:
         self.health_bar = Entity_Health(screen, MAX_HEALTH, health, inventory_bar_height, health_bar_height)
         self.take_damage_threshold_velocity = 22
         self.loss_per_velocity = 1
+        self.images = images
+        self.is_left_facing = is_left_facing
 
 
     # needs redone to account for widths and heights
@@ -43,11 +45,11 @@ class Player:
     def is_touching(self, block_positions, Block_Type):
         # if type(self.grid.get(block_positions[0][0], block_positions[1][0])) == Block_Type:
         #     return True
-        if type(self.grid.get(block_positions[0][0], block_positions[1][1])) == Block_Type:
+        if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
             return True
         # if type(self.grid.get(block_positions[0][1], block_positions[1][0])) == Block_Type:
         #     return True
-        if type(self.grid.get(block_positions[0][1], block_positions[1][1])) == Block_Type:
+        if issubclass(type(self.grid.get(block_positions[0][1], block_positions[1][1])), Block_Type):
             return True
         
         return False
@@ -145,15 +147,47 @@ class Player:
             "ticks_falling": self.ticks_falling,
             "ticks_inc": self.ticks_inc,
             "BLOCK_WIDTH": self.BLOCK_WIDTH,
-            "health": self.health_bar.get_health()
+            "health": self.health_bar.get_health(),
+            "is_left_facing": self.is_left_facing
         }
 
-
+    
+    def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
+        if is_interacting:
+            if self.is_left_facing: # check for if the player is facing left and the mouse is on the right
+                if mouse_pos_x > player_screen_x + self.y_size:
+                    self.is_left_facing = False
+            else:
+                if mouse_pos_x < player_screen_x:
+                    self.is_left_facing = True
+        else:
+            distance_move_x
+            if self.is_left_facing:
+                if distance_move_x > 0:
+                    self.is_left_facing = False
+            else:
+                if distance_move_x < 0:
+                    self.is_left_facing = True
+    
 
     def draw(self, screen_x = 0, screen_y = 0):
-        pygame.draw.rect(
-            self.screen,
-            (0, 200, 255), #color
-            (self.x - screen_x, self.y - screen_y, self.x_size, self.y_size) #position
-        )
+
+        # pygame.draw.rect(
+        #     self.screen,
+        #     (0, 200, 255), #color
+        #     (self.x - screen_x, self.y - screen_y, self.x_size, self.y_size) #position
+        # )
+
+        if self.is_left_facing:
+            player_rect = self.images.player_left.get_rect(
+                topleft=(self.x - screen_x, self.y - screen_y)
+            )
+            self.screen.blit(self.images.player_left, player_rect)
+        else:
+            player_rect = self.images.player_right.get_rect(
+                topleft=(self.x - screen_x, self.y - screen_y)
+            )
+            self.screen.blit(self.images.player_right, player_rect)
+
+
         self.health_bar.draw()

@@ -6,23 +6,29 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     surface_layer = Grass
     sub_surface_layer = Dirt
     deep_layer = Rock
+    ultra_deep_layer = Rock
 
     # floor generation dtails
     start_floor_depth = 13
     max_deviation_floor_lvl = 3
-    dirt_depth = 2
+    sub_surface_layer_depth = 2
     change_probability = 0.10
 
     #ore generation details
     iron_ore_min_depth = 22
-    iron_ore_base_chance = 0.00074
+    iron_ore_base_chance = 0.00071
     iron_ore_inc_chances_by_layer = 0.000005
     iron_ore_vein_min_size = 1
     iron_ore_vein_max_size = 6
 
+    coal_ore_min_depth = 22
+    coal_ore_base_chance = 0.00076
+    coal_ore_inc_chances_by_layer = -0.000001
+    coal_ore_vein_min_size = 2
+    coal_ore_vein_max_size = 9
+
     diamond_ore_min_depth = 56
-    diamond_ore_base_chance = 0.00017
-    # diamond_ore_inc_chances_by_layer = 0.000015
+    diamond_ore_base_chance = 0.000164
     diamond_ore_inc_chances_by_layer = (diamond_ore_base_chance * 3) / (100 - diamond_ore_min_depth)
     diamond_ore_vein_min_size = 1
     diamond_ore_vein_max_size = 4
@@ -39,13 +45,13 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     mabelite_ore_vein_min_size = 1
     mabelite_ore_vein_max_size = 2
 
-    dirt_vein_min_depth = start_floor_depth + dirt_depth + 2
+    dirt_vein_min_depth = start_floor_depth + sub_surface_layer_depth + 2
     dirt_vein_base_chance = 0.00305
     dirt_vein_inc_chances_by_layer = -0.000009
     dirt_vein_min_size = 3
     dirt_vein_max_size = 8
 
-    gravel_vein_min_depth = start_floor_depth + dirt_depth + 4
+    gravel_vein_min_depth = start_floor_depth + sub_surface_layer_depth + 4
     gravel_vein_base_chance = 0.00275
     gravel_vein_inc_chances_by_layer = -0.000009
     gravel_vein_min_size = 3
@@ -63,6 +69,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     cactus_chance = 0
     lake_chance = 0
     small_bushes_chance = 0
+    snow_man_chance = 0
 
 
 
@@ -150,3 +157,27 @@ class Lake(Biome):
     iron_ore_base_chance = Biome.iron_ore_base_chance * 1.05 #slight increase of chances to get iron
     dirt_vein_min_depth = start_floor_depth + max_deviation_floor_lvl + 4
     dirt_vein_inc_chances_by_layer = Biome.dirt_vein_inc_chances_by_layer * 1.01 # slight decrease in deep dirt (balances late start)
+
+
+class Glacier(Biome):
+    surface_layer = Snow_Block
+    sub_surface_layer = Ice
+    deep_layer = Frozen_Rock
+    ultra_deep_layer = Rock
+
+    sub_surface_layer_depth = 7
+
+    start_floor_depth = 17
+
+    max_deviation_floor_lvl = 2
+    change_probability = 0.08
+
+    lake_chance = 0
+
+    water_cave_chance = 0.1
+
+    dirt_vein_base_chance = 0
+
+    snow_man_chance = 0.008
+
+    iron_ore_min_depth = 25

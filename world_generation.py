@@ -28,6 +28,16 @@ def generate_cactus(grid, grid_x, grid_y, height = 2):
     for y in range(grid_y, grid_y + height): # generate cactus
         grid.set(grid_x, y - height, Cactus, False)
 
+def generate_snow_man(grid, grid_x, grid_y):
+    # stops generation if anything is in the way of the cactus
+    if grid.get(grid_x, grid_y) is not None or grid.get(grid_x, grid_y - 1) is not None:
+        if grid.get(grid_x - 1, grid_y) is not None or grid.get(grid_x + 1, grid_y) is not None:
+            return
+        return
+
+    grid.set(grid_x, grid_y, Snow_Block, False)
+    grid.set(grid_x, grid_y - 1, Snow_Man_Head, False)
+
 def generate_small_bush(grid, grid_x, grid_y):
     # stops generation if anything is in the way of the bush
     if grid.get(grid_x, grid_y) is not None: return
@@ -105,16 +115,14 @@ def generate_cave(grid, start_x, start_y, ground_level, max_cave_depth, is_water
         else: grid.set(x, y, None)
 
 
-
 # main function for world generation
 def generate_world_blocks(grid, world_width, world_depth): #width and height are measured in grid units, not pixels
     # generation details
     MIN_LAKE_DEPTH = Biome.start_floor_depth + 2
 
     # biome generation details
-    biomes = [Forest, Thin_Forest, Plains, Tundra, Desert, Lake]
-    biome_probabilities = [25, 25, 35, 8, 12, 5]
-    # biome_probabilities = [0, 0, 0, 100] # for testing individual biome
+    biomes = [Forest, Thin_Forest, Plains, Tundra, Desert, Lake, Glacier]
+    biome_probabilities = [25, 25, 35, 8, 12, 5, 3]
     biome_base_size = 40
     biome_size_variability = 15
 
@@ -161,7 +169,7 @@ def generate_world_blocks(grid, world_width, world_depth): #width and height are
         grid.set(x, cur_floor_level, cur_biome.surface_layer)
 
         # fill in dirt for amound under the surface
-        cur_dirt_depth = cur_biome.dirt_depth + round(random.random()) + 1
+        cur_dirt_depth = cur_biome.sub_surface_layer_depth + round(random.random()) + 1
         for y in range(1, cur_dirt_depth):
             grid.set(x, cur_floor_level + y, cur_biome.sub_surface_layer)
         
@@ -173,6 +181,7 @@ def generate_world_blocks(grid, world_width, world_depth): #width and height are
         cur_biome = cur_biome_by_x[x]
         find_block_vein_locations(grid, x, Dirt, ground_level, cur_biome.dirt_vein_base_chance, cur_biome.dirt_vein_min_depth, cur_biome.dirt_vein_inc_chances_by_layer, cur_biome.dirt_vein_min_size, cur_biome.dirt_vein_max_size)
         find_block_vein_locations(grid, x, Gravel, ground_level, cur_biome.gravel_vein_base_chance, cur_biome.gravel_vein_min_depth, cur_biome.gravel_vein_inc_chances_by_layer, cur_biome.gravel_vein_min_size, cur_biome.gravel_vein_max_size)
+        find_block_vein_locations(grid, x, Coal_Ore_Block, ground_level, cur_biome.coal_ore_base_chance, cur_biome.coal_ore_min_depth, cur_biome.coal_ore_inc_chances_by_layer, cur_biome.coal_ore_vein_min_size, cur_biome.coal_ore_vein_max_size)        
         find_block_vein_locations(grid, x, Iron_Ore_Block, ground_level, cur_biome.iron_ore_base_chance, cur_biome.iron_ore_min_depth, cur_biome.iron_ore_inc_chances_by_layer, cur_biome.iron_ore_vein_min_size, cur_biome.iron_ore_vein_max_size)
         find_block_vein_locations(grid, x, Diamond_Ore_Block, ground_level, cur_biome.diamond_ore_base_chance, cur_biome.diamond_ore_min_depth, cur_biome.diamond_ore_inc_chances_by_layer, cur_biome.diamond_ore_vein_min_size, cur_biome.diamond_ore_vein_max_size)
         find_block_vein_locations(grid, x, Emerald_Ore_Block, ground_level, cur_biome.emerald_ore_base_chance, cur_biome.emerald_ore_min_depth, cur_biome.emerald_ore_inc_chances_by_layer, cur_biome.emerald_ore_vein_min_size, cur_biome.emerald_ore_vein_max_size)
@@ -239,6 +248,7 @@ def generate_world_blocks(grid, world_width, world_depth): #width and height are
                             has_above_ground_object[x] = True
                             has_above_ground_object[x+1] = True
 
+        # small bush
         if cur_biome.small_bushes_chance > 0:
             if x + 1 < world_width:
                 if not has_above_ground_object[x]:
@@ -247,7 +257,13 @@ def generate_world_blocks(grid, world_width, world_depth): #width and height are
                             generate_small_bush(grid, x, ground_level[x]-1)
                             has_above_ground_object[x] = True
                             
-
-
-        # add bushes next? a 1x1, 2x1, or 2x2 sized leaf that slows you down maybe?
-        # could also add a weed block that is 1x1 or 1x2 tall
+        # snow man
+        if cur_biome.snow_man_chance > 0:
+            if x + 1 < world_width and x - 1 > 0: #check for if in bounds
+                if not has_above_ground_object[x - 1] and not has_above_ground_object[x] and not has_above_ground_object[x+1]:
+                    if ground_level[x] == ground_level[x+1] or ground_level[x] == ground_level[x-1]:
+                        if random.random() < cur_biome.snow_man_chance:
+                            generate_snow_man(grid, x, ground_level[x] - 1)
+                            has_above_ground_object[x-1] = True
+                            has_above_ground_object[x] = True
+                            has_above_ground_object[x+1] = True

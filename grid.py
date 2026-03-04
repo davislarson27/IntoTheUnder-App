@@ -1,5 +1,6 @@
 from copy import deepcopy
 from blocks import *
+from inventory_item import Inventory_Item
 
 class Grid:
     """
@@ -38,12 +39,12 @@ class Grid:
             # raise IndexError
             return None
         
-    def set(self, x, y, block, pass_through = False):
+    def set(self, x, y, block, pass_through=False, stored_inventory_items=None):
         if self.in_bounds(x, y):
             if block == None:
                 self.array[y][x] = None
             else:
-                self.array[y][x] = block(self, self.screen, x, y, self.BLOCK_WIDTH, pass_through)
+                self.array[y][x] = block(self, self.screen, x, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
         else:
             return None
 
@@ -68,8 +69,7 @@ class Grid:
             for x in range(self.width):
                 cur_block = self.get(x, y)
                 if cur_block is not None:
-                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through])
-        
+                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through, cur_block.get_stored_inventory_items()])
         return { #returns dictionary for grid
             "grid_width": self.width,
             "grid_height": self.height,
@@ -122,7 +122,17 @@ class Grid:
             x = block[1]
             y = block[2]
             pass_through = block[3]
-            grid.set(x, y, block_type, pass_through)
+            if len(block) > 4 and block[4] is not None:
+                stored_inventory_items_compressed = block[4]
+                stored_inventory_items = []
+                for item in stored_inventory_items_compressed:
+                    if item is None:
+                        stored_inventory_items.append(None)
+                    else:
+                        stored_inventory_items.append(Inventory_Item.create_from_array(item))
+            else:
+                stored_inventory_items = None
+            grid.set(x, y, block_type, pass_through, stored_inventory_items)
 
         return grid
         
