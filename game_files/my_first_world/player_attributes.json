@@ -1,0 +1,13 @@
+{
+   "player_x_pixel": 87353,
+   "player_y_pixel": 352.9900000000116,
+   "player_speed": 4,
+   "x_vel": 0,
+   "y_vel": 4,
+   "x_size": 23,
+   "y_size": 23,
+   "ticks_falling": 5,
+   "ticks_inc": true,
+   "BLOCK_WIDTH": 25,
+   "health": 100
+}
