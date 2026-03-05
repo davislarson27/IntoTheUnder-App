@@ -1239,13 +1239,13 @@ class Crafting_Slots:
                 slot.inventory_item = None
             
         self.possible_crafting_recipes = []
+        self.recipe_slot.inventory_item.set_recipe(None) 
+        self.cur_recipe_index = 0
 
         if self.output_slot.inventory_item is not None:
             for i in range(self.output_slot.inventory_item.count_of_items):
                 inventory_object.add_item(self.output_slot.inventory_item.Block_Type)
             self.output_slot.inventory_item = None
-
-        self.cur_recipe_index = 0
 
     def get_cur_recipe(self):
         if self.cur_recipe_index is None or len(self.possible_crafting_recipes) == 0:

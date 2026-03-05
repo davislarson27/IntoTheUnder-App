@@ -1446,7 +1446,7 @@ class Explosives(Block): # this is a container for all blocks that explode (help
         draw_y = pixel_self_y - camera_y
 
         flash_interval = self.ticks_till_physics // 20
-        if flash_interval % 2 == 0:
+        if flash_interval % 2 == 1:
             self.draw_manual(self.screen, draw_x, draw_y, self.block_width, True, False, self.pass_through)
         else:
             self.draw_manual(self.screen, draw_x, draw_y, self.block_width, False, False, self.pass_through)
@@ -1457,7 +1457,7 @@ class TNT(Explosives):
     tick_threshold = 160
     ticks_till_physics = 0
     blast_power = 400
-    blast_radius = 4
+    blast_radius = 3
     inventory = None
 
     def interaction(self, inventory):
@@ -1482,7 +1482,6 @@ class TNT(Explosives):
         section_width = int(block_width / 5)
         band_height = 0.24
         band_start_height = (1 - band_height) / 2
-        outline_half_width = 1 # gets doubled by how it is drawn
 
         tnt_red_mid    = (180 + added, 34 + added, 34 + added)
 
