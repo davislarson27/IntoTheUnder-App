@@ -70,6 +70,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     cave_start_odds = 0.0006
     max_cave_depth = 5
     water_cave_chance = 0.03
+    saltpeter_chance = 0.02
 
 
     # object generation odds

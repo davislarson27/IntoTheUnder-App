@@ -75,7 +75,7 @@ def generate_block_vein(grid, Block_Type, center_x, center_y, min_size, max_size
                 last_x, last_y = cur_x, cur_y            
         attempts += 1
 
-def generate_cave(grid, start_x, start_y, ground_level, max_cave_depth, is_water_cave):
+def generate_cave(grid, start_x, start_y, ground_level, max_cave_depth, is_water_cave, saltpeter_chance):
     cave_elevation_change = [-2, -1, 0, 1, 2]
     cave_elevation_change_odds = [1, 4, 5, 4, 1]
 
@@ -105,14 +105,23 @@ def generate_cave(grid, start_x, start_y, ground_level, max_cave_depth, is_water
 
         # now go and clear out the area between the floor and ceiling
         for y in range(ceiling+1 , floor):
-            if is_water_cave: grid.set(x, y, Water, True)
-            else: grid.set(x, y, None)
+            if is_water_cave:
+                grid.set(x, y, Water, True)
+            else:
+                grid.set(x, y, None)
             create_cave = True
         
+        # generate saltpeter
+        if floor - ceiling - 1 > 1 and not is_water_cave: # requires that there be at least two spots open to generate
+            if random.random() < saltpeter_chance:
+                grid.set(x, ceiling+1, Saltpeter)
+
     # now dig out the original center block if the cave began to expand
     if create_cave: 
-        if is_water_cave: grid.set(x, y, Water, True)
-        else: grid.set(x, y, None)
+        if is_water_cave:
+            grid.set(start_x, start_y, Water, True)
+        else:
+            grid.set(start_x, start_y, None)
 
 
 # main function for world generation
@@ -195,7 +204,7 @@ def generate_world_blocks(grid, world_width, world_depth): #width and height are
             if random.random() < cur_biome.cave_start_odds:
                 if random.random() < cur_biome.water_cave_chance: water_cave = True
                 else: water_cave = False
-                generate_cave(grid, x, y, ground_level, cur_biome.max_cave_depth, water_cave)
+                generate_cave(grid, x, y, ground_level, cur_biome.max_cave_depth, water_cave, cur_biome.saltpeter_chance)
 
 
     lake_level = grid.height #throws in a number that should always end a lake if it ever triggered
