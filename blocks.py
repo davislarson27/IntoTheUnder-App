@@ -1,5 +1,5 @@
 import pygame
-from math import floor
+from math import floor, sqrt
 
 # remember to update the blocks_list for loading when you add a new type of block :)
 
@@ -59,9 +59,11 @@ class Block:
 
     def physics(self):
         return
-    
+
     def onDestruction(self, inventory=None):
-        return
+        block_type = type(self)
+        self.grid.set(self.x, self.y, None)
+        return block_type
 
 class Item(Block):
     can_place = False
@@ -719,22 +721,22 @@ class Log(Block):
         
         pygame.draw.rect( # draw base color
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (85 + added_color, 70 + added_color, 55 + added_color),
             (x, y, block_width, block_width)
         )
         pygame.draw.rect(
             screen,
-            (40 + added_color, 25 + added_color, 10 + added_color),           # color
+            (40 + added_color, 25 + added_color, 10 + added_color),
             ((x) + floor(block_width * 0.15) , y + floor(block_width * 0.25), block_width // 25, block_width // 1.75)
         )
         pygame.draw.rect(
             screen,
-            (40 + added_color, 25 + added_color, 10 + added_color),           # color
+            (40 + added_color, 25 + added_color, 10 + added_color),
             ((x) + (block_width // 2) , y + (block_width // 3), block_width // 25, block_width // 1.75)
         )
         pygame.draw.rect(
             screen,
-            (40 + added_color, 25 + added_color, 10 + added_color),           # color
+            (40 + added_color, 25 + added_color, 10 + added_color),
             ((x) + floor(block_width * 0.8) , y + floor(block_width * 0.2), block_width // 25, block_width // 1.75)
         )
 
@@ -892,7 +894,7 @@ class Gravel(Block):
                     (sub_x , sub_y, spec_width, spec_width)
                 )
 
-class Cactus(Block): #not yet designed
+class Cactus(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
 
@@ -1323,7 +1325,6 @@ class Saltpeter_Powder(Item):
 
         PowderPile.draw_manual(screen, x, y, block_width, powder_color, being_mined, is_grid_coordinates, use_alt_drawing)
 
-
 class Sulfur_Flakes_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
@@ -1394,6 +1395,126 @@ class Sulfur_Powder(Item):
 
         PowderPile.draw_manual(screen, x, y, block_width, powder_color, being_mined, is_grid_coordinates, use_alt_drawing)
 
+class Gunpowder(Item):
+    str_name = "Gunpowder"
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        powder_color = (
+            88,
+            86,
+            88
+        )
+
+        PowderPile.draw_manual(screen, x, y, block_width, powder_color, being_mined, is_grid_coordinates, use_alt_drawing)
+
+
+# ---------------------------------- explosive blocks ---------------------------------- #
+
+class Explosives(Block): # this is a container for all blocks that explode (helps them find each other)
+    blast_power = 0
+    blast_radius = 0
+
+    def explode(self):
+        # remove self
+        self.grid.set(self.x, self.y, None)
+
+        # create blast radius
+        for y in range(-self.blast_radius, self.blast_radius + 1):
+            for x in range(-self.blast_radius, self.blast_radius + 1):
+                if sqrt(y*y + x*x) < self.blast_radius:
+                    selected_block = self.grid.get(x + self.x, y + self.y)                        
+                    if selected_block is not None:
+                        if issubclass(type(selected_block), Explosives):
+                            selected_block.interaction(self.inventory) # triggers explosives in the blast radius
+                            selected_block.ticks_till_physics = selected_block.tick_threshold - 5
+                        else:
+                            destroyed_block = selected_block.onDestruction()
+                            if destroyed_block is not None:
+                                self.inventory.add_item(destroyed_block)
+    
+    def draw(self, being_mined = False, camera_x = 0, camera_y = 0): # resets the draw function so that it can flash while about to explode
+        pixel_self_x = self.x * self.block_width
+        pixel_self_y = self.y * self.block_width
+
+        draw_x = pixel_self_x - camera_x
+        draw_y = pixel_self_y - camera_y
+
+        flash_interval = self.ticks_till_physics // 20
+        if flash_interval % 2 == 0:
+            self.draw_manual(self.screen, draw_x, draw_y, self.block_width, True, False, self.pass_through)
+        else:
+            self.draw_manual(self.screen, draw_x, draw_y, self.block_width, False, False, self.pass_through)
+
+class TNT(Explosives):
+    str_name = "TNT"
+    ticks_to_mine = 30
+    tick_threshold = 160
+    ticks_till_physics = 0
+    blast_power = 400
+    blast_radius = 4
+    inventory = None
+
+    def interaction(self, inventory):
+        if self.ticks_till_physics == 0: self.ticks_till_physics = 1
+        self.inventory = inventory
+        return True
+        
+    def physics(self):
+        if self.ticks_till_physics >= self.tick_threshold: # explode :)
+            self.explode()
+        elif self.ticks_till_physics > 0: # if the counter has started, keep counting up
+            self.ticks_till_physics += 1
+        
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added = 20 if being_mined else 0
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        section_width = int(block_width / 5)
+        band_height = 0.24
+        band_start_height = (1 - band_height) / 2
+        outline_half_width = 1 # gets doubled by how it is drawn
+
+        tnt_red_mid    = (180 + added, 34 + added, 34 + added)
+
+        tnt_outline = (50 + added, 45 + added, 45 + added)
+
+        tnt_band = (190 + added, 190 + added, 190 + added)
+
+        # fuse_string = (140, 110, 70)
+        # fuse_tip    = (200, 160, 60)
+        # spark       = (255, 210, 80)
+
+        pygame.draw.rect( # base red
+            screen,
+            tnt_red_mid,
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect( # outline of whole thing
+            screen,
+            tnt_outline,
+            (x, y, block_width, block_width),
+            2
+        )
+        for i in range(5):
+            pygame.draw.rect( # outline of whole thing
+                screen,
+                tnt_outline,
+                (x + (section_width * i), y, section_width, block_width),
+                1
+            )
+        pygame.draw.rect(
+            screen,
+            tnt_band,
+            (x, y + int(block_width * band_start_height), block_width, int(block_width * band_height))
+        )
+
+
+# ------------------------------------ multi blocks ------------------------------------ #
 
 class MutliBlock(Block):
     @staticmethod
@@ -1461,6 +1582,9 @@ class Door(MutliBlock):
 
         screen.blit(scaled, (draw_x, draw_y))
 
+
+
+# ---------------------------------- sub multi blocks ---------------------------------- #
 
 class SubMultiBlock(Block):
     def onDestroy(self):
@@ -1652,8 +1776,7 @@ class Door_Bottom(SubMultiBlock):
 
 
 
-
-
+# ------------------------------------ water blocks ------------------------------------ #
 
 class Water(Block):
 
@@ -2136,6 +2259,8 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Saltpeter_Powder,
         Sulfur_Flakes_Block,
         Sulfur_Powder,
+        Gunpowder,
+        TNT,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,
