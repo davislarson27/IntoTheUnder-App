@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 
 from grid import Grid
-from world_generation import generate_world_blocks
 from text_box import Text_Box
 
 """
@@ -195,7 +194,8 @@ class Menu:
         self.height_blocks = (height_px // load_screen_block_width) + 1
         self.background_world_width_px = floor(self.width_blocks * load_screen_block_width)
         self.background_grid = Grid(self.width_blocks, self.height_blocks, load_screen_block_width, screen)
-        generate_world_blocks(self.background_grid, self.width_blocks, self.height_blocks)
+        self.background_grid.generate_terrain()
+
 
     def get_max_load_screens(self):
         return ceil(len(self.world_names_list) / self.WORLDS_PER_LOAD_SCREEN) 

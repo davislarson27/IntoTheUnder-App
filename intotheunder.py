@@ -20,7 +20,6 @@ from player import Player
 from blocks import *
 from items_management import Inventory
 from menu import Menu
-from world_generation import *
 from world_details import World_Details
 from images import Images
 from game_file_reading import *
@@ -163,11 +162,11 @@ def get_affected_block_pointer_build(player, grid, pointer_x, pointer_y, invento
 def generate_world(screen, window, grid_width, grid_depth, world_name):
     # initialize grid and terrain
     grid = Grid(grid_width, grid_depth, BLOCK_WIDTH, screen) #sets width at 200 blocks
-    generate_world_blocks(grid, grid_width, grid_depth)
+    grid.generate_terrain()
 
     # initialize inventory, player, and world
     inventory = Inventory(screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
-    player = Player(grid, screen, ((grid_width * BLOCK_WIDTH) // 2), 0, BLOCK_WIDTH, x_size=22, y_size = 40, inventory_bar_height=INVENTORY_HEIGHT, health_bar_height = HEALTH_BAR_HEIGHT, images=images)
+    player = Player(grid, screen, ((grid_width * BLOCK_WIDTH) // 2), 0, BLOCK_WIDTH, x_size=22, y_size=40, inventory_bar_height=INVENTORY_HEIGHT, health_bar_height = HEALTH_BAR_HEIGHT, images=images)
     world_details = World_Details.create_new_world(world_name, VERSION)
 
     return grid, inventory, player, world_details

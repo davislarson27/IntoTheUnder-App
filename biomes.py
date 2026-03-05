@@ -10,7 +10,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     deep_layer = Rock
     ultra_deep_layer = Rock
 
-    # floor generation dtails
+    # floor generation details
     start_floor_depth = 13
     max_deviation_floor_lvl = 3
     sub_surface_layer_depth = 2
