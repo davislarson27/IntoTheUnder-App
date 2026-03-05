@@ -467,7 +467,7 @@ try:
                                 if inventory_block_type is not None:
                                     inventory.add_item(inventory_block_type)
                             else:
-                                if selected_block.can_move_to_inventory():                            
+                                if selected_block.can_move_to_inventory():
                                     selected_block.onDestruction(inventory) # run any onDestruction methods
                                     inventory.add_item(type(selected_block))
                                 grid.set(affected_x, affected_y, None)

@@ -1108,6 +1108,11 @@ class Chest(Block):
             if item is not None:
                 for i in range(item.count_of_items):
                     inventory.add_item(item.Block_Type)
+        self.stored_inventory_items = []
+        block_type = type(self)
+        self.grid.set(self.x, self.y, None)
+        return block_type
+
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False): 
@@ -1429,7 +1434,7 @@ class Explosives(Block): # this is a container for all blocks that explode (help
                             selected_block.interaction(self.inventory) # triggers explosives in the blast radius
                             selected_block.ticks_till_physics = selected_block.tick_threshold - 5
                         else:
-                            destroyed_block = selected_block.onDestruction()
+                            destroyed_block = selected_block.onDestruction(self.inventory)
                             if destroyed_block is not None:
                                 self.inventory.add_item(destroyed_block)
     
