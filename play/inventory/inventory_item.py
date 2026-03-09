@@ -1,4 +1,4 @@
-from components.blocks import get_str_to_block
+from components.blocks.blocks import get_str_to_block
 
 class Inventory_Item:
 

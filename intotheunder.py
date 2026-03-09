@@ -15,7 +15,7 @@ from math import floor, sqrt
 import json
 from pathlib import Path
 
-from components.blocks import *
+from components.blocks.blocks import *
 from menu.menu import Menu
 from components.world_details import World_Details
 from components.images import Images
