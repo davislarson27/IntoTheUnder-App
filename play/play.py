@@ -139,6 +139,30 @@ class Play:
 
         return None, None
 
+    def set_camera_offset(self):
+        # x camera movement
+        left_bound = self.camera_x + (self.screen.get_width() // 4)
+        right_bound = self.camera_x + ((self.screen.get_width() * 3) // 4)
+
+        if self.player.x < left_bound:
+            self.camera_x = self.player.x - self.screen.get_width() // 4
+
+        elif self.player.x + self.player.x_size > right_bound:
+            self.camera_x = self.player.x + self.player.x_size - ((3 * self.screen.get_width()) // 4)
+
+
+        # y camera movement     # this still has some funky moments but mostly works at this point   
+        camera_y = self.cur_camera_y
+        if self.player.y + self.player.y_size > self.physics_rules.MOVEMENT_ALTITUDE_PX:
+            camera_y = self.player.y + self.player.y_size - self.physics_rules.MOVEMENT_ALTITUDE_PX
+
+        SMOOTH = 0.4
+        self.cur_camera_y = int(self.cur_camera_y + (camera_y - self.cur_camera_y) * SMOOTH)
+
+
+        world_h_px = self.grid.height * self.BLOCK_WIDTH
+        self.cur_camera_y = max(0, min(self.cur_camera_y, world_h_px - self.physics_rules.true_height))
+
 
     # ---------------------------- main actions ---------------------------- #
 
@@ -222,6 +246,7 @@ class Play:
         save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.world_details)
         self.menu.reopen_menu_prep()
 
+
     # ---------------------------- interacting with main loop ---------------------------- #
 
     def catch_exception(self):
@@ -235,29 +260,8 @@ class Play:
             return_class = self.run_main_game(input)
             if return_class is not self: return return_class
 
-            # x camera movement
-            left_bound = self.camera_x + (self.screen.get_width() // 4)
-            right_bound = self.camera_x + ((self.screen.get_width() * 3) // 4)
-
-            if self.player.x < left_bound:
-                self.camera_x = self.player.x - self.screen.get_width() // 4
-
-            elif self.player.x + self.player.x_size > right_bound:
-                self.camera_x = self.player.x + self.player.x_size - ((3 * self.screen.get_width()) // 4)
-
-
-            # y camera movement     # this still has some funky moments but mostly works at this point   
-            camera_y = self.cur_camera_y
-            if self.player.y + self.player.y_size > self.physics_rules.MOVEMENT_ALTITUDE_PX:
-                camera_y = self.player.y + self.player.y_size - self.physics_rules.MOVEMENT_ALTITUDE_PX
-
-            SMOOTH = 0.4
-            self.cur_camera_y = int(self.cur_camera_y + (camera_y - self.cur_camera_y) * SMOOTH)
-
-
-            world_h_px = self.grid.height * self.BLOCK_WIDTH
-            self.cur_camera_y = max(0, min(self.cur_camera_y, world_h_px - self.physics_rules.true_height))
-
+            # set camera variables
+            self.set_camera_offset()
 
             # execute physics
             self.grid.physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
@@ -286,7 +290,7 @@ class Play:
 
 
         # ------------- run inventory ------------- #
-        # process input and update internal attributes
+        
         self.inventory.run(input) # this is resetting the value of self.inventory.show_full_item_mamagement BEFORE the loop runs with that! it forces exit incorrectly. fix!
 
         # ------------- draw inventory ------------- #
@@ -294,8 +298,6 @@ class Play:
         self.inventory.draw()        
 
         return return_class
-
-
 
         
 class Physics_Rules:

@@ -11,7 +11,7 @@ import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import pygame
-from math import floor, sqrt
+from math import floor
 import json
 from pathlib import Path
 
@@ -54,6 +54,11 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 # - refactored code to be more state based
 # - reorganized code into files
 
+
+"""
+notes:
+ - the health bar is not being drawn: uncomment in player.draw(), but note that play is not accounting for the health bar height when it stops drawing (health bar covers bottom blocks)
+"""
 
 # functions
 def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME):

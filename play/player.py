@@ -192,7 +192,7 @@ class Player:
             self.screen.blit(self.images.player_right, player_rect)
 
 
-        self.health_bar.draw()
+        # self.health_bar.draw()
 
 
     # ----------------------------- runs player physics ----------------------------- #
