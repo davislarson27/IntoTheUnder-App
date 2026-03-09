@@ -7,7 +7,7 @@ class Text_Box():
         self.text_box_color_active = (255, 255, 255)
         self.text_box_text_color = (40, 40, 40)
         self.text_box_outline_color = (120, 135, 150)
-        self.text_box_outline_color_active = (155, 175, 220)
+        self.text_box_outline_color_active = (145, 165, 210)
 
         # invalid characters
         self.invalid_characters = {

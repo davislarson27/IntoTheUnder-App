@@ -651,12 +651,6 @@ class Menu:
 
 
         # draw world name text box
-        text_box_color = (220, 220, 220)
-        text_box_color_active = (245, 245, 245)
-        text_box_text_color = (40, 40, 40)
-        text_box_outline_color = (120, 135, 150)
-        text_box_outline_color_hover = (150, 170, 190)
-
         if self.new_world_name_text_box.is_typing:
             cur_button_color = self.new_world_name_text_box.text_box_color_active
         else:
@@ -681,7 +675,7 @@ class Menu:
         )
 
         display_string = self.new_world_name_text_box.get_cur_string() + self.new_world_name_text_box.get_text_cursor()
-        text_surf = self.button_font.render(display_string, True, text_box_text_color)
+        text_surf = self.button_font.render(display_string, True, self.new_world_name_text_box.text_box_text_color)
         text_rect = text_surf.get_rect(
             midleft=(
                 self.button1_dimentions.left + self.padding,
