@@ -944,6 +944,35 @@ class Inventory:
         self.position_on_click = None
 
 
+# -------------------------------------------------- run functions -------------------------------------------------- #
+
+    def run(self, input):
+        # process clicks
+        self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
+
+        # get scrolling for switching inventory
+        if self.show_full_item_management: # don't run if items management is operating            
+            # close inventory
+            if input.e_keypress or input.escape_keypress:
+                self.close()
+
+
+        else:
+            if abs(input.scroll_change) > 0:
+                self.scroll_change_inventory_position(input.scroll_change)
+                input.scroll_change = 0
+
+            # allow rotating inventory using keyboard
+            if input.return_keypress:
+                if input.l_shift_hold > 0 or input.r_shift_hold > 0:
+                    self.increment_cur_position(False)
+                else:
+                    self.increment_cur_position(True)
+            # open the full inventory
+            if input.e_keypress:
+                self.open()
+
+
 
 class Inventory_Position:
     def __init__(self, hit_box, item_frame, can_allow_swap=True, execute_special_action=None, label_rect=None, inventory_item = None, special_color=None, special_color_2=None, block_check_on_click=False):

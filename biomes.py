@@ -1,5 +1,7 @@
 from blocks import *
 
+# move the attribute that sets the sufrace layer to be a +/- off of the world levels
+
 GRID_HEIGHT = 100
 
 class Biome: #generic biome made so that not every type needs to be added - basicallyl 0's for everything

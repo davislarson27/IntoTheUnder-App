@@ -5,6 +5,9 @@ from pathlib import Path
 
 from grid import Grid
 from text_box import Text_Box
+from play import Play
+from blit_letterboxed import blit_letterboxed
+from game_file_reading import *
 
 """
 
@@ -22,16 +25,18 @@ it then checks the mouse coordinates on click and compares them against the expe
 
 
 class Menu:
-    def __init__(self, screen, images, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory):
+    def __init__(self, screen, window, images, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory, world_generation_settings):
         # draw_function_call
         # self.draw_function = self.draw_load_menu
         self.draw_function = self.draw_main
 
         # most attributes
         self.screen = screen
+        self.window = window
         self.images = images
         self.width = width_px
         self.height = height_px
+        self.block_width = BLOCK_WIDTH
         self.run_game = False
         self.button_font = pygame.font.Font(None, 25)  # None = default font
         self.small_button_font = pygame.font.Font(None, 20)
@@ -45,6 +50,7 @@ class Menu:
         self.button_color = (140, 140, 140)
         self.button_select_color = (165, 165, 165)
         self.game_files_directory = game_files_directory
+        self.world_generation_settings = world_generation_settings
 
         self.string_end_if_corrupted = " (CORRUPTED)" # 12 chars
 
@@ -257,6 +263,7 @@ class Menu:
                 self.draw_function = self.draw_load_menu
             elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
                 self.world_name = self.create_world_name()
+                self.new_world_name_text_box.set_init_string(self.world_name)
                 self.draw_function = self.draw_create_world_menu
             elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
@@ -351,7 +358,6 @@ class Menu:
             if not self.button1_dimentions.collidepoint(self.position_on_click) and not self.button1_dimentions.collidepoint(position_on_release):
                 self.new_world_name_text_box.is_typing = False
 
-
     def create_announce_screen(self, message):
         self.announce_message = message
         self.prev_draw_func = self.draw_create_world_menu
@@ -377,7 +383,7 @@ class Menu:
     def move_background(self):
         if self.camera_x + self.width < self.background_world_width_px: self.camera_x += self.background_move_speed
 
-    def draw_main(self, mx, my, text_input):
+    def draw_main(self, mx, my, input):
         # draw game title
         text_rect = self.main_text_surf.get_rect(center=self.title_space.center)
         self.screen.blit(self.main_text_surf, text_rect)
@@ -418,7 +424,7 @@ class Menu:
         text_rect = text_surf.get_rect(center=self.button3_dimentions.center)
         self.screen.blit(text_surf, text_rect)
 
-    def draw_load_menu(self, mx, my, text_input):
+    def draw_load_menu(self, mx, my, input):
 
         if len(self.world_names_list) > 0: # checks to make sure there are actual worlds that can be loaded
             start_world_position = self.load_screen_factor * self.WORLDS_PER_LOAD_SCREEN
@@ -560,7 +566,7 @@ class Menu:
             text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
-    def draw_confirm_delete_screen(self, mx, my, text_input): # eventually this will allow deleting worlds in the game UI
+    def draw_confirm_delete_screen(self, mx, my, input): # eventually this will allow deleting worlds in the game UI
                 
         # draw game title
         load_screen_text_surf = self.small_title_font.render(f"Are You Sure You Want to Delete \"{self.world_name}\"", True, (255, 255, 255))
@@ -602,7 +608,7 @@ class Menu:
         self.screen.fill(self.loading_world_screen_background_color)
         self.screen.blit(self.saving_world_title_surf, self.saving_world_screen_text_rect)
 
-    def draw_announce_and_return_screen(self, mx, my, text_input):
+    def draw_announce_and_return_screen(self, mx, my, input):
             text_surf = self.button_font.render(self.announce_message, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
             self.screen.blit(text_surf, text_rect)
@@ -620,18 +626,10 @@ class Menu:
             text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
-    def draw_create_world_menu(self, mx, my, text_input):
+    def draw_create_world_menu(self, mx, my, input):
         # handle text input
-        if self.new_world_name_text_box.is_typing and text_input is not None:
-            if text_input == "backspace":
-                self.world_name = self.world_name[:-1]
-            elif len(self.world_name) < self.world_name_length_limit:
-                if not text_input in self.new_world_name_text_box.invalid_characters:
-                    self.world_name += text_input
-            
-            # reset text cursor to be shown when typing happens
-            self.new_world_name_text_box.frames_active = 0
-        
+        self.new_world_name_text_box.take_input(input, self.world_name_length_limit)
+        self.world_name = self.new_world_name_text_box.get_cur_string()
 
         # draw game title
         load_screen_text_surf = self.small_title_font.render("Create New World", True, (255, 255, 255))
@@ -721,10 +719,97 @@ class Menu:
         self.screen.blit(text_surf, text_rect)
 
 
-
-    def draw(self, mx, my, text_input):
+    def draw(self, mx, my, input):
         # draw background before menus
         self.screen.fill((30,30,30))
         self.background_grid.draw(floor(self.camera_x), 0)
 
-        self.draw_function(mx, my, text_input)
+        self.draw_function(mx, my, input)
+    
+    # helper functions
+    def create_new_world(self):
+        # initialize grid and terrain
+        grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen) #sets width at 200 blocks
+        grid.generate_terrain()
+
+        # initialize inventory, player, and world
+        inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
+        player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
+        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
+
+        return grid, inventory, player, world_details
+    
+    def load_world_from_file(self):
+        worlds_directory = f"{self.game_files_directory}/{self.world_name}"
+        with open(f"{worlds_directory}/grid.json", "r") as grid_file:
+            grid_dict = json.load(grid_file)
+            grid = Grid.fill_from_dict(grid_dict, self.screen, self.block_width)
+
+        with open(f"{worlds_directory}/inventory.json", "r") as inventory_file:
+            inventory_dict = json.load(inventory_file)
+            inventory = Inventory.fill_from_dict(inventory_dict, self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
+
+        with open(f"{worlds_directory}/player_attributes.json", "r") as player_attr_file:
+            player_attr_dict = json.load(player_attr_file)
+            player_attr_dict["screen"] = self.screen
+            player_attr_dict["grid"] = grid
+            player_attr_dict["inventory_bar_height"] = self.world_generation_settings.inventory_height
+            player_attr_dict["health_bar_height"] = self.world_generation_settings.health_bar_height
+            player = Player(**player_attr_dict)
+            player.images = self.images
+
+        with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
+            world_details_dict = json.load(world_details_file)
+            # world_details = World_Details(**world_details_dict)
+            world_details = World_Details.fill_from_dict(world_details_dict)
+
+        return grid, inventory, player, world_details
+        
+    def reopen_menu_prep(self):
+        self.world_names_list.remove(self.world_name)
+        self.world_names_list.insert(0, self.world_name)
+        self.run_game = False
+        # menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH, menu.world_names_list) # generates new menu
+        self.return_to_main()
+
+    # ------------------------ functions interacting with the main loop ------------------------ #
+
+    def catch_exception(self):
+        pass
+
+    def run(self, input):
+        """runs the menu and returns function of class that will run next (normally itself)"""
+
+        self.check_click(pygame.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
+        self.move_background()
+        self.draw(input.virtual_mouse_x, input.virtual_mouse_y, input)
+
+        # register keyboard inputs
+        if input.escape_keypress: self.return_to_main()
+
+        if self.run_game: # creates the play object that will be returned
+            self.draw_loading_world_screen()
+            blit_letterboxed(self.screen, self.window, self.loading_world_screen_background_color)
+            pygame.display.flip()
+            pygame.event.pump()
+
+            play_object = None
+
+            if self.load_world:
+                grid, inventory, player, world_details = self.load_world_from_file()
+                play_object = Play(self.screen, self.block_width, grid, inventory, player, world_details, self)
+
+            elif self.generate_new_world:
+                self.world_names_list.insert(0, self.world_name)
+                grid, inventory, player, world_details = self.create_new_world()
+                new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
+                new_directory_path.mkdir()
+                save_game(new_directory_path, player, inventory, grid, world_details)
+                play_object = Play(self.screen, self.block_width, grid, inventory, player, world_details, self)
+
+            if play_object is None: return self
+
+            return play_object
+
+        else:
+            return self

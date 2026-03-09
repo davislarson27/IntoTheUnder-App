@@ -5,7 +5,6 @@ import random
 from blocks import *
 from biomes import *
 from inventory_item import Inventory_Item
-from world_generation import *
 
 class Grid:
     """
@@ -117,10 +116,6 @@ class Grid:
                 obj = self.get(x, y)
                 if(obj != None):
                     obj.draw(camera_x = camera_x, camera_y = camera_y)
-
-    # def generate_terrain(self):
-    #     world_generation = World_Generation(self, self.width, self.height)
-    #     world_generation.generate_terrain()
 
     @staticmethod
     def fill_from_dict(grid_dict, screen, BLOCK_WIDTH):
