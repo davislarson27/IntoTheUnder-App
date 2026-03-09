@@ -41,19 +41,20 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 # to zip without metadata for windows on mac -> zip -r -X IntoTheUnder.zip IntoTheUnder
 
 
-# update notes:
-# - improved inventory UI
-# - added crafting new items
-# - added chests to store items
-# - added functioning doors
-# - let left shift key ignore item interactions
-# - added items
-# - added new blocks
-# - fixed incorrect exit screen
-# - added TNT and explosives
-# - refactored code to be more state based
-# - reorganized code into files
-
+"""
+update notes:
+- improved inventory UI
+- added crafting new items
+- added chests to store items
+- added functioning doors
+- let left shift key ignore item interactions
+- added items
+- added new blocks
+- fixed incorrect exit screen
+- added TNT and explosives
+- refactored code to be more state based
+- reorganized code into files
+"""
 
 """
 notes:

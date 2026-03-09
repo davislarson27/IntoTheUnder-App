@@ -26,7 +26,6 @@ class Grid:
         # generation details
         self.biomes = [Forest, Thin_Forest, Plains, Tundra, Desert, Lake, Glacier]
         self.biome_probabilities = [25, 25, 35, 8, 12, 5, 3]
-        self.biome_base_size = 40
         self.biome_size_variability = 15
 
         self.ground_level = 13
@@ -323,7 +322,7 @@ class Grid:
         # set first biome at x = 0
         cur_biome = random.choices(self.biomes, weights=self.biome_probabilities, k=1)[0]
         cur_biome_start = 0
-        cur_biome_size = self.biome_base_size + floor(random.random() * self.biome_size_variability)
+        cur_biome_size = cur_biome.biome_base_size + floor(random.random() * self.biome_size_variability)
 
         # generation details for computer (helps computer understand what it has done at different points during generation)
         ground_level = []
@@ -339,7 +338,7 @@ class Grid:
             if x >= cur_biome_start + cur_biome_size: # determine next biome details
                 cur_biome = random.choices(self.biomes, weights=self.biome_probabilities, k=1)[0]
                 cur_biome_start = x
-                cur_biome_size = self.biome_base_size + floor(random.random() * self.biome_size_variability)
+                cur_biome_size = cur_biome.biome_base_size + floor(random.random() * self.biome_size_variability)
 
 
             #determine new elevation

@@ -18,6 +18,9 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     sub_surface_layer_depth = 2
     change_probability = 0.10
 
+    # biome size details
+    biome_base_size = 50
+
     #ore generation details
     iron_ore_min_depth = 22
     iron_ore_base_chance = 0.00071
@@ -183,6 +186,8 @@ class Glacier(Biome):
     sub_surface_layer = Ice
     deep_layer = Frozen_Rock
     ultra_deep_layer = Rock
+
+    biome_base_size = Biome.biome_base_size * 2
 
     sub_surface_layer_depth = 7
 
