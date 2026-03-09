@@ -96,6 +96,9 @@ class Input:
             if keys[pygame.K_s]: self.s_hold += 1
             else: self.s_hold = 0
 
+            if keys[pygame.K_BACKSPACE]: self.backspace_hold += 1
+            else: self.backspace_hold = 0
+
     @staticmethod
     def get_scaled_mouse_click(scale, mouse_x, mouse_y, offx, offy):
         if scale == 0: #forcefully stops divide by 0, may cause different errors but this should not happen

@@ -263,7 +263,7 @@ class Menu:
                 self.draw_function = self.draw_load_menu
             elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
                 self.world_name = self.create_world_name()
-                self.new_world_name_text_box.set_init_string(self.world_name)
+                self.new_world_name_text_box.open_text_box(self.world_name)
                 self.draw_function = self.draw_create_world_menu
             elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
@@ -652,14 +652,22 @@ class Menu:
 
         # draw world name text box
         text_box_color = (220, 220, 220)
-        text_box_color_hover = (245, 245, 245)
+        text_box_color_active = (245, 245, 245)
         text_box_text_color = (40, 40, 40)
         text_box_outline_color = (120, 135, 150)
         text_box_outline_color_hover = (150, 170, 190)
-        if self.button1_dimentions.collidepoint((mx, my)): 
-            cur_button_color = text_box_color_hover
-        else: 
-            cur_button_color = text_box_color
+
+        if self.new_world_name_text_box.is_typing:
+            cur_button_color = self.new_world_name_text_box.text_box_color_active
+        else:
+            cur_button_color = self.new_world_name_text_box.text_box_color
+        if self.button1_dimentions.collidepoint((mx, my)):
+            outline_color = self.new_world_name_text_box.text_box_outline_color_active
+            outline_width = 3
+        else:
+            outline_color = self.new_world_name_text_box.text_box_outline_color
+            outline_width = 1
+
         pygame.draw.rect( # world name text box
             self.screen,
             cur_button_color,
@@ -667,12 +675,12 @@ class Menu:
         )
         pygame.draw.rect( # outline
             self.screen,
-            text_box_outline_color,
+            outline_color,
             self.button1_dimentions,
-            width=1
+            width=outline_width
         )
 
-        display_string = self.world_name + self.new_world_name_text_box.get_text_cursor()
+        display_string = self.new_world_name_text_box.get_cur_string() + self.new_world_name_text_box.get_text_cursor()
         text_surf = self.button_font.render(display_string, True, text_box_text_color)
         text_rect = text_surf.get_rect(
             midleft=(

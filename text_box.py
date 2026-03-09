@@ -1,11 +1,13 @@
+"""note that this class is still largely managed by the menu code -> at some point management of a text box should be moved into its own class"""
+
 class Text_Box():
     def __init__(self):
         # colors
         self.text_box_color = (220, 220, 220)
-        self.text_box_color_hover = (245, 245, 245)
+        self.text_box_color_active = (255, 255, 255)
         self.text_box_text_color = (40, 40, 40)
         self.text_box_outline_color = (120, 135, 150)
-        self.text_box_outline_color_hover = (150, 170, 190)
+        self.text_box_outline_color_active = (155, 175, 220)
 
         # invalid characters
         self.invalid_characters = {
@@ -34,7 +36,7 @@ class Text_Box():
         # animation details
         self.frames_active = 0
         self.is_typing = False
-
+        self.b_space_hold_after_init_press = 0
         self.cur_string = ""
 
     def get_text_cursor(self):
@@ -55,18 +57,30 @@ class Text_Box():
         return True
     
     def take_input(self, input, length_limit):
+        ticks_between_backspace = 6
         if self.is_typing and input.typed_text is not None:
-            if input.backspace_keypress:
+            if self.b_space_hold_after_init_press > 0:
+                if input.backspace_hold > 0:
+                    self.b_space_hold_after_init_press += 1
+                    if self.b_space_hold_after_init_press % ticks_between_backspace == 1 and self.b_space_hold_after_init_press > ticks_between_backspace * 5:
+                        self.cur_string = self.cur_string[:-1]
+                else:
+                    self.b_space_hold_after_init_press = 0
+            elif input.backspace_keypress:
                 self.cur_string = self.cur_string[:-1]
+                self.b_space_hold_after_init_press = 1
             elif len(self.cur_string) < length_limit:
                 if not input.typed_text in self.invalid_characters:
                     self.cur_string += input.typed_text
             
-            # reset text cursor to be shown when typing happens
-            self.frames_active = 0
+            # # reset text cursor to be shown when typing happens
+            # self.frames_active = 0
 
     def get_cur_string(self):
         return self.cur_string
     
-    def set_init_string(self, initial_string):
+    def open_text_box(self, initial_string):
+        self.frames_active = 0
+        self.is_typing = False
+        self.b_space_hold_after_init_press = 0
         self.cur_string = initial_string
