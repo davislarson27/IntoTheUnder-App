@@ -1,10 +1,10 @@
 import pygame
 from math import floor, sqrt
 
-from blocks import *
-from mining_sprite import Mining_Sprite
-from blit_letterboxed import blit_letterboxed
-from game_file_reading import save_game
+from components.blocks import *
+from play.mining_sprite import Mining_Sprite
+from components.blit_letterboxed import blit_letterboxed
+from components.game_file_reading import save_game
 
 
 class Play:

@@ -15,22 +15,20 @@ from math import floor, sqrt
 import json
 from pathlib import Path
 
-from grid import Grid
-from player import Player
-from blocks import *
-from items_management import Inventory
-from menu import Menu
-from world_details import World_Details
-from images import Images
-from game_file_reading import *
-from mining_sprite import Mining_Sprite
-from input import Input
-from play import Play
-from world_generation_settings import World_Generation_Settings
-from blit_letterboxed import blit_letterboxed
+from components.grid import Grid
+from play.player import Player
+from components.blocks import *
+from menu.menu import Menu
+from components.world_details import World_Details
+from components.images import Images
+from components.game_file_reading import *
+from components.input import Input
+from play.play import Play
+from menu.world_creation.world_generation_settings import World_Generation_Settings
+from components.blit_letterboxed import blit_letterboxed
 
 # from windows_path_resources import *
-from mac_path_resources import *
+from components.path_resources.mac_path_resources import *
 
 # pyinstaller command line
 r"""

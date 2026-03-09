@@ -1,8 +1,8 @@
 import pygame
 
-from blocks import *
-from crafting_recipe import *
-from inventory_item import Inventory_Item
+from components.blocks import *
+from play.inventory.crafting_recipe import *
+from play.inventory.inventory_item import Inventory_Item
 
 
 class Inventory:

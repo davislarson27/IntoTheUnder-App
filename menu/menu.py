@@ -3,11 +3,11 @@ from math import floor, ceil
 import shutil
 from pathlib import Path
 
-from grid import Grid
-from text_box import Text_Box
-from play import Play
-from blit_letterboxed import blit_letterboxed
-from game_file_reading import *
+from components.grid import Grid
+from components.text_box import Text_Box
+from play.play import Play
+from components.blit_letterboxed import blit_letterboxed
+from components.game_file_reading import *
 
 """
 

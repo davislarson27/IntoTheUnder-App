@@ -1,8 +1,8 @@
 import json
-from grid import Grid
-from items_management import Inventory
-from player import Player
-from world_details import World_Details
+from components.grid import Grid
+from play.inventory.items_management import Inventory
+from play.player import Player
+from components.world_details import World_Details
 
 def save_game(directory, player, inventory, grid, world_details):
     grid_dictionary = grid.to_dict()

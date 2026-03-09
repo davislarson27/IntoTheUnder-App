@@ -2,9 +2,9 @@ from copy import deepcopy
 from math import floor
 import random
 
-from blocks import *
-from biomes import *
-from inventory_item import Inventory_Item
+from components.blocks import *
+from menu.world_creation.biomes import *
+from play.inventory.inventory_item import Inventory_Item
 
 class Grid:
     """

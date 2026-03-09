@@ -1,12 +1,14 @@
 import pygame
-from math import floor, pi
+from math import floor
 
-from blocks import *
-from entity_health import Entity_Health
+from components.blocks import *
+from play.entity_health import Entity_Health
 
 
-class Player:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 1, ticks_inc = True, inventory_bar_height = 100, health_bar_height = 25, images = None, is_left_facing = True):
+class player_entity():
+    """includes user and npc player objects"""
+
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 1, ticks_inc = True, inventory_bar_height = 100, health_bar_height = 25):
         MAX_HEALTH = 100
         
         self.grid = grid
@@ -24,10 +26,6 @@ class Player:
         self.health_bar = Entity_Health(screen, MAX_HEALTH, health, inventory_bar_height, health_bar_height)
         self.take_damage_threshold_velocity = 22
         self.loss_per_velocity = 1
-        self.images = images
-        self.is_left_facing = is_left_facing
-
-        self.dx = 0
 
 
     # needs redone to account for widths and heights
@@ -47,11 +45,11 @@ class Player:
     def is_touching(self, block_positions, Block_Type):
         # if type(self.grid.get(block_positions[0][0], block_positions[1][0])) == Block_Type:
         #     return True
-        if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
+        if type(self.grid.get(block_positions[0][0], block_positions[1][1])) == Block_Type:
             return True
         # if type(self.grid.get(block_positions[0][1], block_positions[1][0])) == Block_Type:
         #     return True
-        if issubclass(type(self.grid.get(block_positions[0][1], block_positions[1][1])), Block_Type):
+        if type(self.grid.get(block_positions[0][1], block_positions[1][1])) == Block_Type:
             return True
         
         return False
@@ -149,112 +147,20 @@ class Player:
             "ticks_falling": self.ticks_falling,
             "ticks_inc": self.ticks_inc,
             "BLOCK_WIDTH": self.BLOCK_WIDTH,
-            "health": self.health_bar.get_health(),
-            "is_left_facing": self.is_left_facing
+            "health": self.health_bar.get_health()
         }
 
-    
-    def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
-        if is_interacting:
-            if self.is_left_facing: # check for if the player is facing left and the mouse is on the right
-                if mouse_pos_x > player_screen_x + self.y_size:
-                    self.is_left_facing = False
-            else:
-                if mouse_pos_x < player_screen_x:
-                    self.is_left_facing = True
-        else:
-            distance_move_x
-            if self.is_left_facing:
-                if distance_move_x > 0:
-                    self.is_left_facing = False
-            else:
-                if distance_move_x < 0:
-                    self.is_left_facing = True
-    
+
 
     def draw(self, screen_x = 0, screen_y = 0):
-
-        # pygame.draw.rect(
-        #     self.screen,
-        #     (0, 200, 255), #color
-        #     (self.x - screen_x, self.y - screen_y, self.x_size, self.y_size) #position
-        # )
-
-        if self.is_left_facing:
-            player_rect = self.images.player_left.get_rect(
-                topleft=(self.x - screen_x, self.y - screen_y)
-            )
-            self.screen.blit(self.images.player_left, player_rect)
-        else:
-            player_rect = self.images.player_right.get_rect(
-                topleft=(self.x - screen_x, self.y - screen_y)
-            )
-            self.screen.blit(self.images.player_right, player_rect)
-
-
+        pygame.draw.rect(
+            self.screen,
+            (0, 200, 255), #color
+            (self.x - screen_x, self.y - screen_y, self.x_size, self.y_size) #position
+        )
         self.health_bar.draw()
 
-
-    # ----------------------------- runs player physics ----------------------------- #
-    def move(self, input, physics): # returns assessed damage object
-        # ---------------------- step 1: set cur iteration variables ---------------------- #
-        dx = 0
-        dy = 0
-        cur_y_acceleration = physics.Y_ACCELERATION
-        cur_player_speed_x = self.player_speed
-        cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible = self.get_player_physics(physics.Y_ACCELERATION)
-        if cur_player_speed_y > 0: water_movement = True
-        else: water_movement = False
-
-
-        # ---------------------- step 2: process input ---------------------- #
-        if input.a_hold > 0:
-            dx -= cur_player_speed_x
-        if input.d_hold > 0:
-            dx += cur_player_speed_x 
-        if input.w_hold > 0 or input.space_hold > 0:
-            if not self.is_not_block_below() and jump_is_possible: # add jump_is_possible
-                self.y_vel = physics.JUMP_VELOCITY
-                self.ticks_falling = 1
-                self.ticks_inc = False
-            if water_movement:
-                cur_y_acceleration = physics.WATER_UPWARD_ACCEL
-        if input.s_hold > 0:
-            if water_movement: 
-                self.y_vel = cur_player_speed_y
-
-        # ---------------------- step 3: move ---------------------- #
-        # apply gravity and jumping
-        if self.y_vel + (cur_y_acceleration * self.ticks_falling) < self.BLOCK_WIDTH: #limits gravity at 1 block per tick
-            dy += self.y_vel + (cur_y_acceleration * self.ticks_falling)
-
-
-        # check if motion is legal
-        if water_movement: dy *= 0.4
-        collided = self.is_move_ok_y(dy)
-
-        # if collided and dy > 0 and abs(player.y_vel) > player.take_damage_threshold_velocity:
-        #     print("executed")
-        #     if player.health_bar.health > 0: player.health_bar.health -= player.loss_per_velocity * (abs(player.y_vel) - player.take_damage_threshold_velocity )
-
-        x_move = abs(dx)
-        if dx < 0: x_direction = -1
-        else: x_direction = 1
-        while x_move >= 0:
-            if self.is_move_ok_x(x_move * x_direction):
-                self.x += (x_move * x_direction)
-                break
-            x_move -= 1
-
-        # increment gravity
-        if dy == 0:
-            self.y_vel = 0
-            self.ticks_falling = 1
-        else:
-            self.y_vel += cur_y_acceleration
-            if self.ticks_inc:
-                self.ticks_falling += 1
-            else:
-                self.ticks_inc = True
-
-        self.dx = dx
+class npc_entity(player_entity):
+    """base for all npc -> adds decision making trees not necessary for the player"""
+    def make_decision():
+        pass
