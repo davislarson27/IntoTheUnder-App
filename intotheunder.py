@@ -50,6 +50,8 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 # - added items
 # - added new blocks
 # - fixed incorrect exit screen
+# - refactored code to be more state based
+# - reorganized code into files
 
 
 # functions
