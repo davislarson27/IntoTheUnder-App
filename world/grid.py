@@ -3,7 +3,7 @@ from math import floor
 import random
 
 from .blocks.blocks import *
-from menu.world_creation.biomes import *
+from .world_creation.biomes import *
 from play.inventory.inventory_item import Inventory_Item
 
 class Grid:
@@ -25,7 +25,7 @@ class Grid:
 
         # generation details
         self.biomes = [Forest, Thin_Forest, Plains, Tundra, Desert, Lake, Glacier]
-        self.biome_probabilities = [25, 25, 35, 8, 12, 5, 3]
+        self.biome_probabilities = [25, 25, 35, 800, 12, 5, 3]
         self.biome_base_size = 40
         self.biome_size_variability = 15
 
@@ -376,6 +376,7 @@ class Grid:
             find_block_vein_locations(x, Dirt, ground_level, cur_biome.dirt_vein_base_chance, cur_biome.dirt_vein_min_depth, cur_biome.dirt_vein_inc_chances_by_layer, cur_biome.dirt_vein_min_size, cur_biome.dirt_vein_max_size)
             find_block_vein_locations(x, Gravel, ground_level, cur_biome.gravel_vein_base_chance, cur_biome.gravel_vein_min_depth, cur_biome.gravel_vein_inc_chances_by_layer, cur_biome.gravel_vein_min_size, cur_biome.gravel_vein_max_size)
             find_block_vein_locations(x, Coal_Ore_Block, ground_level, cur_biome.coal_ore_base_chance, cur_biome.coal_ore_min_depth, cur_biome.coal_ore_inc_chances_by_layer, cur_biome.coal_ore_vein_min_size, cur_biome.coal_ore_vein_max_size)        
+            find_block_vein_locations(x, Sulfur_Flakes_Block, ground_level, cur_biome.sulfur_flakes_base_chance, cur_biome.sulfur_flakes_min_depth, cur_biome.sulfur_flakes_inc_chances_by_layer, cur_biome.sulfur_flakes_vein_min_size, cur_biome.sulfur_flakes_vein_max_size)
             find_block_vein_locations(x, Iron_Ore_Block, ground_level, cur_biome.iron_ore_base_chance, cur_biome.iron_ore_min_depth, cur_biome.iron_ore_inc_chances_by_layer, cur_biome.iron_ore_vein_min_size, cur_biome.iron_ore_vein_max_size)
             find_block_vein_locations(x, Diamond_Ore_Block, ground_level, cur_biome.diamond_ore_base_chance, cur_biome.diamond_ore_min_depth, cur_biome.diamond_ore_inc_chances_by_layer, cur_biome.diamond_ore_vein_min_size, cur_biome.diamond_ore_vein_max_size)
             find_block_vein_locations(x, Emerald_Ore_Block, ground_level, cur_biome.emerald_ore_base_chance, cur_biome.emerald_ore_min_depth, cur_biome.emerald_ore_inc_chances_by_layer, cur_biome.emerald_ore_vein_min_size, cur_biome.emerald_ore_vein_max_size)

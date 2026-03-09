@@ -22,7 +22,7 @@ from components.images import Images
 from components.game_file_reading import *
 from components.input import Input
 from play.play import Play
-from menu.world_creation.world_generation_settings import World_Generation_Settings
+from world.world_creation.world_generation_settings import World_Generation_Settings
 from components.blit_letterboxed import blit_letterboxed
 
 # from windows_path_resources import *
