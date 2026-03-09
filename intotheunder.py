@@ -54,6 +54,9 @@ update notes:
 - added TNT and explosives
 - refactored code to be more state based
 - reorganized code into files
+- made biomes larger
+- allowed biomes to be different sizes
+- fixed text box to allow easier deleting
 """
 
 """
