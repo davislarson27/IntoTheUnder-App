@@ -1,5 +1,5 @@
 import pygame
-from components.blocks.block_types._base import Item, Ingot
+from world.blocks.block_types._base import Item, Ingot
 
 class Coal(Item):
     str_name = "Coal"

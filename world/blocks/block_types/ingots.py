@@ -1,4 +1,4 @@
-from components.blocks.block_types._base import Item, Ingot
+from world.blocks.block_types._base import Item, Ingot
 
 class Iron_Ingot(Item):
     str_name = "Iron Ingot"

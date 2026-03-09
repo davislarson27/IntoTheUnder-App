@@ -3,7 +3,7 @@ from math import floor, ceil
 import shutil
 from pathlib import Path
 
-from components.grid import Grid
+from world.grid import Grid
 from components.text_box import Text_Box
 from play.play import Play
 from components.blit_letterboxed import blit_letterboxed

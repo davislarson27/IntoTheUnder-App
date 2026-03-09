@@ -1,6 +1,6 @@
 import pygame
 from math import floor
-from components.blocks.block_types._base import Block
+from world.blocks.block_types._base import Block
 
 class Chest(Block):
 

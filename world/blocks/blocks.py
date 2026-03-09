@@ -9,7 +9,6 @@ from .block_types.ores import *
 from .block_types.powders import *
 from .block_types.special_terrain import *
 from .block_types.storage import *
-from .block_types.submutliblocks import *
 from .block_types.terrain import *
 from .block_types.water import *
 from .block_types.wood import *

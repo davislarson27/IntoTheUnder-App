@@ -5,7 +5,7 @@
 #       for the leave example, make the leaves count 
 # this will need to be saved and regenerated in the .json grid file so it doens't get lost on reload (not all objects of the same type will have a parent object)
 
-from components.grid import Grid
+from world.grid import Grid
 
 class Parent_Object: # holds objects that 
     def __init__(self, parent_object_type, parent_object_x, parent_object_y, ticks_parent_object_missing = 0):

@@ -1,5 +1,5 @@
 import pygame
-from components.blocks.block_types._base import MutliBlock, SubMultiBlock
+from world.blocks.block_types._base import MutliBlock, SubMultiBlock
 
 class Door(MutliBlock):
     @staticmethod

@@ -1,4 +1,4 @@
-from components.blocks.block_types._base import PowderPile, Item
+from world.blocks.block_types._base import PowderPile, Item
 
 class Saltpeter_Powder(Item):
     str_name = "Saltpeter Powder"

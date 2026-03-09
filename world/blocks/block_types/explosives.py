@@ -1,5 +1,5 @@
 import pygame
-from components.blocks.block_types._base import Explosives
+from world.blocks.block_types._base import Explosives
 
 class TNT(Explosives):
     str_name = "TNT"

@@ -1,5 +1,5 @@
 import pygame
-from components.blocks.block_types._base import Block
+from world.blocks.block_types._base import Block
 
 class Rock(Block):
 
