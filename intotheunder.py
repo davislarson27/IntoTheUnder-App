@@ -1,6 +1,8 @@
 import pygame
 from math import floor
 import json
+import os, sys
+from pathlib import Path
 
 from grid import Grid
 from player import Player
@@ -8,6 +10,25 @@ from blocks import *
 from full_inventory import Inventory
 from menu import Menu
 from world_generation import *
+from world_details import World_Details
+
+# python location
+# "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3"
+
+# pyinstaller command line
+# python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--icon "game_files/image_files/icon.icns" \--add-data "game_files:game_files" \intotheunder.py
+
+# path based functions
+def resource_path(relative_path: str) -> str:
+    # When bundled by PyInstaller, files are unpacked to a temp folder: sys._MEIPASS
+    base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
+
+def user_data_dir(app_name="Into The Under"):
+    base = os.path.expanduser("~/Library/Application Support")
+    path = os.path.join(base, app_name)
+    os.makedirs(path, exist_ok=True)
+    return path
 
 # functions
 def pixel_to_grid(pixel_coordinates, BLOCK_WIDTH):
@@ -36,7 +57,7 @@ def get_affected_block(player, grid, pointer_x, pointer_y, build_mode = True): #
         return None, None
     return out_of_bounds_x, out_of_bounds_y
 
-def save_game(directory, player, inventory, grid):
+def save_game(directory, player, inventory, grid, world_details):
     grid_dictionary = grid.to_dict()
     with open(f"{directory}/grid.json", "w") as grid_file:
         json.dump(grid_dictionary, grid_file, indent=3)
@@ -47,16 +68,20 @@ def save_game(directory, player, inventory, grid):
     
     inventory_dict = inventory.to_dict()
     with open(f"{directory}/inventory.json", "w") as inventory_file:
-        json.dump(inventory_dict,inventory_file, indent=3)
+        json.dump(inventory_dict, inventory_file, indent=3)
 
-def load_world(directory, screen, width, height, INVENTORY_HEIGHT, BLOCK_WIDTH):
+    world_details_dict = world_details.to_dict()
+    with open(f"{directory}/world_details.json", "w") as world_details_file:
+        json.dump(world_details_dict, world_details_file, indent=3)
+
+def load_world(directory, screen, window, width, height, INVENTORY_HEIGHT, BLOCK_WIDTH):
     with open(f"{directory}/grid.json", "r") as grid_file:
         grid_dict = json.load(grid_file)
         grid = Grid.fill_from_dict(grid_dict, screen, BLOCK_WIDTH)
 
     with open(f"{directory}/inventory.json", "r") as inventory_file:
         inventory_dict = json.load(inventory_file)
-        inventory = Inventory.fill_from_dict(inventory_dict, screen, height, width, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
+        inventory = Inventory.fill_from_dict(inventory_dict, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
 
     with open(f"{directory}/player_attributes.json", "r") as player_attr_file:
         player_attr_dict = json.load(player_attr_file)
@@ -66,9 +91,18 @@ def load_world(directory, screen, width, height, INVENTORY_HEIGHT, BLOCK_WIDTH):
         player_attr_dict["health_bar_height"] = HEALTH_BAR_HEIGHT
         player = Player(**player_attr_dict)
 
-    return grid, inventory, player
+    with open(f"{directory}/world_details.json", "r") as world_details_file:
+        world_details_dict = json.load(world_details_file)
+        # world_details = World_Details(**world_details_dict)
+        world_details = World_Details.fill_from_dict(world_details_dict)
 
-def generate_world(screen, grid_width, grid_depth):
+    return grid, inventory, player, world_details
+
+def create_world_name(world_names_list): # this function will eventually be replaced by user input -> but for now it is auto generated
+    # print(world_names_list)
+    return f"My World {len(world_names_list) + 1}"
+
+def generate_world(screen, window, grid_width, grid_depth, world_name):
     # initialize grid
     grid = Grid(grid_width, grid_depth, BLOCK_WIDTH, screen) #sets width at 200 blocks
 
@@ -76,38 +110,101 @@ def generate_world(screen, grid_width, grid_depth):
     generate_world_blocks(grid, grid_width, grid_depth)
 
     # initialize inventory
-    inventory = Inventory(screen, screen_height_px, screen_width_px, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
+    inventory = Inventory(screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
 
     # initialize player in grid
     player = Player(grid, screen, ((grid_width * BLOCK_WIDTH) // 2), 0, BLOCK_WIDTH, x_size=23, y_size = 23, inventory_bar_height=INVENTORY_HEIGHT, health_bar_height = HEALTH_BAR_HEIGHT)
 
-    return grid, inventory, player
+    # initialize world details
+    world_details = World_Details.create_new_world(world_name, VERSION)
+
+    return grid, inventory, player, world_details
+
+def blit_letterboxed(src, dst, color):
+    sw, sh = src.get_size()
+    dw, dh = dst.get_size()
+    scale = min(dw / sw, dh / sh)
+    new_size = (int(sw * scale), int(sh * scale))
+    x = (dw - new_size[0]) // 2
+    y = (dh - new_size[1]) // 2
+    scaled = pygame.transform.smoothscale(src, new_size)
+    dst.fill(color)
+    dst.blit(scaled, (x, y))
+    return scale, x, y  # useful for mouse coordinate mapping
+
+def get_scaled_mouse_click(scale, mx, my, offx, offy):
+    if scale == 0: #forcefully stops divide by 0, may cause different errors but this should not happen
+        return None, None
+    
+    gx = (mx - offx) / scale
+    gy = (my - offy) / scale
+
+    return gx, gy
+
+def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME):
+    def convert_file_to_class(wd_file_path): #converts file to class
+        try:
+            with open(wd_file_path, "r") as world_details_file:
+                return World_Details.fill_from_dict(json.load(world_details_file))
+        except: # prevents crash on launch with a bad details file by adding dummy file
+            cur_timestamp = World_Details.get_corrupted_timestamp()
+            file_name = Path(wd_file_path).parent.name
+            return World_Details(f"{file_name} (CORRUPTED)", VERSION, cur_timestamp, cur_timestamp, True)
+
+    # gets the file names for all user worlds and sorts them in order of last opened
+    game_files_folder = Path(game_files_directory)
+
+    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.rglob("*") if file.is_dir() and Path(file / "world_details.json").is_file() and file.name != IMAGES_FILE_NAME]
+    world_details_class_list.sort(key=lambda world:world.last_modified_date, reverse=True)
+
+    return [world.world_name for world in world_details_class_list if not world.version > VERSION]
 
 
 # implementation details
 BLOCK_WIDTH = 25
 INVENTORY_HEIGHT = 120
 HEALTH_BAR_HEIGHT = 20 # included in INVENTORY_HEIGHT
+screen_height_px = 620
+screen_width_px = floor(screen_height_px / 0.625) + 100
+
 # cur_seed = 12
 # random.seed(cur_seed)
+
+APP_NAME = "Into The Under"
+VERSION_NAME = "intotheunder1.3"
+VERSION = 1.3 # primary version - ex 1.3.1 becomes 1.3
+GAME_FILE_FOLDER_NAME = "game_files"
+IMAGES_FILE_NAME = "image_files"
+pygame_icon_file = "icon.png"
+
+# game_files_location = VERSION_NAME + '/' + GAME_FILE_FOLDER_NAME + '/' + world_name
+game_files_location = VERSION_NAME + '/' + GAME_FILE_FOLDER_NAME
+
+save_path = user_data_dir(APP_NAME)
+directory = os.path.join(save_path, game_files_location)
+os.makedirs(directory, exist_ok=True)
 
 
 # initalize pygame
 pygame.init()
 pygame.font.init()
 
+icon_surface = pygame.image.load(resource_path(f"game_files/{IMAGES_FILE_NAME}/{pygame_icon_file}"))
+pygame.display.set_icon(icon_surface)
+
 
 # create the screen
-screen_width_px, screen_height_px = 1000, 620
-screen = pygame.display.set_mode((screen_width_px, screen_height_px))
-pygame.display.set_caption("Zombie Archeology")
+background_color = (30,30,30)
+window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RESIZABLE)
+screen = pygame.Surface((screen_width_px, screen_height_px))
+pygame.display.set_caption("Into the Under 1.3")
+
 
 true_height = screen_height_px - INVENTORY_HEIGHT
 MOVEMENT_ALTITUDE_PX = (true_height * 13) // 16
 
 # set grid size
 grid_width = 5000
-# grid_depth = (screen_height_px - INVENTORY_HEIGHT)//BLOCK_WIDTH + 10
 grid_height = 100
 
 
@@ -115,12 +212,10 @@ grid_height = 100
 clock = pygame.time.Clock()
 TICKS = 60
 
-directory = "zombie_archeology1.2/game_files/my_first_world"
-
 # set gravity variables
-Y_ACCELERATION = 0.3
+Y_ACCELERATION = 1
 WATER_UPWARD_ACCEL = -0.05
-JUMP_VELOCITY = -12
+JUMP_VELOCITY = -15
 
 
 # arrow key press variables
@@ -137,19 +232,38 @@ return_key_state = 0
 
 # run details
 running = True
-menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH)
+menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME))
+
 
 while running and menu.menu_running:
+
+    scale, offx, offy = blit_letterboxed(screen, window, background_color)
+
     # event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-            if game_is_loaded: save_game(directory, player, inventory, grid)
+            if game_is_loaded: 
+                menu.draw_saving_world_screen()
+                blit_letterboxed(screen, window, background_color)
+                pygame.display.flip()
+                pygame.event.pump()
+
+                save_game(f"{directory}/{menu.world_name}", player, inventory, grid, world_details)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                if game_is_loaded: save_game(directory, player, inventory, grid)
+                if game_is_loaded: 
+                    menu.draw_saving_world_screen()
+                    blit_letterboxed(screen, window, background_color)
+                    pygame.display.flip()
+                    pygame.event.pump()
+                    save_game(f"{directory}/{menu.world_name}", player, inventory, grid, world_details)
+                    # temp_world_name = menu.world_name
+                    menu.world_names_list.remove(menu.world_name)
+                    menu.world_names_list.insert(0, menu.world_name)
                 game_is_loaded = False
-                menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH) # generates new menu
+                # menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH, menu.world_names_list) # generates new menu
+                menu.return_to_main()
             if event.key == pygame.K_e:
                 if game_is_loaded:
                     if inventory.show_full_inventory:
@@ -158,7 +272,8 @@ while running and menu.menu_running:
                     else:
                         inventory.show_full_inventory = True
         if game_is_loaded and inventory.show_full_inventory and event.type == pygame.MOUSEBUTTONUP and event.button == 1: # only processes if inventory is on
-            inventory_click_x, inventory_click_y = event.pos
+            unscaled_x, unscaled_y = event.pos
+            inventory_click_x, inventory_click_y = get_scaled_mouse_click(scale, unscaled_x, unscaled_y, offx, offy)
             inventory.process_click_full_inventory(inventory_click_x, inventory_click_y)
 
 
@@ -177,7 +292,8 @@ while running and menu.menu_running:
         
         # get clicks for switching inventory
         if pygame.mouse.get_pressed()[0]: # Get the state of left click
-            x, y = pygame.mouse.get_pos()
+            tx, ty = pygame.mouse.get_pos()
+            x, y = get_scaled_mouse_click(scale, tx, ty, offx, offy)
             if y > screen_height_px - INVENTORY_HEIGHT:
                 # now send it to the part of inventory that checks what part was pressed
                 new_index = inventory.select_click(x,y)
@@ -278,22 +394,15 @@ while running and menu.menu_running:
             # apply gravity and jumping
             if player.y_vel + (cur_y_acceleration * player.ticks_falling) < BLOCK_WIDTH: #limits gravity at 1 block per tick
                 dy += player.y_vel + (cur_y_acceleration * player.ticks_falling)
-            else:
-                dy = player.y_vel
 
 
             # check if motion is legal
             if water_movement: dy *= 0.4
             collided = player.is_move_ok_y(dy)
 
-            print(f"collided: {collided}, vel = {player.y_vel}, dy = {dy}")
-
-            if collided and dy > 0 and abs(player.y_vel) > player.take_damage_threshold_velocity:
-                damage = player.loss_per_velocity * (abs(player.y_vel) - player.take_damage_threshold_velocity)
-                if player.health_bar.health - damage > 0: player.health_bar.health -= player.loss_per_velocity * (abs(player.y_vel) - player.take_damage_threshold_velocity )
-                else: player.health_bar.health = 0
-            
-            print(f"health: {player.health_bar.health}")
+            # if collided and dy > 0 and abs(player.y_vel) > player.take_damage_threshold_velocity:
+            #     print("executed")
+            #     if player.health_bar.health > 0: player.health_bar.health -= player.loss_per_velocity * (abs(player.y_vel) - player.take_damage_threshold_velocity )
 
             x_move = abs(dx)
             if dx < 0: x_direction = -1
@@ -309,9 +418,11 @@ while running and menu.menu_running:
                 player.y_vel = 0
                 player.ticks_falling = 1
             else:
-                if player.y_vel + cur_y_acceleration < BLOCK_WIDTH:
-                    player.y_vel += cur_y_acceleration
-                player.ticks_falling += 1
+                player.y_vel += cur_y_acceleration
+                if player.ticks_inc:
+                    player.ticks_falling += 1
+                else:
+                    player.ticks_inc = True
 
 
             # x camera movement
@@ -344,7 +455,7 @@ while running and menu.menu_running:
 
 
         # drawing
-        screen.fill((30,30,30))
+        screen.fill(background_color)
 
         grid.draw(camera_x, cur_camera_y, INVENTORY_HEIGHT)
 
@@ -359,19 +470,31 @@ while running and menu.menu_running:
 
     # run menu
     else: #this is for the menu screens
-        menu.check_click(pygame.mouse)
+        tx, ty = pygame.mouse.get_pos()
+        scaled_mouse_pos_x, scaled_mouse_pos_y = get_scaled_mouse_click(scale, tx, ty, offx, offy)
+        menu.check_click(pygame.mouse, scaled_mouse_pos_x, scaled_mouse_pos_y)
         menu.move_background()
-        menu.draw(pygame.mouse)
+        menu.draw(scaled_mouse_pos_x, scaled_mouse_pos_y)
 
         if menu.run_game: # check for if it's time to move on and generate world before launch
+            menu.draw_loading_world_screen()
+            scale, offx, offy = blit_letterboxed(screen, window, background_color)
+            pygame.display.flip()
+            pygame.event.pump()
+
             if menu.load_world:
-                grid, inventory, player = load_world(directory, screen, screen_width_px, screen_height_px, INVENTORY_HEIGHT, BLOCK_WIDTH)
+                grid, inventory, player, world_details = load_world(f"{directory}/{menu.world_name}", screen, window, screen_width_px, screen_height_px, INVENTORY_HEIGHT, BLOCK_WIDTH)
                 camera_x = player.x + (player.x_size // 2) - (screen_width_px // 2)
                 camera_y = player.y + (player.y_size // 2) - (screen_height_px // 2)
                 cur_camera_y = camera_y
                 game_is_loaded = True
             elif menu.generate_new_world:
-                grid, inventory, player = generate_world(screen, grid_width, grid_height)
+                menu.world_name = create_world_name(menu.world_names_list)
+                menu.world_names_list.insert(0, menu.world_name)
+                grid, inventory, player, world_details = generate_world(screen, window, grid_width, grid_height, menu.world_name)
+                new_directory_path = Path(f"{directory}/{menu.world_name}")
+                new_directory_path.mkdir()
+                save_game(new_directory_path, player, inventory, grid, world_details)
                 camera_x = player.x + (player.x_size // 2) - (screen_width_px // 2)
                 camera_y = player.y + (player.y_size // 2) - (screen_height_px // 2)
                 cur_camera_y = camera_y

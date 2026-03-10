@@ -1,12 +1,12 @@
 {
-   "player_x_pixel": 87258,
-   "player_y_pixel": 252.9900000000116,
+   "player_x_pixel": 87398,
+   "player_y_pixel": 377.9900000000116,
    "player_speed": 4,
    "x_vel": 0,
-   "y_vel": 12,
+   "y_vel": 9,
    "x_size": 23,
    "y_size": 23,
-   "ticks_falling": 13,
+   "ticks_falling": 10,
    "ticks_inc": true,
    "BLOCK_WIDTH": 25,
    "health": 100

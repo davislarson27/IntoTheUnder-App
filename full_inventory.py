@@ -3,10 +3,10 @@ from blocks import *
 
 class Inventory:
 
-    def __init__(self, screen, SCREEN_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25):
+    def __init__(self, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25):
         self.screen = screen
-        self.SCREEN_HEIGHT = SCREEN_HEIGHT
-        self.SCREEN_WIDTH = SCREEN_WIDTH
+        
+        self.window = window # use for width and height when dealing with mouse clicks
         self.INVENTORY_HEIGHT = INVENTORY_HEIGHT - HEALTH_BAR_HEIGHT
         self.HEALTH_BAR_HEIGHT = HEALTH_BAR_HEIGHT
 
@@ -16,8 +16,8 @@ class Inventory:
         self.tot_columns = 24
         self.tot_rows = 24
         
-        self.row_width = self.SCREEN_WIDTH // self.tot_columns
-        self.column_height = (self.SCREEN_HEIGHT  - self.INVENTORY_HEIGHT) // self.tot_rows
+        self.row_width = screen.get_width() // self.tot_columns
+        self.column_height = (screen.get_height()  - self.INVENTORY_HEIGHT) // self.tot_rows
 
         self.boxes_per_row = 8
         self.boxes_high = 4
@@ -27,8 +27,8 @@ class Inventory:
         self.margin_x = 3 * self.row_width
         self.margin_y = 3 * self.column_height
 
-        self.margin_between_boxes_x = (self.SCREEN_WIDTH - (2 * self.margin_x) - (self.boxes_per_row * self.box_side_length)) // (self.boxes_per_row - 1)
-        self.margin_between_boxes_y = (self.SCREEN_HEIGHT  - self.INVENTORY_HEIGHT - (2 * self.margin_y) - (self.boxes_high * self.box_side_length)) // (self. boxes_high - 1)
+        self.margin_between_boxes_x = (screen.get_width() - (2 * self.margin_x) - (self.boxes_per_row * self.box_side_length)) // (self.boxes_per_row - 1)
+        self.margin_between_boxes_y = (screen.get_height()  - self.INVENTORY_HEIGHT - (2 * self.margin_y) - (self.boxes_high * self.box_side_length)) // (self. boxes_high - 1)
     
         self.item_percent_of_box = 0.75
         self.full_inventory_item_size = floor(self.box_side_length * self.item_percent_of_box) # item is 90% as long as its box is
@@ -70,15 +70,15 @@ class Inventory:
 
 
     def swap_positions(self, swap_coordinates):
-        p1 = self.get_inventory_position_from_coordinates(self.selected_coordinates, self.hot_bar_length)
-        p2 = self.get_inventory_position_from_coordinates(swap_coordinates, self.hot_bar_length)
+        p1 = floor(self.get_inventory_position_from_coordinates(self.selected_coordinates, self.hot_bar_length))
+        p2 = floor(self.get_inventory_position_from_coordinates(swap_coordinates, self.hot_bar_length))
 
         self.full_inventory[p1], self.full_inventory[p2] = self.full_inventory[p2], self.full_inventory[p1]
 
         self.selected_coordinates = None
 
-    def process_click_full_inventory(self, m_x, m_y):
-        if m_x > self.margin_x and m_x < self.SCREEN_WIDTH - self.margin_x:
+    def process_click_full_inventory(self, m_x, m_y, scale = 1):
+        if m_x > self.margin_x and m_x < self.screen.get_width() - self.margin_x:
             if m_y > self.margin_y and m_y < self.margin_y + ((self.box_side_length * self.boxes_high) + ((self.boxes_high - 1) * self.margin_between_boxes_y)):
                 # now we are in range of the boxes - we can work on determining which box was selected
                 box_position_x = (m_x - self.margin_x) // (self.box_side_length + self.margin_between_boxes_x) 
@@ -120,7 +120,7 @@ class Inventory:
             self.full_inventory[empty_slot] = Inventory_Position(item)
 
     def build_from_current(self):
-        cur_inventory_slot = self.full_inventory[self.cur_position_index]
+        cur_inventory_slot = self.full_inventory[floor(self.cur_position_index)]
         if cur_inventory_slot != None:
             block_type = cur_inventory_slot.Block_Type
             if cur_inventory_slot.remove_block():
@@ -130,16 +130,16 @@ class Inventory:
         return None
 
     def set_cur_position(self, index):
-        self.cur_position_index = index
+        self.cur_position_index = floor(index)
 
     def select_click(self, x, y): # needs to get redone for new inventory hot bar
-        spacing_x = self.SCREEN_WIDTH // 10
+        spacing_x = self.screen.get_width() // 10
         spacing_y = self.INVENTORY_HEIGHT // 12
         INVENTORY_BLOCK_WIDTH = (spacing_x // 12) * 8
 
-        if y > self.SCREEN_HEIGHT - self.INVENTORY_HEIGHT + (spacing_y * 2) and y < self.SCREEN_HEIGHT - (spacing_y * 2):
+        if y > self.screen.get_height() - self.INVENTORY_HEIGHT + (spacing_y * 2) and y < self.screen.get_height() - (spacing_y * 2):
             x_margin = spacing_x + (spacing_x // 12)
-            if x > x_margin and x + x_margin < self.SCREEN_WIDTH:
+            if x > x_margin and x + x_margin < self.screen.get_width():
                 return (x // spacing_x) - 1
         return None
 
@@ -169,7 +169,7 @@ class Inventory:
         pygame.draw.rect( # draw base color
             self.screen,
             self.inventory_background_color,           # color
-            (0, self.SCREEN_HEIGHT - self.INVENTORY_HEIGHT, self.SCREEN_WIDTH, self.INVENTORY_HEIGHT)
+            (0, self.screen.get_height() - self.INVENTORY_HEIGHT, self.screen.get_width(), self.INVENTORY_HEIGHT)
         )
 
 
@@ -284,9 +284,9 @@ class Inventory:
         }
     
     @staticmethod
-    def fill_from_dict(inventory_dict, screen, SCREEN_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT):
+    def fill_from_dict(inventory_dict, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT):
         # create new inventory
-        inventory = Inventory(screen, SCREEN_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
+        inventory = Inventory(screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
 
         # get block conversion dictionary and list of slots
         str_to_block = get_str_to_block()
