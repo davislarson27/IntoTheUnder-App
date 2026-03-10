@@ -11,12 +11,26 @@ from full_inventory import Inventory
 from menu import Menu
 from world_generation import *
 from world_details import World_Details
+from images import Images
+
 
 # python location
 # "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3"
 
 # pyinstaller command line
-# python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--icon "game_files/image_files/icon.icns" \--add-data "game_files:game_files" \intotheunder.py
+"""
+python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--icon "game_files/image_files/icon.icns" \--add-data "game_files:game_files" \intotheunder.py
+"""
+
+# additional helpful command line args
+# cp -a intotheunder1.3 intotheunder1.3.1 (copies a folder to a new version)
+
+# notes:
+# when i release an updated version it does not give access to old versions as of now (that may change when app is launched)
+
+# update notes:
+# added the ability to delete worlds
+
 
 # path based functions
 def resource_path(relative_path: str) -> str:
@@ -154,7 +168,7 @@ def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME):
     # gets the file names for all user worlds and sorts them in order of last opened
     game_files_folder = Path(game_files_directory)
 
-    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.rglob("*") if file.is_dir() and Path(file / "world_details.json").is_file() and file.name != IMAGES_FILE_NAME]
+    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.rglob("*") if file.is_dir() and file.name != IMAGES_FILE_NAME]
     world_details_class_list.sort(key=lambda world:world.last_modified_date, reverse=True)
 
     return [world.world_name for world in world_details_class_list if not world.version > VERSION]
@@ -171,7 +185,8 @@ screen_width_px = floor(screen_height_px / 0.625) + 100
 # random.seed(cur_seed)
 
 APP_NAME = "Into The Under"
-VERSION_NAME = "intotheunder1.3"
+APP_DISPLAY_NAME = "Into The Under 1.3.1"
+VERSION_NAME = "intotheunder1.3.1"
 VERSION = 1.3 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
 IMAGES_FILE_NAME = "image_files"
@@ -184,7 +199,6 @@ save_path = user_data_dir(APP_NAME)
 directory = os.path.join(save_path, game_files_location)
 os.makedirs(directory, exist_ok=True)
 
-
 # initalize pygame
 pygame.init()
 pygame.font.init()
@@ -192,12 +206,14 @@ pygame.font.init()
 icon_surface = pygame.image.load(resource_path(f"game_files/{IMAGES_FILE_NAME}/{pygame_icon_file}"))
 pygame.display.set_icon(icon_surface)
 
-
 # create the screen
 background_color = (30,30,30)
 window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RESIZABLE)
 screen = pygame.Surface((screen_width_px, screen_height_px))
-pygame.display.set_caption("Into the Under 1.3")
+pygame.display.set_caption(APP_DISPLAY_NAME)
+
+# load in images
+images = Images(f"game_files/{IMAGES_FILE_NAME}", BLOCK_WIDTH)
 
 
 true_height = screen_height_px - INVENTORY_HEIGHT
@@ -232,7 +248,7 @@ return_key_state = 0
 
 # run details
 running = True
-menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME))
+menu = Menu(screen, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME), directory)
 
 
 while running and menu.menu_running:

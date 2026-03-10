@@ -3,15 +3,32 @@ from math import floor, ceil
 
 from grid import Grid
 from world_generation import generate_world_blocks
+import shutil
+from pathlib import Path
+
+"""
+
+explanation:
+
+the menu works by using a self.blocks_width by self.blocks_height grid. 
+boxes are generated during initialization
+the main game loops calls the menu by calling menu.draw_function
+self.draw_function holds a class method that actually draws the screen and is what click selection is based on
+the subclass does the drawing
+self.execute_clicked() checks self.draw_function to see what is on the screen
+it then checks the mouse coordinates on click and compares them against the expected hit boxes and executes a function
+
+"""
 
 class Menu:
-    def __init__(self, screen, width_px, height_px, BLOCK_WIDTH, world_names_list):
+    def __init__(self, screen, images, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory):
         # draw_function_call
         # self.draw_function = self.draw_load_menu
         self.draw_function = self.draw_main
 
         # most attributes
         self.screen = screen
+        self.images = images
         self.width = width_px
         self.height = height_px
         self.run_game = False
@@ -25,12 +42,18 @@ class Menu:
         self.menu_running = True
         self.button_color = (140, 140, 140)
         self.button_select_color = (165, 165, 165)
+        self.game_files_directory = game_files_directory
+
+        self.string_end_if_corrupted = " (CORRUPTED)" # 12 chars
+
+        self.announce_message = None
+        self.prev_draw_func = None
 
         self.world_names_list = world_names_list
-        # self.world_names_list = ["my_first_world", "my_second_world", "my_third_world", "my_fourth_world", "my_fifth_world", "my_sixth_world", "my_seventh_world"] # temp placeholder
         self.WORLDS_PER_LOAD_SCREEN = 3
         self.load_screen_factor = 0
         self.world_name = None
+        self.special_world_reference_index = None
         
         # world options
         self.load_world = False
@@ -78,6 +101,15 @@ class Menu:
         self.button4L_dimentions = pygame.Rect(self.menu_block_width * center_column_margin_x, self.menu_block_height * 19, floor(self.menu_block_width * RL_width), self.menu_block_height * 2)
         self.button4R_dimentions = pygame.Rect(floor(self.menu_block_width * RL_width) + (self.menu_block_width * (center_column_margin_x + 1)), self.menu_block_height * 19, floor(self.menu_block_width * RL_width), self.menu_block_height * 2)
 
+        longL_column_width = 9.75
+        self.button1_longL_dimentions = pygame.Rect(self.menu_block_width * center_column_margin_x, self.menu_block_height * 10, self.menu_block_width * longL_column_width, self.menu_block_height * 2)
+        self.button2_longL_dimentions = pygame.Rect(self.menu_block_width * center_column_margin_x, self.menu_block_height * 13, self.menu_block_width * longL_column_width, self.menu_block_height * 2)
+        self.button3_longL_dimentions = pygame.Rect(self.menu_block_width * center_column_margin_x, self.menu_block_height * 16, self.menu_block_width * longL_column_width, self.menu_block_height * 2)
+
+        self.button1_shortR_dimentions = pygame.Rect(floor(self.menu_block_width * longL_column_width) + (self.menu_block_width * (center_column_margin_x + 0.25)), self.menu_block_height * 10, self.menu_block_width * 2, self.menu_block_height * 2)
+        self.button2_shortR_dimentions = pygame.Rect(floor(self.menu_block_width * longL_column_width) + (self.menu_block_width * (center_column_margin_x + 0.25)), self.menu_block_height * 13, self.menu_block_width * 2, self.menu_block_height * 2)
+        self.button3_shortR_dimentions = pygame.Rect(floor(self.menu_block_width * longL_column_width) + (self.menu_block_width * (center_column_margin_x + 0.25)), self.menu_block_height * 16, self.menu_block_width * 2, self.menu_block_height * 2)
+
         # generate menu background world
         load_screen_block_width = floor(BLOCK_WIDTH * 1.15) #slightly enlarge the blocks
         self.width_blocks = (width_px // load_screen_block_width) * 3
@@ -89,7 +121,43 @@ class Menu:
     def get_max_load_screens(self):
         return ceil(len(self.world_names_list) / self.WORLDS_PER_LOAD_SCREEN) 
 
-    def execute_clicked(self, position_on_release):
+    def execute_load_world(self, button_offset = 0):
+        """
+        loads world and resets menu to main
+        button offset specifies which button got pressed (0 is the first option, 1 is the second, etc)
+        """
+        self.draw_function = self.draw_main
+        self.load_world = True
+        self.run_game = True
+        self.world_name = self.world_names_list[(self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset]
+
+    def execute_delete_world_confirmation(self, button_offset = 0):
+        """
+        runs process for when the delete button is pressed on the load page
+        does not actually delete the world files
+        """
+        self.draw_function = self.draw_confirm_delete_screen
+        self.world_name = self.world_names_list[(self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset]
+        self.special_world_reference_index = (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset
+
+    def delete_world_files(self, world_file_name):
+        # step 1: strip file name of " (CORRUPTED)" if applicable
+        # World (CORRUPTED)
+        if len(world_file_name) > len(self.string_end_if_corrupted) and world_file_name[len(world_file_name) - len(self.string_end_if_corrupted) : ] == self.string_end_if_corrupted[:]:
+            cleaned_world_file_name = world_file_name[0 : len(world_file_name) - len(self.string_end_if_corrupted)]
+        else:
+            cleaned_world_file_name = world_file_name
+        
+        delete_file_dir = Path(self.game_files_directory) / cleaned_world_file_name
+        if (delete_file_dir).is_dir():
+            shutil.rmtree(delete_file_dir)
+            self.world_names_list.remove(world_file_name)
+            # print(delete_file_dir)
+            return True
+        return False
+
+    def execute_clicked(self, position_on_release): # may need to add in self.
+
         if self.draw_function.__func__ is self.draw_main.__func__:
             if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
                 self.draw_function = self.draw_load_menu
@@ -102,36 +170,72 @@ class Menu:
 
         elif self.draw_function.__func__ is self.draw_load_menu.__func__:
             if len(self.world_names_list) > 0:
+                # check the return button
                 if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
                     self.draw_function = self.draw_main
-                elif self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list) and self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
-                    self.draw_function = self.draw_main
-                    self.load_world = True
-                    self.run_game = True
-                    self.world_name = self.world_names_list[self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor]
-                elif (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list) and self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
-                    self.draw_function = self.draw_main
-                    self.load_world = True
-                    self.run_game = True
-                    self.world_name = self.world_names_list[(self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1]
-                elif (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list) and self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
-                    self.draw_function = self.draw_main
-                    self.load_world = True
-                    self.run_game = True
-                    self.world_name = self.world_names_list[(self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2]
+                
+                # now check the launch world buttons
+                elif self.button1_longL_dimentions.collidepoint(self.position_on_click) and self.button1_longL_dimentions.collidepoint(position_on_release):
+                    if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
+                        self.execute_load_world(0)
+                elif self.button2_longL_dimentions.collidepoint(self.position_on_click) and self.button2_longL_dimentions.collidepoint(position_on_release):                    
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
+                        self.execute_load_world(1)
+                elif self.button3_longL_dimentions.collidepoint(self.position_on_click) and self.button3_longL_dimentions.collidepoint(position_on_release):                    
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
+                        self.execute_load_world(2)
+                
+                # check the delete world buttons
+                elif self.button1_shortR_dimentions.collidepoint(self.position_on_click) and self.button1_shortR_dimentions.collidepoint(position_on_release):
+                    if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
+                        self.execute_delete_world_confirmation(0)
+                elif self.button2_shortR_dimentions.collidepoint(self.position_on_click) and self.button2_shortR_dimentions.collidepoint(position_on_release):
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
+                        self.execute_delete_world_confirmation(1)
+                elif self.button3_shortR_dimentions.collidepoint(self.position_on_click) and self.button3_shortR_dimentions.collidepoint(position_on_release):
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
+                        self.execute_delete_world_confirmation(2)
+
+                # check the load menu navigation buttons
                 elif self.button4L_dimentions.collidepoint(self.position_on_click) and self.button4L_dimentions.collidepoint(position_on_release):
-                    # this is the prev button
+                    # prev button
                     self.load_screen_factor -= 1
                     if self.load_screen_factor < 0:
                         self.load_screen_factor = self.get_max_load_screens() - 1
                 elif self.button4R_dimentions.collidepoint(self.position_on_click) and self.button4R_dimentions.collidepoint(position_on_release):
-                    # this is the prev button
-                            self.load_screen_factor += 1
-                            if self.load_screen_factor > self.get_max_load_screens() - 1:
-                                self.load_screen_factor = 0
-            else: # lets alt return button work
+                    # next button
+                    self.load_screen_factor += 1
+                    if self.load_screen_factor > self.get_max_load_screens() - 1:
+                        self.load_screen_factor = 0
+            
+            else: # allows alt return button to work
                 if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
                     self.draw_function = self.draw_main
+        
+        # confirm world deletion menu
+        elif self.draw_function.__func__ is self.draw_confirm_delete_screen.__func__:
+            # selected yes
+            if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
+                # self.announce_message = "successfully deleted f{}"  
+                if self.delete_world_files(self.world_names_list[self.special_world_reference_index]):
+                    self.announce_message = f"Successfully Deleted \"{self.world_name}\""
+                else:
+                    self.announce_message = f"Failed to Delete \"{self.world_name}\""
+                self.draw_function = self.draw_announce_and_return_screen
+                self.special_world_reference_index = None
+                self.world_name = None
+                self.load_screen_factor = 0 # ensures that when the user clicks back in it doesn't throw an index error
+                self.prev_draw_func = self.draw_load_menu
+            # selected no
+            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.draw_function = self.draw_load_menu
+                self.special_world_reference_index = None
+                self.world_name = None
+
+        # print alert system and return to last
+        elif self.draw_function.__func__ is self.draw_announce_and_return_screen.__func__:
+            if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.draw_function = self.prev_draw_func
 
     def return_to_main(self):
         self.draw_function = self.draw_main
@@ -140,7 +244,6 @@ class Menu:
         self.menu_running = True
         self.generate_new_world = False
         self.world_name = None
-
 
     def check_click(self, mouse, mx, my):
         if not self.is_clicked and mouse.get_pressed()[0]: # detect click
@@ -221,42 +324,78 @@ class Menu:
 
             # create first option button
             if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
-                if self.button1_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+                if self.button1_longL_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
                 else: cur_button_color = self.button_color
                 pygame.draw.rect( # menu button
                     self.screen,
                     cur_button_color,
-                    self.button1_dimentions
+                    self.button1_longL_dimentions
                 )
                 text_surf = self.button_font.render(self.world_names_list[start_world_position], True, (255, 255, 255))
-                text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
+                text_rect = text_surf.get_rect(center=self.button1_longL_dimentions.center)
                 self.screen.blit(text_surf, text_rect)
+
+                # delete button
+                if self.button1_shortR_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+                else: cur_button_color = self.button_color
+                pygame.draw.rect( # menu button
+                    self.screen,
+                    cur_button_color,
+                    self.button1_shortR_dimentions
+                )
+                icon_rect = self.images.trash.get_rect(center=self.button1_shortR_dimentions.center)
+                self.screen.blit(self.images.trash, icon_rect)
+
+
 
             # create second option button
             if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
-                if self.button2_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+                if self.button2_longL_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
                 else: cur_button_color = self.button_color
                 pygame.draw.rect( # menu button
                     self.screen,
                     cur_button_color,
-                    self.button2_dimentions
+                    self.button2_longL_dimentions
                 )
                 text_surf = self.button_font.render(self.world_names_list[start_world_position + 1], True, (255, 255, 255))
-                text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
+                text_rect = text_surf.get_rect(center=self.button2_longL_dimentions.center)
                 self.screen.blit(text_surf, text_rect)
+
+                
+                # draw delete
+                if self.button2_shortR_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+                else: cur_button_color = self.button_color
+                pygame.draw.rect( # menu button
+                    self.screen,
+                    cur_button_color,
+                    self.button2_shortR_dimentions
+                )
+                icon_rect = self.images.trash.get_rect(center=self.button2_shortR_dimentions.center)
+                self.screen.blit(self.images.trash, icon_rect)
 
             # create third option button
             if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
-                if self.button3_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+                if self.button3_longL_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
                 else: cur_button_color = self.button_color
                 pygame.draw.rect( # menu button
                     self.screen,
                     cur_button_color,
-                    self.button3_dimentions
+                    self.button3_longL_dimentions
                 )
                 text_surf = self.button_font.render(self.world_names_list[start_world_position + 2], True, (255, 255, 255))
-                text_rect = text_surf.get_rect(center=self.button3_dimentions.center)
+                text_rect = text_surf.get_rect(center=self.button3_longL_dimentions.center)
                 self.screen.blit(text_surf, text_rect)
+                
+                # delete button
+                if self.button3_shortR_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+                else: cur_button_color = self.button_color
+                pygame.draw.rect( # menu button
+                    self.screen,
+                    cur_button_color,
+                    self.button3_shortR_dimentions
+                )
+                icon_rect = self.images.trash.get_rect(center=self.button3_shortR_dimentions.center)
+                self.screen.blit(self.images.trash, icon_rect)
 
             # create "Prev" option button
             if self.button4L_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
@@ -301,8 +440,39 @@ class Menu:
             text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
-    def draw_confirm_delete_screen(self): # eventually this will allow deleting worlds in the game UI
-        pass
+    def draw_confirm_delete_screen(self, mx, my): # eventually this will allow deleting worlds in the game UI
+                
+        # draw game title
+        load_screen_text_surf = self.small_title_font.render(f"Are You Sure You Want to Delete \"{self.world_name}\"", True, (255, 255, 255))
+        text_rect = load_screen_text_surf.get_rect(center=self.title_space.center)
+        self.screen.blit(load_screen_text_surf, text_rect)
+
+        # create return button
+        if self.button1_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+        else: cur_button_color = self.button_color
+
+        pygame.draw.rect( # return button button
+            self.screen,
+            cur_button_color,
+            self.button1_dimentions
+        )
+        text_surf = self.button_font.render("Delete World", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
+        self.screen.blit(text_surf, text_rect)
+
+
+        # create return button
+        if self.button2_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+        else: cur_button_color = self.button_color
+
+        pygame.draw.rect( # return button button
+            self.screen,
+            cur_button_color,
+            self.button2_dimentions
+        )
+        text_surf = self.button_font.render("Cancel", True, (255, 255, 255))
+        text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
+        self.screen.blit(text_surf, text_rect)
 
     def draw_loading_world_screen(self, percent_complete=1):
         self.screen.fill(self.loading_world_screen_background_color)
@@ -311,6 +481,24 @@ class Menu:
     def draw_saving_world_screen(self, percent_complete=1):
         self.screen.fill(self.loading_world_screen_background_color)
         self.screen.blit(self.saving_world_title_surf, self.saving_world_screen_text_rect)
+
+    def draw_announce_and_return_screen(self, mx, my):
+            text_surf = self.button_font.render(self.announce_message, True, (255, 255, 255))
+            text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
+            self.screen.blit(text_surf, text_rect)
+
+            # create return button
+            if self.button2_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+            else: cur_button_color = self.button_color
+
+            pygame.draw.rect( # return button button
+                self.screen,
+                cur_button_color,
+                self.button2_dimentions
+            )
+            text_surf = self.button_font.render("Return", True, (255, 255, 255))
+            text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
+            self.screen.blit(text_surf, text_rect)
 
 
     def draw(self, mx, my):
