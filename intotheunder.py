@@ -25,11 +25,10 @@ python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--
 # additional helpful command line args
 # cp -a intotheunder1.3 intotheunder1.3.1 (copies a folder to a new version)
 
-# notes:
-# when i release an updated version it does not give access to old versions as of now (that may change when app is launched)
 
 # update notes:
-# added the ability to delete worlds
+# added a new scren for creating a new world
+# patched bug with automatically generated world names
 
 
 # path based functions
@@ -112,10 +111,6 @@ def load_world(directory, screen, window, width, height, INVENTORY_HEIGHT, BLOCK
 
     return grid, inventory, player, world_details
 
-def create_world_name(world_names_list): # this function will eventually be replaced by user input -> but for now it is auto generated
-    # print(world_names_list)
-    return f"My World {len(world_names_list) + 1}"
-
 def generate_world(screen, window, grid_width, grid_depth, world_name):
     # initialize grid
     grid = Grid(grid_width, grid_depth, BLOCK_WIDTH, screen) #sets width at 200 blocks
@@ -185,8 +180,8 @@ screen_width_px = floor(screen_height_px / 0.625) + 100
 # random.seed(cur_seed)
 
 APP_NAME = "Into The Under"
-APP_DISPLAY_NAME = "Into The Under 1.3.1"
-VERSION_NAME = "intotheunder1.3.1"
+APP_DISPLAY_NAME = "Into The Under 1.3.2"
+VERSION_NAME = "intotheunder1.3.2"
 VERSION = 1.3 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
 IMAGES_FILE_NAME = "image_files"
@@ -250,10 +245,15 @@ return_key_state = 0
 running = True
 menu = Menu(screen, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME), directory)
 
-
 while running and menu.menu_running:
 
     scale, offx, offy = blit_letterboxed(screen, window, background_color)
+
+    typing_key = None
+    if menu.new_world_name_text_box.is_typing:
+        pygame.key.start_text_input()
+    else:
+        pygame.key.stop_text_input()
 
     # event handling
     for event in pygame.event.get():
@@ -266,6 +266,10 @@ while running and menu.menu_running:
                 pygame.event.pump()
 
                 save_game(f"{directory}/{menu.world_name}", player, inventory, grid, world_details)
+        
+        if event.type == pygame.TEXTINPUT: 
+            typing_key = event.text
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 if game_is_loaded: 
@@ -287,6 +291,9 @@ while running and menu.menu_running:
                         inventory.show_full_inventory = False
                     else:
                         inventory.show_full_inventory = True
+            if event.key == pygame.K_BACKSPACE and menu.new_world_name_text_box.is_typing:
+                typing_key = "backspace"
+
         if game_is_loaded and inventory.show_full_inventory and event.type == pygame.MOUSEBUTTONUP and event.button == 1: # only processes if inventory is on
             unscaled_x, unscaled_y = event.pos
             inventory_click_x, inventory_click_y = get_scaled_mouse_click(scale, unscaled_x, unscaled_y, offx, offy)
@@ -490,7 +497,7 @@ while running and menu.menu_running:
         scaled_mouse_pos_x, scaled_mouse_pos_y = get_scaled_mouse_click(scale, tx, ty, offx, offy)
         menu.check_click(pygame.mouse, scaled_mouse_pos_x, scaled_mouse_pos_y)
         menu.move_background()
-        menu.draw(scaled_mouse_pos_x, scaled_mouse_pos_y)
+        menu.draw(scaled_mouse_pos_x, scaled_mouse_pos_y, typing_key)
 
         if menu.run_game: # check for if it's time to move on and generate world before launch
             menu.draw_loading_world_screen()
@@ -505,7 +512,6 @@ while running and menu.menu_running:
                 cur_camera_y = camera_y
                 game_is_loaded = True
             elif menu.generate_new_world:
-                menu.world_name = create_world_name(menu.world_names_list)
                 menu.world_names_list.insert(0, menu.world_name)
                 grid, inventory, player, world_details = generate_world(screen, window, grid_width, grid_height, menu.world_name)
                 new_directory_path = Path(f"{directory}/{menu.world_name}")
