@@ -1,5 +1,13 @@
+import warnings
+
+warnings.filterwarnings( # you should probably delete this at some point but deprecation warnings were getting annoying
+    "ignore",
+    message="pkg_resources is deprecated as an API.*",
+    category=UserWarning,
+)
+
 import pygame
-from math import floor
+from math import floor, sqrt
 import json
 import os, sys
 from pathlib import Path
@@ -12,7 +20,10 @@ from menu import Menu
 from world_generation import *
 from world_details import World_Details
 from images import Images
-from windows_path_resources import *
+from game_file_reading import *
+
+# from windows_path_resources import *
+from mac_path_resources import *
 
 
 
@@ -21,43 +32,78 @@ from windows_path_resources import *
 
 # pyinstaller command line
 """
-mac: python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--icon "game_files/image_files/icon.icns" \--add-data "game_files:game_files" \intotheunder.py
+python3 -m PyInstaller --clean --noconfirm --windowed --name "Into The Under" --icon "game_files/image_files/icon.icns" --add-data "game_files:game_files" intotheunder.py
+"""
 
-windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" --icon "game_files\image_files\icon.ico" --add-data "game_files;game_files" intotheunder.py
+# steps to compile and sign (ad-hoc)
+"""
+(optional, look into this) delete folders already there (or create new subdirectory for the new version) 
+    rm -rf Intotheunder.app
+
+in file directory:
+    cp -r intotheunder1.4.0 ~/signingwork
+
+now navigate to signingwork into the folder with the python files for the version you want to compile
+    cd, etc
+
+now compile the app
+    python3 -m PyInstaller --clean --noconfirm --windowed --name "Into The Under" --icon "game_files/image_files/ITU-Icon.icns" --add-data "game_files:game_files" intotheunder.py
+
+now remove quarantines and sign
+    cd dist
+    xattr -dr com.apple.quarantine Intotheunder.app
+    codesign --force --deep --sign - Intotheunder.app
+
+verify that it is signed correctoy (look for something like "Signature=adhoc" in message)
+    codesign -dv --verbose=4 Intotheunder.app
+
+# zip file
+#     ditto -c -k --sequesterRsrc --keepParent IntotheUnder.app IntotheUnder.app.zip
+
+# # move copy of file back to original directory
+# #     cp -a IntotheUnder.app ~/Some/Other/Folder/
+
+
+alt: move to .dmg
+    do not zip
+    get app and move it into staging folder
+    go to applications in Davis's Mac -> Macintosh HD, get applications and create an Alias called Applications
+        move to staging folder
+    go to Disk Utility
+        file -> new image -> imgage from folder
+        should not be encrypted, but it should be compressed
+
+    wassa! the .dmg is now created!
+
+
 
 """
 
 # additional helpful command line args
 # cp -a intotheunder1.3 intotheunder1.3.1 (copies a folder to a new version)
 
-
 # update notes:
-# added a new scren for creating a new world
-# patched bug with automatically generated world names
-
+# - added glacier biome
+# - added naturally generating snow men
+# - added coal blocks to the game
+# - adjusted ore rarities
+# - added new method of building and destroying blocks using mouse
+# - added ability to scroll through inventory with mouse wheel
+# - added user character with new height
+# - updated gravity to allow jumping over 3 high hurdles
+# - doubled time to mine blocks
 
 # path based functions
-
-# def user_data_dir(app_name="Into The Under"):
-#     if sys.platform == "darwin":  # macOS
-#         base = os.path.expanduser("~/Library/Application Support")
-#     elif sys.platform == "win32":  # Windows
-#         base = os.path.expanduser("~\\AppData\\Roaming")
-#     else:  # Linux
-#         base = os.path.expanduser("~/.config")
-    
-#     path = os.path.join(base, app_name)
-#     os.makedirs(path, exist_ok=True)
-#     return path
+def resource_path(relative_path: str) -> str:
+    # When bundled by PyInstaller, files are unpacked to a temp folder: sys._MEIPASS
+    base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
 
 def user_data_dir(app_name="Into The Under"):
-    base = os.path.expanduser("~\\AppData\\Roaming")
-    
+    base = os.path.expanduser("~/Library/Application Support")
     path = os.path.join(base, app_name)
     os.makedirs(path, exist_ok=True)
     return path
-
-
 
 # functions
 def pixel_to_grid(pixel_coordinates, BLOCK_WIDTH):
@@ -86,61 +132,83 @@ def get_affected_block(player, grid, pointer_x, pointer_y, build_mode = True): #
         return None, None
     return out_of_bounds_x, out_of_bounds_y
 
-def save_game(directory, player, inventory, grid, world_details):
-    grid_dictionary = grid.to_dict()
-    with open(f"{directory}/grid.json", "w") as grid_file:
-        json.dump(grid_dictionary, grid_file, indent=3)
 
-    player_dictionary = player.to_dict()
-    with open(f"{directory}/player_attributes.json", "w") as player_attr_file:
-        json.dump(player_dictionary, player_attr_file, indent=3)
-    
-    inventory_dict = inventory.to_dict()
-    with open(f"{directory}/inventory.json", "w") as inventory_file:
-        json.dump(inventory_dict, inventory_file, indent=3)
+def get_affected_block_pointer(player, grid, pointer_x, pointer_y, build_mode = True): #pointers (expected as 1, 0, or -1) give direction of arrow
+    # using vector raycasting
+    start_x = player.x + floor(0.5 * player.x_size)
+    start_y = player.y + floor(0.5 * player.y_size)
 
-    world_details_dict = world_details.to_dict()
-    with open(f"{directory}/world_details.json", "w") as world_details_file:
-        json.dump(world_details_dict, world_details_file, indent=3)
+    # calculate vector step
+    dx, dy = pointer_x - start_x, pointer_y - start_y        
+    length = sqrt(dx*dx + dy*dy)
+    if length == 0: # if the player's cursor is exactly in their center it will just return the player's center's block
+        if grid.get(pixel_to_grid(start_x, grid.BLOCK_WIDTH), pixel_to_grid(start_y, grid.BLOCK_WIDTH)) is None:
+            return None, None
+        else:
+            return pixel_to_grid(start_x, grid.BLOCK_WIDTH), pixel_to_grid(start_y, grid.BLOCK_WIDTH)
+    else:
+        ux, uy = dx / length, dy / length
 
-def load_world(directory, screen, window, width, height, INVENTORY_HEIGHT, BLOCK_WIDTH):
-    with open(f"{directory}/grid.json", "r") as grid_file:
-        grid_dict = json.load(grid_file)
-        grid = Grid.fill_from_dict(grid_dict, screen, BLOCK_WIDTH)
+    # now step outward
+    reach_sq = 4 * grid.BLOCK_WIDTH * 4 * grid.BLOCK_WIDTH # reach of 4 blocks squared
+    distrance_stepped_sq = 0
+    step = 0
+    while distrance_stepped_sq < reach_sq:
+        grid_x = floor((start_x + ux * step) / grid.BLOCK_WIDTH)
+        grid_y = floor((start_y + uy * step) / grid.BLOCK_WIDTH)
 
-    with open(f"{directory}/inventory.json", "r") as inventory_file:
-        inventory_dict = json.load(inventory_file)
-        inventory = Inventory.fill_from_dict(inventory_dict, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
+        if grid.get(grid_x, grid_y) is not None:
+            return grid_x, grid_y
+        
+        distrance_stepped_sq = ((ux * step) * (ux * step)) + ((uy * step) * (uy * step))
+        step += 0.025
 
-    with open(f"{directory}/player_attributes.json", "r") as player_attr_file:
-        player_attr_dict = json.load(player_attr_file)
-        player_attr_dict["screen"] = screen
-        player_attr_dict["grid"] = grid
-        player_attr_dict["inventory_bar_height"] = INVENTORY_HEIGHT
-        player_attr_dict["health_bar_height"] = HEALTH_BAR_HEIGHT
-        player = Player(**player_attr_dict)
+    return None, None
 
-    with open(f"{directory}/world_details.json", "r") as world_details_file:
-        world_details_dict = json.load(world_details_file)
-        # world_details = World_Details(**world_details_dict)
-        world_details = World_Details.fill_from_dict(world_details_dict)
+def get_affected_block_pointer_build(player, grid, pointer_x, pointer_y, build_mode = True): #pointers (expected as 1, 0, or -1) give direction of arrow
+    # using vector raycasting
+    start_x = player.x + floor(0.5 * player.x_size)
+    start_y = player.y + floor(0.5 * player.y_size)
 
-    return grid, inventory, player, world_details
+    # calculate vector step
+    dx, dy = pointer_x - start_x, pointer_y - start_y        
+    length = sqrt(dx*dx + dy*dy)
+    if length == 0: # if the player's cursor is exactly in their center it will just return the player's center's block
+        if grid.get(pixel_to_grid(start_x, grid.BLOCK_WIDTH), pixel_to_grid(start_y, grid.BLOCK_WIDTH)) is None:
+            return None, None
+        else:
+            return pixel_to_grid(start_x, grid.BLOCK_WIDTH), pixel_to_grid(start_y, grid.BLOCK_WIDTH)
+    else:
+        ux, uy = dx / length, dy / length
+
+    # now step outward
+    d_step = 0.025
+    reach_sq = 4 * grid.BLOCK_WIDTH * 4 * grid.BLOCK_WIDTH # reach of 4 blocks squared
+    distrance_stepped_sq = 0
+    step = 0
+    while distrance_stepped_sq < reach_sq:
+        grid_x = floor((start_x + ux * step) / grid.BLOCK_WIDTH)
+        grid_y = floor((start_y + uy * step) / grid.BLOCK_WIDTH)
+
+        if grid.get(grid_x, grid_y) is not None:
+            x_place_spot = floor((start_x + ux*(step - d_step)) / grid.BLOCK_WIDTH)
+            y_place_spot = floor((start_y + uy*(step - d_step)) / grid.BLOCK_WIDTH)
+
+            return x_place_spot, y_place_spot
+        
+        distrance_stepped_sq = ((ux * step) * (ux * step)) + ((uy * step) * (uy * step))
+        step += d_step
+
+    return None, None
 
 def generate_world(screen, window, grid_width, grid_depth, world_name):
-    # initialize grid
+    # initialize grid and terrain
     grid = Grid(grid_width, grid_depth, BLOCK_WIDTH, screen) #sets width at 200 blocks
-
-    # generate world terrain
     generate_world_blocks(grid, grid_width, grid_depth)
 
-    # initialize inventory
+    # initialize inventory, player, and world
     inventory = Inventory(screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
-
-    # initialize player in grid
-    player = Player(grid, screen, ((grid_width * BLOCK_WIDTH) // 2), 0, BLOCK_WIDTH, x_size=23, y_size = 23, inventory_bar_height=INVENTORY_HEIGHT, health_bar_height = HEALTH_BAR_HEIGHT)
-
-    # initialize world details
+    player = Player(grid, screen, ((grid_width * BLOCK_WIDTH) // 2), 0, BLOCK_WIDTH, x_size=22, y_size = 40, inventory_bar_height=INVENTORY_HEIGHT, health_bar_height = HEALTH_BAR_HEIGHT, images=images)
     world_details = World_Details.create_new_world(world_name, VERSION)
 
     return grid, inventory, player, world_details
@@ -196,12 +264,12 @@ screen_width_px = floor(screen_height_px / 0.625) + 100
 # random.seed(cur_seed)
 
 APP_NAME = "Into The Under"
-APP_DISPLAY_NAME = "Into The Under 1.3.2"
-VERSION_NAME = "intotheunder1.3.2"
-VERSION = 1.3 # primary version - ex 1.3.1 becomes 1.3
+APP_DISPLAY_NAME = "Into The Under 1.4.0"
+VERSION_NAME = "intotheunder1.4.0"
+VERSION = 1.4 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
 IMAGES_FILE_NAME = "image_files"
-pygame_icon_file = "icon.png"
+pygame_icon_file = "ITU-Icon.png"
 
 # game_files_location = VERSION_NAME + '/' + GAME_FILE_FOLDER_NAME + '/' + world_name
 game_files_location = VERSION_NAME + '/' + GAME_FILE_FOLDER_NAME
@@ -240,19 +308,20 @@ clock = pygame.time.Clock()
 TICKS = 60
 
 # set gravity variables
-Y_ACCELERATION = 1
+Y_ACCELERATION = 0.7
 WATER_UPWARD_ACCEL = -0.05
-JUMP_VELOCITY = -15
+JUMP_VELOCITY = -14
 
 
 # arrow key press variables
-held_time = 0 # holds count of frames held
+destroy_held_time = 0 # holds count of frames held
+build_held_time = 0
 DESTROY_HOLD_THRESHOLD = 15 # count of frames held before destroyed motion happens
-BUILD_HOLD_THRESHOLD = 3 # count of frames held before destroyed motion happens
+BUILD_HOLD_THRESHOLD = 10 # count of frames held before destroyed motion happens
 block_selected = (None, None) # block coordinates of which block will be affected
 game_is_loaded = False
 
-build_mode = True #true for build, false for destroy
+build_mode = False #true for build, false for destroy
 
 # counters of frames with key pressed
 return_key_state = 0
@@ -260,6 +329,10 @@ return_key_state = 0
 # run details
 running = True
 menu = Menu(screen, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME), directory)
+scroll_change = 0
+
+
+# ----------------------------------------------- run loop ------------------------------------------------ #
 
 while running and menu.menu_running:
 
@@ -285,6 +358,9 @@ while running and menu.menu_running:
         
         if event.type == pygame.TEXTINPUT: 
             typing_key = event.text
+
+        if event.type == pygame.MOUSEWHEEL:
+            scroll_change += event.y
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -322,6 +398,11 @@ while running and menu.menu_running:
         dx = 0
         dy = 0
 
+        tx, ty = pygame.mouse.get_pos()
+        scaled_mouse_pos_x, scaled_mouse_pos_y = get_scaled_mouse_click(scale, tx, ty, offx, offy)
+        world_mx, world_my = scaled_mouse_pos_x + camera_x, scaled_mouse_pos_y + cur_camera_y
+
+
         # find out if player is touching a block that slows down movement
         cur_y_acceleration = Y_ACCELERATION
         cur_player_speed_x = player.player_speed
@@ -339,6 +420,10 @@ while running and menu.menu_running:
                 if new_index is not None: inventory.set_cur_position(new_index)
         # if pygame.mouse.get_pressed()[2]: # check right click
 
+        # get scrolling for switching inventory
+        if abs(scroll_change) > 0:
+            inventory.scroll_change_inventory_position(scroll_change)
+            scroll_change = 0
 
         # input (held keys)
         keys = pygame.key.get_pressed()
@@ -367,22 +452,6 @@ while running and menu.menu_running:
                 if water_movement: 
                     player.y_vel = cur_player_speed_y
 
-            # check for pointers
-            if keys[pygame.K_LSHIFT]: build_mode = True
-            else: build_mode = False
-
-            if keys[pygame.K_LEFT]:
-                dir_x, dir_y = -1, 0
-            elif keys[pygame.K_RIGHT]:
-                dir_x, dir_y = 1, 0
-            elif keys[pygame.K_UP]:
-                dir_x, dir_y = 0, -1
-            elif keys[pygame.K_DOWN]:
-                dir_x, dir_y = 0, 1
-            else:
-                dir_x, dir_y = 0, 0
-                affected_x, affected_y = None, None
-
 
             # process return key data (alt inventory selection method)
             if return_key_state == 1:
@@ -392,42 +461,43 @@ while running and menu.menu_running:
                     inventory.increment_cur_position(True)
 
 
-            # process selector data
-            if dir_x != 0 or dir_y != 0:
-                affected_x, affected_y = get_affected_block(player, grid, dir_x, dir_y, build_mode)
-                if build_mode and affected_x != None:
-                    affected_x += dir_x * -1
-                    affected_y += dir_y * -1
-                    if player.reject_block_placement(affected_x, affected_y):
-                        affected_x, affected_y = None, None
+            # process block interaction data
+            dir_x, dir_y = scaled_mouse_pos_x + camera_x, scaled_mouse_pos_y + cur_camera_y
 
+            affected_x, affected_y = get_affected_block_pointer(player, grid, world_mx, world_my)
 
-                if affected_x is None: affected_block = None
-                else: affected_block = grid.get(affected_x, affected_y)
+            if pygame.mouse.get_pressed()[0]:
+                destroy_held_time+=1
             else:
-                affected_block = None
+                destroy_held_time = 0
 
-
-            if affected_x == None:
-                held_time = 0
+            if pygame.mouse.get_pressed()[2]:
+                build_mode = True
+                build_held_time+=1
             else:
-                if block_selected == (affected_x, affected_y):
-                    held_time += 1
-                else:
-                    held_time = 1
-                    block_selected = (affected_x, affected_y)
-            
-            if build_mode and held_time > BUILD_HOLD_THRESHOLD:
-                Block_Type = inventory.build_from_current()
-                if Block_Type is not None: 
-                    grid.set(affected_x, affected_y, Block_Type)
+                build_held_time = 0
+                build_mode = False
 
-            else:
-                # grid_spot = grid.get(affected_x, affected_y)
-                if affected_block is not None and held_time > affected_block.ticks_to_mine:
-                    if affected_block.can_move_to_inventory():
-                        inventory.add_item(type(grid.get(affected_x, affected_y)))
-                    grid.set(affected_x, affected_y, None)
+
+            if affected_x is not None:
+                if pygame.mouse.get_pressed()[2]:
+                    if (build_held_time - 1) % BUILD_HOLD_THRESHOLD == 0 and build_held_time - 1 != BUILD_HOLD_THRESHOLD:
+                        build_affected_x, build_affected_y = get_affected_block_pointer_build(player, grid, world_mx, world_my)
+                        # check to see if the block can be built
+                        # right here you could check for if the block has a special attribute when it's selected -also bypass it with shift
+                        if build_affected_x is not None and not player.reject_block_placement(build_affected_x, build_affected_y):
+                            # now build the block
+                            Block_Type = inventory.build_from_current()
+                            if Block_Type is not None: 
+                                grid.set(build_affected_x, build_affected_y, Block_Type)
+                
+                elif pygame.mouse.get_pressed()[0]:
+                    if grid.get(affected_x, affected_y) is not None and destroy_held_time > grid.get(affected_x, affected_y).ticks_to_mine:
+                        # affected_block.interaction()
+                        destroy_held_time = 0
+                        if grid.get(affected_x, affected_y).can_move_to_inventory():
+                            inventory.add_item(type(grid.get(affected_x, affected_y)))
+                        grid.set(affected_x, affected_y, None)
 
 
             # apply gravity and jumping
@@ -491,18 +561,23 @@ while running and menu.menu_running:
             # execute physics
             grid.physics(camera_x, cur_camera_y, INVENTORY_HEIGHT)
 
-
+            # # get player icon direction using movement direction UNLESS they are actively interacting with a block
+            if pygame.mouse.get_pressed()[0] or pygame.mouse.get_pressed()[2]: is_interacting = True
+            else: is_interacting = False
+            screen_x = player.x - camera_x
+            player.get_direction(dx, screen_x, scaled_mouse_pos_x, is_interacting)
+            
 
         # drawing
         screen.fill(background_color)
 
         grid.draw(camera_x, cur_camera_y, INVENTORY_HEIGHT)
 
-        player.draw(camera_x, cur_camera_y)
-
         if affected_x != None and not build_mode:
             if grid.get(affected_x, affected_y) != None:
                 grid.get(affected_x, affected_y).draw(True, camera_x = camera_x, camera_y = cur_camera_y)
+                
+        player.draw(camera_x, cur_camera_y)
 
         inventory.draw()
 
@@ -522,7 +597,7 @@ while running and menu.menu_running:
             pygame.event.pump()
 
             if menu.load_world:
-                grid, inventory, player, world_details = load_world(f"{directory}/{menu.world_name}", screen, window, screen_width_px, screen_height_px, INVENTORY_HEIGHT, BLOCK_WIDTH)
+                grid, inventory, player, world_details = load_world(f"{directory}/{menu.world_name}", screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, BLOCK_WIDTH, images)
                 camera_x = player.x + (player.x_size // 2) - (screen_width_px // 2)
                 camera_y = player.y + (player.y_size // 2) - (screen_height_px // 2)
                 cur_camera_y = camera_y

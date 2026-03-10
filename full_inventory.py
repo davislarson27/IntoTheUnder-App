@@ -3,7 +3,7 @@ from blocks import *
 
 class Inventory:
 
-    def __init__(self, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25):
+    def __init__(self, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25, cur_position_index = 0):
         self.screen = screen
         
         self.window = window # use for width and height when dealing with mouse clicks
@@ -41,7 +41,10 @@ class Inventory:
         self.max_items_in_inventory = (self.boxes_high + 1) * self.boxes_per_row + 1
         self.full_inventory = [None for x in range(self.max_items_in_inventory)]
         self.hot_bar_length = 8
-        self.cur_position_index = 0
+        self.cur_position_index = cur_position_index
+        
+        self.scrolls_per_inventory_slot = 1
+        self.cur_scroll_position = self.cur_position_index * self.scrolls_per_inventory_slot
 
         # initalize fonts
         self.hot_bar_font = pygame.font.Font(None, 36)  # None = default font, 36 = size
@@ -67,6 +70,13 @@ class Inventory:
         #     return (self.boxes_per_row)
         # return (self.boxes_per_row * y) + x + offset
         return (self.boxes_per_row * y) + x
+
+    def scroll_change_inventory_position(self, scroll_change):
+        scroll_change *= -1 # reverses order to make it feel more natural
+        self.cur_scroll_position += scroll_change
+        position = self.cur_scroll_position // self.scrolls_per_inventory_slot
+        position %= self.hot_bar_length
+        self.cur_position_index = position
 
 
     def swap_positions(self, swap_coordinates):
@@ -285,15 +295,15 @@ class Inventory:
     
     @staticmethod
     def fill_from_dict(inventory_dict, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT):
+        # get position
+        cur_position_index = inventory_dict["cur_position_index"]
+
         # create new inventory
-        inventory = Inventory(screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT)
+        inventory = Inventory(screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, cur_position_index)
 
         # get block conversion dictionary and list of slots
         str_to_block = get_str_to_block()
         inventory_items = inventory_dict["inventory_items"]
-
-        # get position
-        inventory.cur_position_index = inventory_dict["cur_position_index"]
 
         # get inventory contents
         for i in range(len(inventory_items)):

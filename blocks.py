@@ -5,7 +5,7 @@ from math import floor
 
 class Block:
 
-    ticks_to_mine = 15
+    ticks_to_mine = 30
     tick_threshold = 0
 
     def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through = False, ticks_till_physics = 0):
@@ -17,6 +17,9 @@ class Block:
         self.cur_selected = False
         self.pass_through = pass_through
         self.ticks_till_physics = ticks_till_physics
+
+    def interaction(self):
+        return None
 
     def can_move_to_inventory(self):
         return True
@@ -42,7 +45,7 @@ class Rock(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Rock"
-    ticks_to_mine = 25
+    ticks_to_mine = 50
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -73,7 +76,7 @@ class Iron_Ore_Block(Block):
 
     str_name = "Iron_Ore_Block"
 
-    ticks_to_mine = 35
+    ticks_to_mine = 70
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -109,7 +112,7 @@ class Diamond_Ore_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Diamond_Ore_Block"
-    ticks_to_mine = 40
+    ticks_to_mine = 80
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -143,7 +146,7 @@ class Emerald_Ore_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Emerald_Ore_Block"
-    ticks_to_mine = 35
+    ticks_to_mine = 70
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -180,7 +183,7 @@ class Mabelite_Ore_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Mabelite_Ore_Block"
-    ticks_to_mine = 40
+    ticks_to_mine = 80
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -210,6 +213,43 @@ class Mabelite_Ore_Block(Block):
         pygame.draw.rect(
             screen,
             (30 + added_color, 155 + added_color, 90 + added_color),
+            ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
+        )
+
+class Coal_Ore_Block(Block):
+        
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Coal_Ore_Block"
+
+    ticks_to_mine = 64
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        pygame.draw.rect(
+            screen,
+            (70 + added_color, 75 + added_color, 80 + added_color),           # color
+            (x, y, block_width, block_width)
+            
+        )
+        #(215, 180, 155) (190, 155, 130)
+        pygame.draw.rect(
+            screen,
+            (22 + added_color, 21 + added_color, 22 + added_color),           # color
+            ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
+        )
+        pygame.draw.rect(
+            screen,
+            (22 + added_color, 21 + added_color, 22 + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
 
@@ -274,7 +314,7 @@ class Log(Block): #not yet designed
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Log"
-    ticks_to_mine = 25
+    ticks_to_mine = 50
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -313,7 +353,7 @@ class Leaves(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Leaves"
-    ticks_to_mine = 8
+    ticks_to_mine = 18
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
@@ -337,7 +377,7 @@ class Sand(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Sand"
-    ticks_to_mine = 12
+    ticks_to_mine = 24
     tick_threshold = 2
 
     def physics(self):
@@ -348,7 +388,6 @@ class Sand(Block):
                 else: #tick count has reached go time :)
                     self.grid.set(self.x, self.y, None)
                     self.grid.set(self.x, self.y+1, Sand, False)
-                    # self.y += 1
                     self.ticks_till_physics = 0
 
 
@@ -385,7 +424,7 @@ class Gravel(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Gravel"
-    ticks_to_mine = 12
+    ticks_to_mine = 24
     tick_threshold = 2
 
     def physics(self):
@@ -465,6 +504,220 @@ class Cactus(Block): #not yet designed
             (40 + added_color, 25 + added_color, 10 + added_color),           # color
             ((x) + floor(block_width * 0.8) , y + floor(block_width * 0.2), block_width // 25, block_width // 1.75)
         )
+
+class Snow_Block(Block):
+    
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Snow_Block"
+    ticks_to_mine = 16
+    tick_threshold = 2
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1): #checks for block directly under the water
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Snow_Block, False)
+                    # self.y += 1
+                    self.ticks_till_physics = 0
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
+        if being_mined:
+            added_color = 9
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (225 + added_color, 235 + added_color, 245 + added_color),           # color
+            (x, y, block_width, block_width)
+        )
+
+class Snow_Man_Head(Block):
+    
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Snow_Man_Head"
+    ticks_to_mine = 16
+    tick_threshold = 2
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1): #checks for block directly under the water
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Snow_Man_Head, False)
+                    # self.y += 1
+                    self.ticks_till_physics = 0
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
+        if being_mined:
+            added_color = 9
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (225 + added_color, 235 + added_color, 245 + added_color),           # color
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            (10 + added_color, 10 + added_color, 10 + added_color),
+            (
+                x + (block_width // 4),
+                y + (block_width // 3),
+                block_width // 8,
+                block_width // 8
+            )
+        )
+        pygame.draw.rect(
+            screen,
+            (10 + added_color, 10 + added_color, 10 + added_color),
+            (
+                x + ((block_width * 3) // 4) - 1,
+                y + (block_width // 3),
+                block_width // 8,
+                block_width // 8
+            )
+        )
+        # (237, 145, 33)
+        pygame.draw.polygon(
+            screen,
+            (237 + added_color, 145 + added_color, 33 + added_color),
+            [
+                (x + (block_width // 2), y + (block_width // 2)),
+                (x + ((block_width * 3) // 5), y + ((block_width * 3) // 5)),
+                (x + ((block_width * 2) // 5), y + ((block_width * 3) // 5))
+            ]  
+        )
+
+class Ice(Block):
+    
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Ice"
+    ticks_to_mine = 36
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
+        if being_mined:
+            added_color = 10
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+        
+        #(180, 230, 255)
+        pygame.draw.rect( # draw base color
+            screen,
+            (180 + added_color, 230 + added_color, 245 + added_color),           # color
+            (x, y, block_width, block_width)
+        )
+
+class Frozen_Rock(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Frozen_Rock"
+    ticks_to_mine = 55
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        pygame.draw.rect(
+            screen,
+            (70 + added_color, 75 + added_color, 80 + added_color),           # color
+            (x, y, block_width, block_width)
+            
+        )
+        #(145, 155, 165) (175, 190, 205)
+        pygame.draw.rect(
+            screen,
+            (145 + added_color, 155 + added_color, 165 + added_color),           # color
+            ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
+        )
+
+class Chest(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Chest"
+    ticks_to_mine = 60
+    interaction = None # this will eventually be a function that opens the chest and lets the user interact with it
+    
+    def interaction(self):
+        print("hit this")
+        return None
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined = False, is_grid_coordinates = True): 
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (227 + added_color, 183 + added_color, 138 + added_color),           # color
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect( # draw base color
+            screen,
+            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (x, y, block_width, block_width),
+            2
+        )
+        pygame.draw.rect( # draw outline
+            screen,
+            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (x, y, block_width, block_width),
+            floor(block_width * 0.08) # width of border
+        )
+        pygame.draw.rect( # draw divider between top and bottom of the chest
+            screen,
+            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (x, y + floor(block_width * 0.3), block_width, floor(block_width * 0.08))
+        )
+        pygame.draw.rect(
+            screen,
+            (140 + added_color, 140 + added_color, 140 + added_color),
+            (x + floor(block_width * 0.42), y + floor(block_width * 0.3),floor(block_width * 0.18), floor(block_width * 0.24))
+        )
+
+
+
+
+
 
 class Water(Block):
 
@@ -917,20 +1170,26 @@ water_value_reference = [Water_L4, Water_L3, Water_L2, Water_L1, Water, Water_R1
 
 def get_str_to_block(): # uses blocks_list to generate dictionary that converts str names to their types
     blocks_list = [
-        Rock, 
-        Iron_Ore_Block, 
-        Diamond_Ore_Block, 
-        Emerald_Ore_Block, 
-        Mabelite_Ore_Block, 
-        Dirt, 
-        Grass, 
-        Log, 
-        Leaves, 
-        Sand, 
-        Gravel, 
-        Cactus, 
+        Rock,
+        Iron_Ore_Block,
+        Diamond_Ore_Block,
+        Emerald_Ore_Block,
+        Mabelite_Ore_Block,
+        Coal_Ore_Block,
+        Dirt,
+        Grass,
+        Log,
+        Leaves,
+        Sand,
+        Gravel,
+        Cactus,
+        Snow_Block,
+        Snow_Man_Head,
+        Ice,
+        Frozen_Rock,
+        Chest,
         Water, # water subclasses after this
-            Water_R1, 
+            Water_R1,
             Water_L1,
             Water_R2,
             Water_L2,
