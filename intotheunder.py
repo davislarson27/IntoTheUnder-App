@@ -12,6 +12,8 @@ from menu import Menu
 from world_generation import *
 from world_details import World_Details
 from images import Images
+from windows_path_resources import *
+
 
 
 # python location
@@ -19,7 +21,10 @@ from images import Images
 
 # pyinstaller command line
 """
-python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--icon "game_files/image_files/icon.icns" \--add-data "game_files:game_files" \intotheunder.py
+mac: python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--icon "game_files/image_files/icon.icns" \--add-data "game_files:game_files" \intotheunder.py
+
+windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" --icon "game_files\image_files\icon.ico" --add-data "game_files;game_files" intotheunder.py
+
 """
 
 # additional helpful command line args
@@ -32,16 +37,27 @@ python3 -m PyInstaller --clean --noconfirm --windowed \--name "IntoTheUnder" \--
 
 
 # path based functions
-def resource_path(relative_path: str) -> str:
-    # When bundled by PyInstaller, files are unpacked to a temp folder: sys._MEIPASS
-    base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
-    return os.path.join(base_path, relative_path)
+
+# def user_data_dir(app_name="Into The Under"):
+#     if sys.platform == "darwin":  # macOS
+#         base = os.path.expanduser("~/Library/Application Support")
+#     elif sys.platform == "win32":  # Windows
+#         base = os.path.expanduser("~\\AppData\\Roaming")
+#     else:  # Linux
+#         base = os.path.expanduser("~/.config")
+    
+#     path = os.path.join(base, app_name)
+#     os.makedirs(path, exist_ok=True)
+#     return path
 
 def user_data_dir(app_name="Into The Under"):
-    base = os.path.expanduser("~/Library/Application Support")
+    base = os.path.expanduser("~\\AppData\\Roaming")
+    
     path = os.path.join(base, app_name)
     os.makedirs(path, exist_ok=True)
     return path
+
+
 
 # functions
 def pixel_to_grid(pixel_coordinates, BLOCK_WIDTH):
