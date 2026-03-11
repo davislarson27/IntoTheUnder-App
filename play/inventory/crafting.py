@@ -1,0 +1,444 @@
+from .inventory_position import Inventory_Position
+from .inventory_item import Inventory_Item
+from .crafting_recipe import *
+from world.blocks.block_export import *
+
+
+class Crafting_Slots:
+    def __init__(self, input_slots):
+
+        def can_craft_more(inventory_object):
+
+            req_list = inventory_object.crafting_object.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index].requirement_list
+            crafting_slots = inventory_object.crafting_object.crafting_input_slots
+
+            passed_requirement = False
+            for requirement in req_list:
+                for input_item in crafting_slots:
+                    if input_item.inventory_item is not None and input_item.inventory_item.Block_Type == requirement.block_type:
+                        if input_item.inventory_item.count_of_items >= requirement.count:
+                            passed_requirement = True
+                            break
+                if not passed_requirement:
+                    inventory_object.crafting_object.check_on_click(inventory_object)
+
+        def recipe_on_click(inventory_object):
+            # step 1: make sure there is a recipe selected
+            if len(inventory_object.crafting_object.possible_crafting_recipes) == 0: return
+
+            # step 2: remove materials from slots based on recipe
+            if self.cur_recipe_index >= len(inventory_object.crafting_object.possible_crafting_recipes): self.cur_recipe_index = 0  # protects against a bad index
+            
+            selected_recipe = inventory_object.crafting_object.possible_crafting_recipes[self.cur_recipe_index]
+            output_object = inventory_object.crafting_object.output_slot.inventory_item
+            if output_object is not None and (selected_recipe.output.block_type != output_object.Block_Type or output_object.count_of_items + selected_recipe.output.count > output_object.MAX_ITEMS_IN_INVENTORY_SLOT):
+                return
+            for recipe_item in selected_recipe.requirement_list:
+                removed_item = False
+                for slot in self.crafting_input_slots:
+                    if isinstance(slot.inventory_item, Inventory_Item) and slot.inventory_item.Block_Type == recipe_item.block_type:
+                        if slot.inventory_item.count_of_items >= recipe_item.count:
+                            slot.inventory_item.count_of_items -= recipe_item.count
+                            if slot.inventory_item.count_of_items == 0:
+                                slot.inventory_item = None
+                            removed_item = True
+                            break
+                if not removed_item:
+                    return
+                
+            if inventory_object.crafting_object.output_slot.inventory_item is None:
+                inventory_object.crafting_object.output_slot.inventory_item = Inventory_Item(selected_recipe.output.block_type, selected_recipe.output.count)
+            else:
+                inventory_object.crafting_object.output_slot.inventory_item.add_block(selected_recipe.output.count)
+
+            # runs on click if the recipe is not longer valid
+            can_craft_more(inventory_object)
+
+        def output_onclick(inventory_object):
+            # stop selection if empty
+            if inventory_object.crafting_object.output_slot.inventory_item is None: return
+
+            # step 2: use the inventory_object's add_item object to throw it in to the inventory!
+            for i in range(inventory_object.crafting_object.output_slot.inventory_item.count_of_items):
+                inventory_object.add_item(inventory_object.crafting_object.output_slot.inventory_item.Block_Type)
+            inventory_object.crafting_object.output_slot.inventory_item = None
+
+        def inc_recipe_up(inventory_object):
+            if len(self.possible_crafting_recipes) > 0:
+                if self.cur_recipe_index == 0:
+                    self.cur_recipe_index = len(self.possible_crafting_recipes) - 1
+                else:
+                    self.cur_recipe_index -= 1
+
+            if len(self.possible_crafting_recipes) > 0:
+                self.recipe_slot.inventory_item.set_recipe(self.possible_crafting_recipes[self.cur_recipe_index])
+            else:
+                self.recipe_slot.inventory_item.set_recipe(None)
+
+        def inc_recipe_down(inventory_object):
+            if len(self.possible_crafting_recipes) > 0:
+                if self.cur_recipe_index == len(self.possible_crafting_recipes) - 1:
+                    self.cur_recipe_index = 0
+                else:
+                    self.cur_recipe_index += 1
+
+            if len(self.possible_crafting_recipes) > 0:
+                self.recipe_slot.inventory_item.set_recipe(self.possible_crafting_recipes[self.cur_recipe_index])
+            else:
+                self.recipe_slot.inventory_item.set_recipe(None)
+
+        self.crafting_input_slots = []
+        for i in range(input_slots):
+            self.crafting_input_slots.append(Inventory_Position(None, None))
+        self.recipe_slot = Inventory_Position(None, None, False, recipe_on_click)
+        self.output_slot = Inventory_Position(None, None, False, output_onclick)
+        self.point_up_slot = Inventory_Position(None, None, False, inc_recipe_up, special_color=(145, 150, 155), block_check_on_click=True)
+        self.point_down_slot = Inventory_Position(None, None, False, inc_recipe_down, special_color=(145, 150, 155), block_check_on_click=True)
+
+        self.title_label_text_surface = None
+        self.section_label_rect = None
+
+        self.craft_label_text_surface = None
+        self.craft_label_rect = None
+
+        self.collect_label_text_surface = None
+        self.collect_label_rect = None
+
+        self.recipe_name_text_surface = None
+        self.recipe_name_rect = None
+
+        self.needed_slots = 5
+
+        self.possible_crafting_recipes = []
+
+        self.cur_recipe_index = 0
+
+        self.crafting_recipes = [
+            Crafting_Recipe(
+                "Dirt",
+                [
+                    Ingredient(Grass, 1)
+                ],
+                output=Ingredient(Dirt, 1)
+            ),
+            Crafting_Recipe(
+                "Chest",
+                [
+                    Ingredient(Wood_Planks, 6), 
+                    Ingredient(Iron_Ingot, 1)
+                ],
+                output=Ingredient(Chest, 1)
+            ),
+            Crafting_Recipe(
+                "Iron Ore Ingot",
+                [
+                    Ingredient(Iron_Ore_Block, 1),
+                ],
+                output=Ingredient(Iron_Ingot, 1)
+            ),
+            Crafting_Recipe(
+                "Gold Ore Ingot",
+                [
+                    Ingredient(Gold_Ore_Block, 1),
+                ],
+                output=Ingredient(Gold_Ingot, 1)
+            ),
+            Crafting_Recipe(
+                "Gravel",
+                [
+                    Ingredient(Rock, 1),
+                ],
+                output=Ingredient(Gravel, 2)
+            ),
+            Crafting_Recipe(
+                "Door",
+                [
+                    Ingredient(Wood_Planks, 3),
+                ],
+                output=Ingredient(Door, 2)
+            ),
+            Crafting_Recipe(
+                "Wood Planks",
+                [
+                    Ingredient(Log, 1),
+                ],
+                output=Ingredient(Wood_Planks, 3)
+            ),
+            Crafting_Recipe(
+                "Sulfur Powder",
+                [
+                    Ingredient(Sulfur_Flakes_Block, 3),
+                ],
+                output=Ingredient(Sulfur_Powder, 1)
+            ),
+            Crafting_Recipe(
+                "Saltpeter Powder",
+                [
+                    Ingredient(Saltpeter, 1),
+                ],
+                output=Ingredient(Saltpeter_Powder, 5)
+            ),
+            Crafting_Recipe(
+                "Coal",
+                [
+                    Ingredient(Coal_Ore_Block, 1),
+                ],
+                output=Ingredient(Coal, 1)
+            ),
+            Crafting_Recipe(
+                "Gun Powder",
+                [
+                    Ingredient(Saltpeter_Powder, 7),
+                    Ingredient(Coal, 2),
+                    Ingredient(Sulfur_Powder, 1),
+                ],
+                output=Ingredient(Gunpowder, 1)
+            ),
+            Crafting_Recipe(
+                "TNT",
+                [
+                    Ingredient(Gunpowder, 4),
+                    Ingredient(Gravel, 1),
+                ],
+                output=Ingredient(TNT, 1)
+            ),
+        ]
+
+    def close(self, inventory_object):
+        for slot in self.crafting_input_slots:
+            if slot.inventory_item is not None:
+                for i in range(slot.inventory_item.count_of_items):
+                    inventory_object.add_item(slot.inventory_item.Block_Type)
+                slot.inventory_item = None
+            
+        self.possible_crafting_recipes = []
+        self.recipe_slot.inventory_item.set_recipe(None) 
+        self.cur_recipe_index = 0
+
+        if self.output_slot.inventory_item is not None:
+            for i in range(self.output_slot.inventory_item.count_of_items):
+                inventory_object.add_item(self.output_slot.inventory_item.Block_Type)
+            self.output_slot.inventory_item = None
+
+    def get_cur_recipe(self):
+        if self.cur_recipe_index is None or len(self.possible_crafting_recipes) == 0:
+            return None
+        else:
+            return self.possible_crafting_recipes[self.cur_recipe_index]
+
+    def has_enough_blocks(self, block_type, count_required, only_check_slot_index = None):
+        if only_check_slot_index is None:
+            for slot in self.crafting_input_slots:
+                if slot.inventory_item is not None:
+                    if block_type == slot.inventory_item.Block_Type and slot.inventory_item.count_of_items >= count_required:
+                        return True
+            return False
+        else:
+            slot = self.crafting_input_slots[only_check_slot_index]
+            if slot.inventory_item is not None:
+                if block_type == slot.inventory_item.Block_Type and slot.inventory_item.count_of_items >= count_required:
+                    return True
+            return False
+
+    def get_possible_recipes(self):
+        possible_crafting_recipes = []
+        for recipe in self.crafting_recipes:
+            has_all_ingredients = True
+            for required_ingredient in recipe.requirement_list:
+                # seach through slots in self.crafting_input_slots
+                if not self.has_enough_blocks(required_ingredient.block_type, required_ingredient.count):
+                    has_all_ingredients = False
+                    break
+            if has_all_ingredients: possible_crafting_recipes.append(recipe)
+
+        return possible_crafting_recipes
+
+    def check_on_click(self, inventory_object): # this figures out what recipes apply on each click
+        
+        self.possible_crafting_recipes = self.get_possible_recipes()
+
+        # reset the active index if it is out of range (otherwise don't touch it)
+        if self.cur_recipe_index >= len(self.possible_crafting_recipes): self.cur_recipe_index = 0
+
+        if len(self.possible_crafting_recipes) > 0:
+            self.recipe_slot.inventory_item.set_recipe(self.possible_crafting_recipes[self.cur_recipe_index])
+        else:
+            self.recipe_slot.inventory_item.set_recipe(None)
+        
+
+        # for recipe in self.possible_crafting_recipes:
+        #     print(recipe.name)
+        # print("")
+
+    def get_slots(self):
+        i = 0
+        return_slots = []
+        for i in range(len(self.crafting_input_slots)):
+            return_slots.append(self.crafting_input_slots[i])
+        return_slots.append(self.recipe_slot)
+        return_slots.append(self.output_slot)
+        return_slots.append(self.point_up_slot)
+        return_slots.append(self.point_down_slot)
+
+        return return_slots
+
+    def draw(self, inventory_object):
+        pipe_color = {}
+
+        if len(self.possible_crafting_recipes) > 0:
+
+            cur_slot_index = 0
+            input0_active = False
+            if self.crafting_input_slots[cur_slot_index].inventory_item is not None:
+                found_block = False
+                for req in self.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index].requirement_list:
+                    if req.block_type == self.crafting_input_slots[cur_slot_index].inventory_item.Block_Type:
+                        found_block = True
+                        input0_active = self.crafting_input_slots[cur_slot_index].inventory_item is not None and self.has_enough_blocks(req.block_type, req.count, cur_slot_index)
+                if not found_block:
+                    input0_active = False
+            else:
+                input0_active = False
+
+            cur_slot_index = 2
+            input2_active = False
+            if self.crafting_input_slots[cur_slot_index].inventory_item is not None:
+                found_block = False
+                for req in self.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index].requirement_list:
+                    if req.block_type == self.crafting_input_slots[cur_slot_index].inventory_item.Block_Type:
+                        found_block = True
+                        input2_active = self.crafting_input_slots[cur_slot_index].inventory_item is not None and self.has_enough_blocks(req.block_type, req.count, cur_slot_index)
+                if not found_block:
+                    input2_active = False
+            else:
+                input2_active = False
+            
+            cur_slot_index = 1
+            input_1_active = False
+            if self.crafting_input_slots[cur_slot_index].inventory_item is not None:
+                found_block = False
+                for req in self.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index].requirement_list:
+                    if req.block_type == self.crafting_input_slots[cur_slot_index].inventory_item.Block_Type:
+                        found_block = True
+                        input_1_active = self.crafting_input_slots[cur_slot_index].inventory_item is not None and self.has_enough_blocks(req.block_type, req.count, cur_slot_index)
+                if not found_block:
+                    input_1_active = False
+            else:
+                input_1_active = False
+
+
+            if input0_active:
+                pipe_color[0] = inventory_object.pipe_color_active
+
+            if input2_active:
+                pipe_color[1] = inventory_object.pipe_color_active
+
+            if input0_active or input2_active or input_1_active:
+                pipe_color[2] = inventory_object.pipe_color_active
+
+                if self.output_slot.inventory_item is not None:
+                    pipe_color[3] = inventory_object.pipe_color_active
+
+        cur_recipes = inventory_object.crafting_object.get_possible_recipes()
+        cur_index = inventory_object.crafting_object.cur_recipe_index
+        if cur_index is not None and len(cur_recipes) > 0:
+            cur_recipe = cur_recipes[cur_index]
+            output_object = inventory_object.crafting_object.output_slot.inventory_item
+            if output_object is not None and (cur_recipe.output.block_type != output_object.Block_Type or output_object.count_of_items + cur_recipe.output.count > output_object.MAX_ITEMS_IN_INVENTORY_SLOT):
+                pipe_color[3] = inventory_object.pipe_color_inactive
+             
+        
+        for i in range(len(inventory_object.crafting_flow_rects)):
+            pipe_color[i] = pipe_color.get(i, inventory_object.pipe_color_inactive)
+
+        i = 0
+        for rect in inventory_object.crafting_flow_rects:
+            pygame.draw.rect(inventory_object.screen, pipe_color[i], rect)
+            i+=1
+
+        # ----------------------------- custom crafting labels ----------------------------- #
+
+        screen = inventory_object.screen
+
+        # static labels
+        if self.craft_label_text_surface is not None and self.craft_label_rect is not None:
+            screen.blit(self.craft_label_text_surface, self.craft_label_rect)
+
+        if self.collect_label_text_surface is not None and self.collect_label_rect is not None:
+            screen.blit(self.collect_label_text_surface, self.collect_label_rect)
+
+        # dynamic recipe name (above center slot up arrow)
+        if self.recipe_name_rect is not None:
+
+            cur_recipe = self.get_cur_recipe()
+
+            if cur_recipe is not None:
+                recipe_name = cur_recipe.name
+            else:
+                recipe_name = "None"
+
+            # render the two lines
+            recipe_label_surface = inventory_object.inventory_item_name_font.render(
+                "Recipe:",
+                True,
+                inventory_object.slot_label_color
+            )
+
+            recipe_name_surface = inventory_object.inventory_item_name_font.render(
+                recipe_name,
+                True,
+                inventory_object.slot_label_color
+            )
+
+            # position them
+            recipe_label_rect = recipe_label_surface.get_rect(
+                center=(self.recipe_name_rect.centerx, self.recipe_name_rect.centery - self.recipe_name_rect.height // 4)
+            )
+
+            recipe_name_rect = recipe_name_surface.get_rect(
+                center=(self.recipe_name_rect.centerx, self.recipe_name_rect.centery + self.recipe_name_rect.height // 4)
+            )
+
+            # draw
+            screen.blit(recipe_label_surface, recipe_label_rect)
+            screen.blit(recipe_name_surface, recipe_name_rect)
+
+class Recipe_Slot_Contents:
+    def __init__(self, main_rect, block_rect, recipe, outline_width, valid_recipe_color, invalid_recipe_color):
+        self.main_rect = main_rect
+        self.block_rect = block_rect
+        self.recipe = recipe
+        self.is_recipe_valid = False
+        self.outline_width = outline_width
+        self.valid_recipe_color = valid_recipe_color
+        self.invalid_recipe_color = invalid_recipe_color
+
+    def set_recipe(self, cur_recipe):
+        self.recipe = cur_recipe
+        if cur_recipe is not None:
+            self.is_recipe_valid = True
+        else:
+            self.is_recipe_valid = False
+
+    def draw(self, screen):
+        if self.is_recipe_valid:
+            color = self.valid_recipe_color
+        else:
+            color = self.invalid_recipe_color
+
+        pygame.draw.rect(
+            screen,
+            color,
+            self.main_rect,
+            self.outline_width
+        )
+
+        if self.recipe is not None:
+            block_type = self.recipe.output.block_type
+            block_type.draw_manual(
+                    screen, 
+                    self.block_rect.x,
+                    self.block_rect.y,
+                    self.block_rect.width,
+                    is_grid_coordinates = False # set to draw by pixel
+                )

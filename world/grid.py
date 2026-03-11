@@ -2,7 +2,7 @@ from copy import deepcopy
 from math import floor
 import random
 
-from .blocks.blocks import *
+from .blocks.block_export import *
 from .world_creation.biomes import *
 from play.inventory.inventory_item import Inventory_Item
 

@@ -15,7 +15,7 @@ from math import floor
 import json
 from pathlib import Path
 
-from world.blocks.blocks import *
+from world.blocks.block_export import *
 from menu.menu import Menu
 from components.world_details import World_Details
 from components.images import Images

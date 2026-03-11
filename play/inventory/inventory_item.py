@@ -1,4 +1,4 @@
-from world.blocks.blocks import get_str_to_block
+from world.blocks.block_export import get_str_to_block
 
 class Inventory_Item:
 

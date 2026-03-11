@@ -1,7 +1,7 @@
 import pygame
 from math import floor, pi
 
-from world.blocks.blocks import *
+from world.blocks.block_export import *
 from play.entity_health import Entity_Health
 
 

@@ -1,7 +1,7 @@
 import pygame
 from math import floor, sqrt
 
-from world.blocks.blocks import *
+from world.blocks.block_export import *
 from play.mining_sprite import Mining_Sprite
 from components.blit_letterboxed import blit_letterboxed
 from components.game_file_reading import save_game

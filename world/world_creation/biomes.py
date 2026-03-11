@@ -1,4 +1,4 @@
-from world.blocks.blocks import *
+from world.blocks.block_export import *
 
 # move the attribute that sets the sufrace layer to be a +/- off of the world levels
 
