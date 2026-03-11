@@ -1,6 +1,6 @@
 from .inventory_position import Inventory_Position
 from .inventory_item import Inventory_Item
-from .crafting_recipe import *
+from .crafting_recipes import *
 from world.blocks.block_export import *
 
 
@@ -402,43 +402,3 @@ class Crafting_Slots:
             # draw
             screen.blit(recipe_label_surface, recipe_label_rect)
             screen.blit(recipe_name_surface, recipe_name_rect)
-
-class Recipe_Slot_Contents:
-    def __init__(self, main_rect, block_rect, recipe, outline_width, valid_recipe_color, invalid_recipe_color):
-        self.main_rect = main_rect
-        self.block_rect = block_rect
-        self.recipe = recipe
-        self.is_recipe_valid = False
-        self.outline_width = outline_width
-        self.valid_recipe_color = valid_recipe_color
-        self.invalid_recipe_color = invalid_recipe_color
-
-    def set_recipe(self, cur_recipe):
-        self.recipe = cur_recipe
-        if cur_recipe is not None:
-            self.is_recipe_valid = True
-        else:
-            self.is_recipe_valid = False
-
-    def draw(self, screen):
-        if self.is_recipe_valid:
-            color = self.valid_recipe_color
-        else:
-            color = self.invalid_recipe_color
-
-        pygame.draw.rect(
-            screen,
-            color,
-            self.main_rect,
-            self.outline_width
-        )
-
-        if self.recipe is not None:
-            block_type = self.recipe.output.block_type
-            block_type.draw_manual(
-                    screen, 
-                    self.block_rect.x,
-                    self.block_rect.y,
-                    self.block_rect.width,
-                    is_grid_coordinates = False # set to draw by pixel
-                )
