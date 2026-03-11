@@ -36,6 +36,9 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 """
 
+# tagging code: git tag v1.3.1
+# uploading tag: git push origin v1.3.1
+
 # converting .png to ico (windows) https://convertico.com/
 
 # to zip without metadata for windows on mac -> zip -r -X IntoTheUnder.zip IntoTheUnder
