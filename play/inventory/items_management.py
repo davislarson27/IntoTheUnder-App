@@ -1,7 +1,7 @@
 import pygame
 
 from world.blocks.block_export import *
-from play.inventory.inventory_item import Inventory_Item
+from .inventory_item import Inventory_Item
 from .inventory_position import Inventory_Position
 from .crafting import Crafting_Slots, Recipe_Slot_Contents
 from.chest import Chest_Slots
