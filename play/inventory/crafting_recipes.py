@@ -1,13 +1,14 @@
 import pygame
 
 from world.blocks.block_export import *
+from inventory_item import Inventory_Item
 
 
 class Crafting_Recipe:
     def __init__(self, recipe_name, requirement_list, output=None):
         self.name = recipe_name
-        self.requirement_list = requirement_list
-        self.output = output
+        self.requirement_list = requirement_list # type ingredient
+        self.output = output # type ingredient
 
     def __eq__(self, other):
         if not isinstance(other, Crafting_Recipe):
@@ -28,7 +29,59 @@ class Crafting_Recipe:
             return False
         
         return True
+    
+    def __contains__(self, check_item_type):
+        """checks if a block type is part of the recipe"""
+        if check_item_type is None: return False # returns false if it is a block
+        if not isinstance(check_item_type, type): return False # makes sure it is a class
+        if not issubclass(check_item_type, Block): return False # checks if it's a block we're looking at
 
+        for item in self.requirement_list:
+            if item.block_type is check_item_type:
+                return True
+        return False
+
+    
+    def can_craft(self, inventory_item_list):
+        """takes list of inventory items and returns T/F for if the items are sufficient to allow crafting"""
+
+        # convert input inventory items to consolidated ingredients
+        input_ingredients = [] # will take type ingredient
+        for item in inventory_item_list:
+            if isinstance(item, Inventory_Item) and item.Block_Type in self:
+                # ok now it is a valid block -> check for if it is already in the inventory_item_list
+                not_added_to_input_ingredients = True
+                for input in input_ingredients:
+                    if input.block_type is item.Block_Type:
+                        input.count += item.count_of_items
+                        not_added_to_input_ingredients = False
+                        break
+                if not_added_to_input_ingredients: # if the input hasn't been added, create an ingredient for it
+                    input_ingredients.append(Ingredient(item.Block_Type, item.count_of_items))
+                
+        # now create a list to "check off" requirments as I go
+        slot_complete_list = []
+        for item in self.requirement_list:
+            slot_complete_list.append(item.count)
+        
+        # now run through the list and check it off
+        for input_ingredient in input_ingredients:
+            i = 0
+            for req in self.requirement_list:
+                if slot_complete_list[i] <= 0:
+                    i+=1
+                    continue
+                if req.block_type is input_ingredient.block_type:
+                    slot_complete_list[i] -= input_ingredient.count
+                    break
+                i+=1
+
+        # now look at if the slot_complete_list is complete
+        for count_remaining in slot_complete_list:
+            if count_remaining > 0:
+                return False
+        return True
+        
 
 class Ingredient:
     def __init__(self, block_type, count):
