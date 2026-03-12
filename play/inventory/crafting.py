@@ -105,96 +105,97 @@ class Crafting_Slots:
 
         self.cur_recipe_index = 0
 
-        self.crafting_recipes = [
-            Crafting_Recipe(
-                "Dirt",
-                [
-                    Ingredient(Grass, 1)
-                ],
-                output=Ingredient(Dirt, 1)
-            ),
-            Crafting_Recipe(
-                "Chest",
-                [
-                    Ingredient(Wood_Planks, 6), 
-                    Ingredient(Iron_Ingot, 1)
-                ],
-                output=Ingredient(Chest, 1)
-            ),
-            Crafting_Recipe(
-                "Iron Ore Ingot",
-                [
-                    Ingredient(Iron_Ore_Block, 1),
-                ],
-                output=Ingredient(Iron_Ingot, 1)
-            ),
-            Crafting_Recipe(
-                "Gold Ore Ingot",
-                [
-                    Ingredient(Gold_Ore_Block, 1),
-                ],
-                output=Ingredient(Gold_Ingot, 1)
-            ),
-            Crafting_Recipe(
-                "Gravel",
-                [
-                    Ingredient(Rock, 1),
-                ],
-                output=Ingredient(Gravel, 2)
-            ),
-            Crafting_Recipe(
-                "Door",
-                [
-                    Ingredient(Wood_Planks, 3),
-                ],
-                output=Ingredient(Door, 2)
-            ),
-            Crafting_Recipe(
-                "Wood Planks",
-                [
-                    Ingredient(Log, 1),
-                ],
-                output=Ingredient(Wood_Planks, 3)
-            ),
-            Crafting_Recipe(
-                "Sulfur Powder",
-                [
-                    Ingredient(Sulfur_Flakes_Block, 3),
-                ],
-                output=Ingredient(Sulfur_Powder, 1)
-            ),
-            Crafting_Recipe(
-                "Saltpeter Powder",
-                [
-                    Ingredient(Saltpeter, 1),
-                ],
-                output=Ingredient(Saltpeter_Powder, 5)
-            ),
-            Crafting_Recipe(
-                "Coal",
-                [
-                    Ingredient(Coal_Ore_Block, 1),
-                ],
-                output=Ingredient(Coal, 1)
-            ),
-            Crafting_Recipe(
-                "Gun Powder",
-                [
-                    Ingredient(Saltpeter_Powder, 7),
-                    Ingredient(Coal, 2),
-                    Ingredient(Sulfur_Powder, 1),
-                ],
-                output=Ingredient(Gunpowder, 1)
-            ),
-            Crafting_Recipe(
-                "TNT",
-                [
-                    Ingredient(Gunpowder, 4),
-                    Ingredient(Gravel, 1),
-                ],
-                output=Ingredient(TNT, 1)
-            ),
-        ]
+        self.crafting_recipes = User_Crafting_Recipes_List()
+        # self.crafting_recipes = [
+        #     Crafting_Recipe(
+        #         "Dirt",
+        #         [
+        #             Ingredient(Grass, 1)
+        #         ],
+        #         output=Ingredient(Dirt, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Chest",
+        #         [
+        #             Ingredient(Wood_Planks, 6), 
+        #             Ingredient(Iron_Ingot, 1)
+        #         ],
+        #         output=Ingredient(Chest, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Iron Ore Ingot",
+        #         [
+        #             Ingredient(Iron_Ore_Block, 1),
+        #         ],
+        #         output=Ingredient(Iron_Ingot, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Gold Ore Ingot",
+        #         [
+        #             Ingredient(Gold_Ore_Block, 1),
+        #         ],
+        #         output=Ingredient(Gold_Ingot, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Gravel",
+        #         [
+        #             Ingredient(Rock, 1),
+        #         ],
+        #         output=Ingredient(Gravel, 2)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Door",
+        #         [
+        #             Ingredient(Wood_Planks, 3),
+        #         ],
+        #         output=Ingredient(Door, 2)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Wood Planks",
+        #         [
+        #             Ingredient(Log, 1),
+        #         ],
+        #         output=Ingredient(Wood_Planks, 3)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Sulfur Powder",
+        #         [
+        #             Ingredient(Sulfur_Flakes_Block, 3),
+        #         ],
+        #         output=Ingredient(Sulfur_Powder, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Saltpeter Powder",
+        #         [
+        #             Ingredient(Saltpeter, 1),
+        #         ],
+        #         output=Ingredient(Saltpeter_Powder, 5)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Coal",
+        #         [
+        #             Ingredient(Coal_Ore_Block, 1),
+        #         ],
+        #         output=Ingredient(Coal, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "Gun Powder",
+        #         [
+        #             Ingredient(Saltpeter_Powder, 7),
+        #             Ingredient(Coal, 2),
+        #             Ingredient(Sulfur_Powder, 1),
+        #         ],
+        #         output=Ingredient(Gunpowder, 1)
+        #     ),
+        #     Crafting_Recipe(
+        #         "TNT",
+        #         [
+        #             Ingredient(Gunpowder, 4),
+        #             Ingredient(Gravel, 1),
+        #         ],
+        #         output=Ingredient(TNT, 1)
+        #     ),
+        # ]
 
     def close(self, inventory_object):
         for slot in self.crafting_input_slots:

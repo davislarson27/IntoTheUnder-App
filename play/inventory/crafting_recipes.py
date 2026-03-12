@@ -131,7 +131,7 @@ class Recipe_Slot_Contents:
                     is_grid_coordinates = False # set to draw by pixel
                 )
 
-class User_Recipes_List: # not in use yet
+class User_Crafting_Recipes_List: # not in use yet
     def __init__(self, discovered_recipes=None):
         self.default_crafting_recipes = [
             Crafting_Recipe(
@@ -214,9 +214,6 @@ class User_Recipes_List: # not in use yet
                 ],
                 output=Ingredient(Gunpowder, 1)
             ),
-        ]                
-
-        self.additional_possible_recipes = [
             Crafting_Recipe(
                 "TNT",
                 [
@@ -225,6 +222,10 @@ class User_Recipes_List: # not in use yet
                 ],
                 output=Ingredient(TNT, 1)
             ),
+
+        ]                
+
+        self.additional_possible_recipes = [
         ]
 
         self.discovered_recipes = []
