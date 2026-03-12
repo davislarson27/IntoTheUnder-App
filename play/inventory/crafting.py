@@ -8,19 +8,11 @@ class Crafting_Slots:
     def __init__(self, input_slots):
 
         def can_craft_more(inventory_object):
-
-            req_list = inventory_object.crafting_object.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index].requirement_list
+            cur_recipe = inventory_object.crafting_object.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index]
             crafting_slots = inventory_object.crafting_object.crafting_input_slots
-
-            passed_requirement = False
-            for requirement in req_list:
-                for input_item in crafting_slots:
-                    if input_item.inventory_item is not None and input_item.inventory_item.Block_Type == requirement.block_type:
-                        if input_item.inventory_item.count_of_items >= requirement.count:
-                            passed_requirement = True
-                            break
-                if not passed_requirement:
-                    inventory_object.crafting_object.check_on_click(inventory_object)
+            input_inventory_item_list = [ip.inventory_item for ip in crafting_slots if ip.inventory_item is not None]
+            if not cur_recipe.can_craft(input_inventory_item_list):
+                inventory_object.crafting_object.check_on_click(inventory_object)
 
         def recipe_on_click(inventory_object):
             # step 1: make sure there is a recipe selected
@@ -241,17 +233,8 @@ class Crafting_Slots:
             return False
 
     def get_possible_recipes(self):
-        possible_crafting_recipes = []
-        for recipe in self.crafting_recipes:
-            has_all_ingredients = True
-            for required_ingredient in recipe.requirement_list:
-                # seach through slots in self.crafting_input_slots
-                if not self.has_enough_blocks(required_ingredient.block_type, required_ingredient.count):
-                    has_all_ingredients = False
-                    break
-            if has_all_ingredients: possible_crafting_recipes.append(recipe)
-
-        return possible_crafting_recipes
+        input_inventory_item_list = [ip.inventory_item for ip in self.crafting_input_slots if ip.inventory_item is not None]
+        return [recipe for recipe in self.crafting_recipes if recipe.can_craft(input_inventory_item_list)]
 
     def check_on_click(self, inventory_object): # this figures out what recipes apply on each click
         
@@ -265,11 +248,6 @@ class Crafting_Slots:
         else:
             self.recipe_slot.inventory_item.set_recipe(None)
         
-
-        # for recipe in self.possible_crafting_recipes:
-        #     print(recipe.name)
-        # print("")
-
     def get_slots(self):
         i = 0
         return_slots = []

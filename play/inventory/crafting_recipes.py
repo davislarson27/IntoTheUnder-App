@@ -1,7 +1,7 @@
 import pygame
 
 from world.blocks.block_export import *
-from inventory_item import Inventory_Item
+from .inventory_item import Inventory_Item
 
 
 class Crafting_Recipe:
