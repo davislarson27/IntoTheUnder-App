@@ -638,6 +638,9 @@ class Inventory:
                 block_count = slot[1]
                 inventory.expanded_inventory[i].inventory_item = Inventory_Item(block_type, block_count)
 
+        # fill discovered recieps list
+        inventory.setRecipesFromDict(inventory_dict["crafting_recipes"])
+
         return inventory
     
     def setRecipesFromDict(self, recipeDict):

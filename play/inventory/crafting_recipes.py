@@ -284,10 +284,9 @@ class User_Crafting_Recipes_List: # not in use yet
         }
 
     def fill_from_dict(self, recipe_dictionary):
-        self.discovered_recipes = []
         for recipeString in recipe_dictionary["discovered_recipes"]:
             recipe = self.getRecipeFromString(recipeString)
-            if recipe is not None:
+            if recipe is not None and recipe not in self:
                 self.discovered_recipes.append(recipe)
     
     @staticmethod
