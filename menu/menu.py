@@ -762,7 +762,6 @@ class Menu:
 
         with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
             world_details_dict = json.load(world_details_file)
-            # world_details = World_Details(**world_details_dict)
             world_details = World_Details.fill_from_dict(world_details_dict)
 
         return grid, inventory, player, world_details
@@ -771,7 +770,6 @@ class Menu:
         self.world_names_list.remove(self.world_name)
         self.world_names_list.insert(0, self.world_name)
         self.run_game = False
-        # menu = Menu(screen, screen_width_px, screen_height_px, BLOCK_WIDTH, menu.world_names_list) # generates new menu
         self.return_to_main()
 
     # ------------------------ functions interacting with the main loop ------------------------ #

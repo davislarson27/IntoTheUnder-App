@@ -291,3 +291,9 @@ class Crafting_Slots:
             # draw
             screen.blit(recipe_label_surface, recipe_label_rect)
             screen.blit(recipe_name_surface, recipe_name_rect)
+
+    def get_recipes_dict(self):
+        return self.crafting_recipes.to_dict()
+
+    def setRecipesFromDict(self, recipeDict): # fills crafting_recipes with recipes in the save file 
+        self.crafting_recipes.fill_from_dict(recipeDict)

@@ -601,6 +601,7 @@ class Inventory:
             i+=1
         return returnString
 
+
 # -------------------------------------------- saving and reloading methods -------------------------------------------- #
     
     def to_dict(self):
@@ -613,7 +614,8 @@ class Inventory:
 
         return {
             "cur_position_index": self.cur_position_index,
-            "inventory_items": inventory_items
+            "inventory_items": inventory_items,
+            "crafting_recipes": self.crafting_object.get_recipes_dict()
         }
     
     @staticmethod
@@ -637,6 +639,9 @@ class Inventory:
                 inventory.expanded_inventory[i].inventory_item = Inventory_Item(block_type, block_count)
 
         return inventory
+    
+    def setRecipesFromDict(self, recipeDict):
+        self.crafting_object.setRecipesFromDict(recipeDict)
 
 
 # -------------------------------------------- interacting with blocks methods -------------------------------------------- #
@@ -816,8 +821,6 @@ class Inventory:
 
         # 4. Blit
         self.screen.blit(text_surface, text_rect)
-
-
 
     def draw_hot_bar(self):
         # draw background
