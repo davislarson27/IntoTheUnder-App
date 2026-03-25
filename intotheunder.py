@@ -46,20 +46,6 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 """
 update notes:
-- improved inventory UI
-- added crafting new items
-- added chests to store items
-- added functioning doors
-- let left shift key ignore item interactions
-- added items
-- added new blocks
-- fixed incorrect exit screen
-- added TNT and explosives
-- refactored code to be more state based
-- reorganized code into files
-- made biomes larger
-- allowed biomes to be different sizes
-- fixed text box to allow easier deleting
 """
 
 """
@@ -102,8 +88,8 @@ INVENTORY_HEIGHT = HEALTH_BAR_HEIGHT + (grid_height_px * 7) # this is so hard co
 # random.seed(cur_seed)
 
 APP_NAME = "Into The Under"
-APP_DISPLAY_NAME = "Into The Under 1.5.0"
-VERSION_NAME = "intotheunder1.5.0"
+APP_DISPLAY_NAME = "Into The Under 1.5.1"
+VERSION_NAME = "intotheunder1.5.1"
 VERSION = 1.5 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
 IMAGES_FILE_NAME = "image_files"
