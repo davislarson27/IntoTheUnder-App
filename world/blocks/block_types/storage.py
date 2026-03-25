@@ -39,28 +39,82 @@ class Chest(Block):
         
         pygame.draw.rect( # draw base color
             screen,
-            (220 + added_color, 175 + added_color, 138 + added_color),           # color
+            (220 + added_color, 175 + added_color, 138 + added_color),
             (x, y, block_width, block_width)
         )
         pygame.draw.rect( # draw base color
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (85 + added_color, 70 + added_color, 55 + added_color),
             (x, y, block_width, block_width),
             2
         )
         pygame.draw.rect( # draw outline
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (85 + added_color, 70 + added_color, 55 + added_color),
             (x, y, block_width, block_width),
             floor(block_width * 0.08) # width of border
         )
         pygame.draw.rect( # draw divider between top and bottom of the chest
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),           # color
+            (85 + added_color, 70 + added_color, 55 + added_color),
             (x, y + floor(block_width * 0.3), block_width, floor(block_width * 0.08))
         )
         pygame.draw.rect(
             screen,
             (140 + added_color, 140 + added_color, 140 + added_color),
             (x + floor(block_width * 0.42), y + floor(block_width * 0.3),floor(block_width * 0.18), floor(block_width * 0.24))
+        )
+
+class Recipe_Frame(Block):
+    
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Recipe Frame"
+    ticks_to_mine = 35
+
+    can_store_items = True
+
+    def hasCraftingRecipe(self): # helper function
+        from play.inventory.crafting_recipes import Crafting_Recipe
+        if len(self.stored_inventory_items) == 1 and isinstance(self.stored_inventory_items[0], Crafting_Recipe):
+            return True
+        return False
+    
+    def interaction(self, inventory):
+        if self.hasCraftingRecipe():
+            inventory.add_recipe(self.stored_inventory_items[0])
+            self.stored_inventory_items.pop()
+            return True
+        else:
+            return False
+    
+    def onDestruction(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
+        self.interaction(inventory)
+        self.grid.set(self.x, self.y, None)
+        return type(self)
+    
+    def drawDependentDetails(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        if self.hasCraftingRecipe():
+            self.stored_inventory_items[0].draw(screen, x, y, block_width, is_grid_coordinates=False)
+
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False): 
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (220 + added_color, 175 + added_color, 138 + added_color),
+            (x, y, block_width, block_width)
         )

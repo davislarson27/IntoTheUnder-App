@@ -297,3 +297,6 @@ class Crafting_Slots:
 
     def setRecipesFromDict(self, recipeDict): # fills crafting_recipes with recipes in the save file 
         self.crafting_recipes.fill_from_dict(recipeDict)
+
+    def add_recipe(self, recipe):
+        self.crafting_recipes.add_recipe(recipe)

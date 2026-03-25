@@ -51,6 +51,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Sulfur_Powder,
         Gunpowder,
         TNT,
+        Recipe_Frame,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

@@ -5,6 +5,8 @@ import random
 from .blocks.block_export import *
 from .world_creation.biomes import *
 from play.inventory.inventory_item import Inventory_Item
+from play.inventory.crafting_recipes import *
+
 
 class Grid:
     """
@@ -132,14 +134,19 @@ class Grid:
             x = block[1]
             y = block[2]
             pass_through = block[3]
-            if len(block) > 4 and block[4] is not None:
+            if len(block) > 4 and block[4] is not None:                
                 stored_inventory_items_compressed = block[4]
                 stored_inventory_items = []
                 for item in stored_inventory_items_compressed:
                     if item is None:
                         stored_inventory_items.append(None)
-                    else:
-                        stored_inventory_items.append(Inventory_Item.create_from_array(item))
+                    elif len(item) == 2 and item[0] == "Crafting Recipe":
+                        stored_inventory_items.append(User_Crafting_Recipes_List.getRecipeFromString(item[1]))
+                    elif len(item) == 2 and item[0] == "Inventory Item":
+                        stored_inventory_items.append(Inventory_Item.create_from_array(item[1]))
+                    # else:
+                    #     stored_inventory_items.append(Inventory_Item.create_from_array(item))
+                        
             else:
                 stored_inventory_items = None
             grid.set(x, y, block_type, pass_through, stored_inventory_items)
@@ -461,3 +468,15 @@ class Grid:
                                 has_above_ground_object[x-1] = True
                                 has_above_ground_object[x] = True
                                 has_above_ground_object[x+1] = True
+
+            
+        # for testing
+        self.set(self.width//2, 11, Recipe_Frame)
+        self.get(self.width//2, 11).stored_inventory_items = [Crafting_Recipe(
+            "TNT",
+            [
+                Ingredient(Gunpowder, 4),
+                Ingredient(Gravel, 1),
+            ],
+            output=Ingredient(TNT, 1)
+        )]

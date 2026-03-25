@@ -84,6 +84,17 @@ class Crafting_Recipe:
                 return False
         return True
 
+    def draw(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if is_grid_coordinates:
+            return
+        block_width_percentage = 0.7
+        sub_block_width = block_width * block_width_percentage
+        position_offset = block_width * ((1 - block_width_percentage) // 2)
+        sub_x = x + position_offset
+        sub_y = y + position_offset
+        if self.output is not None:
+            self.output.block_type.draw_manual(screen, sub_x, sub_y, sub_block_width, being_mined, is_grid_coordinates=False, use_alt_drawing=use_alt_drawing)
+
 
 class Ingredient:
     def __init__(self, block_type, count):
@@ -218,7 +229,15 @@ class User_Crafting_Recipes_List: # not in use yet
             ],
             output=Ingredient(Gunpowder, 1)
         ),
-    ]                
+        Crafting_Recipe(
+            "Recipe Frame Test",
+            [
+                Ingredient(Rock, 1),
+            ],
+            output=Ingredient(Recipe_Frame, 1)
+        )
+
+    ]
 
     additional_possible_recipes = [
         Crafting_Recipe(
@@ -278,6 +297,12 @@ class User_Crafting_Recipes_List: # not in use yet
         # step 3: append recipe onto self.additional_discovered_recipes
         self.discovered_recipes.append(recipe)
 
+    def add_recipe(self, recipe): # returns True if new reciepe was added, false if not
+        if recipe is not None and recipe not in self:
+            self.discovered_recipes.append(recipe)
+            return True
+        return False
+
     def to_dict(self):
         return {
             "discovered_recipes": [str(recipe) for recipe in self.discovered_recipes]
@@ -286,8 +311,7 @@ class User_Crafting_Recipes_List: # not in use yet
     def fill_from_dict(self, recipe_dictionary):
         for recipeString in recipe_dictionary["discovered_recipes"]:
             recipe = self.getRecipeFromString(recipeString)
-            if recipe is not None and recipe not in self:
-                self.discovered_recipes.append(recipe)
+            self.add_recipe(recipe)
     
     @staticmethod
     def getRecipeFromString(recipeString):

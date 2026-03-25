@@ -33,11 +33,14 @@ class Block:
     def get_stored_inventory_items(self):
         return_list = []
         if len(self.stored_inventory_items) > 0:
+            from play.inventory.crafting_recipes import Crafting_Recipe
             for item in self.stored_inventory_items:
                 if item is None:
                     return_list.append(None)
+                elif isinstance(item, Crafting_Recipe):
+                    return_list.append(["Crafting Recipe", str(item)])
                 else:
-                    return_list.append(item.rerender_as_array())
+                    return_list.append(["Inventory Item", item.rerender_as_array()])
             return return_list
         else:
             return None
@@ -48,6 +51,10 @@ class Block:
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         return
     
+    def drawDependentDetails(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        """used for items that need to draw a detail (such as a subblock) on top of their base drawing when initialized"""
+        return
+    
     def draw(self, being_mined = False, camera_x = 0, camera_y = 0):
         pixel_self_x = self.x * self.block_width
         pixel_self_y = self.y * self.block_width
@@ -56,6 +63,8 @@ class Block:
         draw_y = pixel_self_y - camera_y
 
         self.draw_manual(self.screen, draw_x, draw_y, self.block_width, being_mined, False, self.pass_through)
+
+        self.drawDependentDetails(self.screen, draw_x, draw_y, self.block_width, being_mined, False, self.pass_through)
 
     def physics(self):
         return

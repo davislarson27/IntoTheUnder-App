@@ -647,7 +647,7 @@ class Inventory:
         self.crafting_object.setRecipesFromDict(recipeDict)
 
 
-# -------------------------------------------- interacting with blocks methods -------------------------------------------- #
+# -------------------------------------- interacting with blocks/recipes methods -------------------------------------- #
 
     def add_item(self, item):
         empty_slot = None
@@ -679,6 +679,8 @@ class Inventory:
     def set_cur_position(self, index):
         self.cur_position_index = floor(index)
 
+    def add_recipe(self, recipe):
+        self.crafting_object.add_recipe(recipe)
 
 # ------------------------------------------------ mouse imput methods ------------------------------------------------ #
 
