@@ -218,6 +218,9 @@ class User_Crafting_Recipes_List: # not in use yet
             ],
             output=Ingredient(Gunpowder, 1)
         ),
+    ]                
+
+    additional_possible_recipes = [
         Crafting_Recipe(
             "TNT",
             [
@@ -226,9 +229,6 @@ class User_Crafting_Recipes_List: # not in use yet
             ],
             output=Ingredient(TNT, 1)
         ),
-    ]                
-
-    additional_possible_recipes = [
     ]
 
     def __init__(self, discovered_recipes=None):
@@ -284,7 +284,7 @@ class User_Crafting_Recipes_List: # not in use yet
         }
 
     @classmethod
-    def fill_from_dict(recipe_dictionary):
+    def fill_from_dict(cls, recipe_dictionary):
         discovered = []
         for recipeString in recipe_dictionary["discovered_recipes"]:
             recipe = User_Crafting_Recipes_List.getRecipeFromString(recipeString)
