@@ -6,6 +6,8 @@ class Block:
     ticks_to_mine = 30
     tick_threshold = 0
 
+    str_name = "base block class"
+
     can_place = True
     can_store_items = False
 
@@ -62,6 +64,9 @@ class Block:
         block_type = type(self)
         self.grid.set(self.x, self.y, None)
         return block_type
+    
+    def __str__(self): # used so when the type is initialized the str() method can be used
+        return self.str_name
 
 class Item(Block):
     can_place = False

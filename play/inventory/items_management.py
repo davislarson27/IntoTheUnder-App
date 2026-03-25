@@ -605,10 +605,6 @@ class Inventory:
     
     def to_dict(self):
         inventory_items = []
-        # for slot in self.hot_bar:
-        #     cur_item = slot.inventory_item
-        #     if cur_item is not None: inventory_items.append([cur_item.Block_Type.str_name, cur_item.count_of_items])
-        #     else: inventory_items.append(None)
         for slot in self.expanded_inventory:
             cur_item = slot.inventory_item            
             if cur_item is not None: inventory_items.append([cur_item.Block_Type.str_name, cur_item.count_of_items])

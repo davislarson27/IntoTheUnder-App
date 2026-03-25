@@ -7,8 +7,8 @@ from .inventory_item import Inventory_Item
 class Crafting_Recipe:
     def __init__(self, recipe_name, requirement_list, output=None):
         self.name = recipe_name
-        self.requirement_list = requirement_list # type ingredient
-        self.output = output # type ingredient
+        self.requirement_list = requirement_list # expected to be type list<ingredient>
+        self.output = output # expected to be type ingredient
 
     def __eq__(self, other):
         if not isinstance(other, Crafting_Recipe):
@@ -40,8 +40,10 @@ class Crafting_Recipe:
             if item.block_type is check_item_type:
                 return True
         return False
-
     
+    def __str__(self):
+        return self.name
+
     def can_craft(self, inventory_item_list):
         """takes list of inventory items and returns T/F for if the items are sufficient to allow crafting"""
 
@@ -81,7 +83,7 @@ class Crafting_Recipe:
             if count_remaining > 0:
                 return False
         return True
-        
+
 
 class Ingredient:
     def __init__(self, block_type, count):
@@ -90,6 +92,7 @@ class Ingredient:
 
     def __eq__(self, other):
         return isinstance(other, Ingredient) and self.block_type is other.block_type and self.count == other.count
+
 
 class Recipe_Slot_Contents:
     def __init__(self, main_rect, block_rect, recipe, outline_width, valid_recipe_color, invalid_recipe_color):
@@ -131,103 +134,104 @@ class Recipe_Slot_Contents:
                     is_grid_coordinates = False # set to draw by pixel
                 )
 
+
 class User_Crafting_Recipes_List: # not in use yet
+
+    default_crafting_recipes = [
+        Crafting_Recipe(
+            "Dirt",
+            [
+                Ingredient(Grass, 1)
+            ],
+            output=Ingredient(Dirt, 1)
+        ),
+        Crafting_Recipe(
+            "Chest",
+            [
+                Ingredient(Wood_Planks, 6), 
+                Ingredient(Iron_Ingot, 1)
+            ],
+            output=Ingredient(Chest, 1)
+        ),
+        Crafting_Recipe(
+            "Iron Ore Ingot",
+            [
+                Ingredient(Iron_Ore_Block, 1),
+            ],
+            output=Ingredient(Iron_Ingot, 1)
+        ),
+        Crafting_Recipe(
+            "Gold Ore Ingot",
+            [
+                Ingredient(Gold_Ore_Block, 1),
+            ],
+            output=Ingredient(Gold_Ingot, 1)
+        ),
+        Crafting_Recipe(
+            "Gravel",
+            [
+                Ingredient(Rock, 1),
+            ],
+            output=Ingredient(Gravel, 2)
+        ),
+        Crafting_Recipe(
+            "Door",
+            [
+                Ingredient(Wood_Planks, 3),
+            ],
+            output=Ingredient(Door, 2)
+        ),
+        Crafting_Recipe(
+            "Wood Planks",
+            [
+                Ingredient(Log, 1),
+            ],
+            output=Ingredient(Wood_Planks, 3)
+        ),
+        Crafting_Recipe(
+            "Sulfur Powder",
+            [
+                Ingredient(Sulfur_Flakes_Block, 3),
+            ],
+            output=Ingredient(Sulfur_Powder, 1)
+        ),
+        Crafting_Recipe(
+            "Saltpeter Powder",
+            [
+                Ingredient(Saltpeter, 1),
+            ],
+            output=Ingredient(Saltpeter_Powder, 5)
+        ),
+        Crafting_Recipe(
+            "Coal",
+            [
+                Ingredient(Coal_Ore_Block, 1),
+            ],
+            output=Ingredient(Coal, 1)
+        ),
+        Crafting_Recipe(
+            "Gun Powder",
+            [
+                Ingredient(Saltpeter_Powder, 7),
+                Ingredient(Coal, 2),
+                Ingredient(Sulfur_Powder, 1),
+            ],
+            output=Ingredient(Gunpowder, 1)
+        ),
+        Crafting_Recipe(
+            "TNT",
+            [
+                Ingredient(Gunpowder, 4),
+                Ingredient(Gravel, 1),
+            ],
+            output=Ingredient(TNT, 1)
+        ),
+    ]                
+
+    additional_possible_recipes = [
+    ]
+
     def __init__(self, discovered_recipes=None):
-        self.default_crafting_recipes = [
-            Crafting_Recipe(
-                "Dirt",
-                [
-                    Ingredient(Grass, 1)
-                ],
-                output=Ingredient(Dirt, 1)
-            ),
-            Crafting_Recipe(
-                "Chest",
-                [
-                    Ingredient(Wood_Planks, 6), 
-                    Ingredient(Iron_Ingot, 1)
-                ],
-                output=Ingredient(Chest, 1)
-            ),
-            Crafting_Recipe(
-                "Iron Ore Ingot",
-                [
-                    Ingredient(Iron_Ore_Block, 1),
-                ],
-                output=Ingredient(Iron_Ingot, 1)
-            ),
-            Crafting_Recipe(
-                "Gold Ore Ingot",
-                [
-                    Ingredient(Gold_Ore_Block, 1),
-                ],
-                output=Ingredient(Gold_Ingot, 1)
-            ),
-            Crafting_Recipe(
-                "Gravel",
-                [
-                    Ingredient(Rock, 1),
-                ],
-                output=Ingredient(Gravel, 2)
-            ),
-            Crafting_Recipe(
-                "Door",
-                [
-                    Ingredient(Wood_Planks, 3),
-                ],
-                output=Ingredient(Door, 2)
-            ),
-            Crafting_Recipe(
-                "Wood Planks",
-                [
-                    Ingredient(Log, 1),
-                ],
-                output=Ingredient(Wood_Planks, 3)
-            ),
-            Crafting_Recipe(
-                "Sulfur Powder",
-                [
-                    Ingredient(Sulfur_Flakes_Block, 3),
-                ],
-                output=Ingredient(Sulfur_Powder, 1)
-            ),
-            Crafting_Recipe(
-                "Saltpeter Powder",
-                [
-                    Ingredient(Saltpeter, 1),
-                ],
-                output=Ingredient(Saltpeter_Powder, 5)
-            ),
-            Crafting_Recipe(
-                "Coal",
-                [
-                    Ingredient(Coal_Ore_Block, 1),
-                ],
-                output=Ingredient(Coal, 1)
-            ),
-            Crafting_Recipe(
-                "Gun Powder",
-                [
-                    Ingredient(Saltpeter_Powder, 7),
-                    Ingredient(Coal, 2),
-                    Ingredient(Sulfur_Powder, 1),
-                ],
-                output=Ingredient(Gunpowder, 1)
-            ),
-            Crafting_Recipe(
-                "TNT",
-                [
-                    Ingredient(Gunpowder, 4),
-                    Ingredient(Gravel, 1),
-                ],
-                output=Ingredient(TNT, 1)
-            ),
-
-        ]                
-
-        self.additional_possible_recipes = [
-        ]
-
         self.discovered_recipes = []
         if discovered_recipes is not None:
             for recipe in discovered_recipes:
@@ -273,3 +277,25 @@ class User_Crafting_Recipes_List: # not in use yet
 
         # step 3: append recipe onto self.additional_discovered_recipes
         self.discovered_recipes.append(recipe)
+
+    def to_dict(self):
+        return {
+            "discovered_recipes": [str(recipe) for recipe in self.discovered_recipes]
+        }
+
+    @classmethod
+    def fill_from_dict(recipe_dictionary):
+        discovered = []
+        for recipeString in recipe_dictionary["discovered_recipes"]:
+            recipe = User_Crafting_Recipes_List.getRecipeFromString(recipeString)
+            if recipe is not None:
+                discovered.append(recipe)
+
+        return User_Crafting_Recipes_List(discovered)
+    
+    @staticmethod
+    def getRecipeFromString(recipeString):
+        for recipe in User_Crafting_Recipes_List.additional_possible_recipes:
+            if str(recipe) == recipeString:
+                return recipe
+        return None
