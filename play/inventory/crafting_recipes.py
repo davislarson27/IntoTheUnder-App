@@ -85,15 +85,8 @@ class Crafting_Recipe:
         return True
 
     def draw(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
-        if is_grid_coordinates:
-            return
-        block_width_percentage = 0.7
-        sub_block_width = block_width * block_width_percentage
-        position_offset = block_width * ((1 - block_width_percentage) // 2)
-        sub_x = x + position_offset
-        sub_y = y + position_offset
         if self.output is not None:
-            self.output.block_type.draw_manual(screen, sub_x, sub_y, sub_block_width, being_mined, is_grid_coordinates=False, use_alt_drawing=use_alt_drawing)
+            self.output.block_type.draw_manual(screen, x, y, block_width, being_mined, is_grid_coordinates=False, use_alt_drawing=use_alt_drawing)
 
 
 class Ingredient:
@@ -229,14 +222,6 @@ class User_Crafting_Recipes_List: # not in use yet
             ],
             output=Ingredient(Gunpowder, 1)
         ),
-        Crafting_Recipe(
-            "Recipe Frame Test",
-            [
-                Ingredient(Rock, 1),
-            ],
-            output=Ingredient(Recipe_Frame, 1)
-        )
-
     ]
 
     additional_possible_recipes = [

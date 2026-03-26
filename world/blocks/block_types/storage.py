@@ -98,8 +98,14 @@ class Recipe_Frame(Block):
             x *= block_width
             y *= block_width
 
+        block_width_percentage = 0.6
+        sub_block_width = block_width * block_width_percentage
+        position_offset = int(block_width * ((1 - block_width_percentage) / 2))
+        sub_x = x + position_offset
+        sub_y = y + position_offset
+
         if self.hasCraftingRecipe():
-            self.stored_inventory_items[0].draw(screen, x, y, block_width, is_grid_coordinates=False)
+            self.stored_inventory_items[0].draw(screen, sub_x, sub_y, sub_block_width, is_grid_coordinates=False)
 
 
     @staticmethod

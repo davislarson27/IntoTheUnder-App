@@ -470,13 +470,13 @@ class Grid:
                                 has_above_ground_object[x+1] = True
 
             
-        # for testing
-        self.set(self.width//2, 11, Recipe_Frame)
-        self.get(self.width//2, 11).stored_inventory_items = [Crafting_Recipe(
-            "TNT",
-            [
-                Ingredient(Gunpowder, 4),
-                Ingredient(Gravel, 1),
-            ],
-            output=Ingredient(TNT, 1)
-        )]
+        # # for testing
+        # self.set(self.width//2, 11, Recipe_Frame)
+        # self.get(self.width//2, 11).stored_inventory_items = [Crafting_Recipe(
+        #     "TNT",
+        #     [
+        #         Ingredient(Gunpowder, 4),
+        #         Ingredient(Gravel, 1),
+        #     ],
+        #     output=Ingredient(TNT, 1)
+        # )]
