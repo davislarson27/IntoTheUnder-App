@@ -813,3 +813,6 @@ class Menu:
         else:
             return self
     
+    def on_quit(self):
+        pass
+    

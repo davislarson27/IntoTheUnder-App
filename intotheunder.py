@@ -148,7 +148,9 @@ try:
         input_object.take_input(scale, offx, offy)
 
         # quit if requested
-        if input_object.check_quit(): break
+        if input_object.check_quit(): 
+            run_class.on_quit()
+            break
 
         # execute run function
         run_class = run_class.run(input_object)

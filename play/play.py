@@ -299,6 +299,8 @@ class Play:
 
         return return_class
 
+    def on_quit(self):
+        self.prep_menu()
         
 class Physics_Rules:
     def __init__(self, screen, inventory_height):
