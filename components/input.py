@@ -8,6 +8,7 @@ class Input:
         self.s_hold = 0
         self.d_hold = 0
         self.e_hold = 0
+        self.c_hold = 0
         self.l_shift_hold = 0
         self.r_shift_hold = 0
         self.space_hold = 0
@@ -27,6 +28,7 @@ class Input:
         self.escape_keypress = False
         self.backspace_keypress = False
         self.e_keypress = False
+        self.c_keypress = False
         self.return_keypress = False
 
         # quit key
@@ -42,6 +44,7 @@ class Input:
         self.scroll_change = 0
         self.escape_keypress = False
         self.e_keypress = False
+        self.c_keypress = False
         self.backspace_keypress = False
         self.return_keypress = False
 
@@ -59,6 +62,7 @@ class Input:
             elif event.type == pygame.KEYDOWN:
                 self.escape_keypress = (event.key == pygame.K_ESCAPE)
                 self.e_keypress = (event.key == pygame.K_e)
+                self.c_keypress = (event.key == pygame.K_c)
                 self.backspace_keypress = (event.key == pygame.K_BACKSPACE)
                 self.return_keypress = (event.key == pygame.K_RETURN)
 
@@ -95,6 +99,9 @@ class Input:
             
             if keys[pygame.K_s]: self.s_hold += 1
             else: self.s_hold = 0
+
+            if keys[pygame.K_c]: self.c_hold += 1
+            else: self.c_hold = 0
 
             if keys[pygame.K_BACKSPACE]: self.backspace_hold += 1
             else: self.backspace_hold = 0
