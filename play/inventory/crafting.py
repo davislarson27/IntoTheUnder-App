@@ -300,3 +300,4 @@ class Crafting_Slots:
 
     def add_recipe(self, recipe):
         self.crafting_recipes.add_recipe(recipe)
+    

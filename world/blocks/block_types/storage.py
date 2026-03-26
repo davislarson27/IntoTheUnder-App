@@ -118,9 +118,49 @@ class Recipe_Frame(Block):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
-        
-        pygame.draw.rect( # draw base color
-            screen,
-            (220 + added_color, 175 + added_color, 138 + added_color),
-            (x, y, block_width, block_width)
+
+        paper_color = (
+            min(255, 225 + added_color),
+            min(255, 205 + added_color),
+            min(255, 170 + added_color)
         )
+        border_color = (
+            min(255, 120 + added_color),
+            min(255, 100 + added_color),
+            min(255, 80 + added_color)
+        )
+        line_color = (
+            min(255, 160 + added_color),
+            min(255, 140 + added_color),
+            min(255, 110 + added_color)
+        )
+
+        # base
+        pygame.draw.rect(screen, paper_color, (x, y, block_width, block_width))
+
+        # border
+        border_thickness = max(1, block_width // 10)
+        pygame.draw.rect(screen, border_color, (x, y, block_width, block_width), border_thickness)
+
+        # inner frame
+        margin = max(2, block_width // 6)
+        inner_x = x + margin
+        inner_y = y + margin
+        inner_w = block_width - margin * 2
+        inner_h = block_width - margin * 2
+
+        if inner_w > 4 and inner_h > 4:
+            pygame.draw.rect(screen, border_color, (inner_x, inner_y, inner_w, inner_h), 1)
+
+            # two simple horizontal lines
+            line1_y = inner_y + inner_h // 3
+            line2_y = inner_y + (inner_h * 2) // 3
+
+            pygame.draw.line(screen, line_color, (inner_x + 2, line1_y), (inner_x + inner_w - 3, line1_y), 1)
+            pygame.draw.line(screen, line_color, (inner_x + 2, line2_y), (inner_x + inner_w - 3, line2_y), 1)
+
+            # tiny center mark
+            mark_size = max(2, block_width // 8)
+            mark_x = x + (block_width - mark_size) // 2
+            mark_y = y + (block_width - mark_size) // 2
+            pygame.draw.rect(screen, border_color, (mark_x, mark_y, mark_size, mark_size), 1)
