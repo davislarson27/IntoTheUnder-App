@@ -720,7 +720,6 @@ class Menu:
         text_rect = text_surf.get_rect(center=self.button3_dimentions.center)
         self.screen.blit(text_surf, text_rect)
 
-
     def draw(self, mx, my, input):
         # draw background before menus
         self.screen.fill((30,30,30))
@@ -813,3 +812,4 @@ class Menu:
 
         else:
             return self
+    

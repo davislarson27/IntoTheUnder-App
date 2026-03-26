@@ -34,8 +34,6 @@ class Input:
         # quit key
         self.quit = False
 
-
-
     def take_input(self, scale, offx, offy):
 
         # ------------------------------------- event handling ------------------------------------- #
@@ -121,3 +119,4 @@ class Input:
 
     def check_quit(self):
         return self.quit
+    
