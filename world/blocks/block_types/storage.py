@@ -1,5 +1,5 @@
 import pygame
-from math import floor
+from math import floor, cos, sin, pi
 from world.blocks.block_types._base import Block
 
 class Chest(Block):
@@ -71,6 +71,7 @@ class Recipe_Frame(Block):
 
     str_name = "Recipe Frame"
     ticks_to_mine = 35
+    tick_threshold = 20
 
     can_store_items = True
 
@@ -82,11 +83,22 @@ class Recipe_Frame(Block):
     
     def interaction(self, inventory):
         if self.hasCraftingRecipe():
-            inventory.add_recipe(self.stored_inventory_items[0])
-            self.stored_inventory_items.pop()
+            self.ticks_till_physics = 1
+            self.inventory = inventory
             return True
         else:
             return False
+    
+    def physics(self): # runs animation counter for this case
+        if self.hasCraftingRecipe() and self.ticks_till_physics > 0: # blocks physics (or animation in this case) if there is no recipe
+            self.ticks_till_physics += 1
+
+        if self.ticks_till_physics == self.tick_threshold: # this will add the recipe when it is done
+            self.ticks_till_physics = 0
+            if self.inventory is not None:
+                self.inventory.add_recipe(self.stored_inventory_items[0])
+                self.stored_inventory_items.pop()
+
     
     def onDestruction(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
         self.interaction(inventory)
@@ -104,9 +116,67 @@ class Recipe_Frame(Block):
         sub_x = x + position_offset
         sub_y = y + position_offset
 
+        # draws crafting recipe output on block
         if self.hasCraftingRecipe():
             self.stored_inventory_items[0].draw(screen, sub_x, sub_y, sub_block_width, is_grid_coordinates=False)
+            self.animation(screen, sub_x, sub_y, sub_block_width, is_grid_coordinates=False)            
 
+    def animation(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        """responsible for drawing animations"""
+        if self.ticks_till_physics == 0: # no animation if physics are not running
+            return
+        
+        def draw_ray(screen, cx, cy, angle, length, color, start_distance=0, thickness=1): # helper function for drawing the reys outward
+            """draws rays, angle is measured in radians"""
+
+            # start point (offset from center)
+            start_x = cx + cos(angle) * start_distance
+            start_y = cy + sin(angle) * start_distance
+
+            # end point (continues outward)
+            end_x = start_x + cos(angle) * length
+            end_y = start_y + sin(angle) * length
+
+            pygame.draw.line(
+                screen,
+                color,
+                (start_x, start_y),
+                (end_x, end_y),
+                thickness
+            )
+
+        # set ray color
+        rayColor = (245, 225, 140)
+
+        # calculate ray length
+        maxRayLength = int(block_width * 0.6)
+
+        maxPositionPercent = 0.65
+        ticksToEndGrowth = int(self.tick_threshold * maxPositionPercent)
+        percentGrown = min((self.ticks_till_physics - 1) / ticksToEndGrowth, 1)
+        rayLength = int(maxRayLength * percentGrown)
+
+        # calculate ray position
+        rayCount = 5
+        anglePerRay = 2 * pi / rayCount
+        offsetFromStart = 0
+        startDistanceFromCenter = block_width + int(block_width * 0.2)
+
+        center_x = x + block_width // 2
+        center_y = y + block_width // 2
+
+        # draw rays
+        for i in range(rayCount):
+            curAngle = (anglePerRay * i) + offsetFromStart
+            draw_ray(screen, center_x, center_y, curAngle, rayLength, rayColor, startDistanceFromCenter)
+        
+        # draw short rays
+        shortRayOffSet = anglePerRay / 2
+        shortRayMaxPercent = 0.75
+        shortRayLength = min(shortRayMaxPercent * maxRayLength, rayLength)
+        for i in range(rayCount):
+            curAngle = (anglePerRay * i) + shortRayOffSet
+            draw_ray(screen, center_x, center_y, curAngle, shortRayLength, rayColor, startDistanceFromCenter)
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False): 

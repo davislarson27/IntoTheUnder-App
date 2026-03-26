@@ -11,6 +11,8 @@ class Block:
     can_place = True
     can_store_items = False
 
+    inventory = None
+
     def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through = False, ticks_till_physics = 0, stored_inventory_items=None, special_value=True):
         self.grid = grid
         self.screen = screen
@@ -25,7 +27,6 @@ class Block:
             self.stored_inventory_items = stored_inventory_items
         else:
             self.stored_inventory_items = []
-
 
     def interaction(self, inventory):
         return False
@@ -55,6 +56,10 @@ class Block:
         """used for items that need to draw a detail (such as a subblock) on top of their base drawing when initialized"""
         return
     
+    def animation(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        """responsible for drawing animations"""
+        pass
+
     def draw(self, being_mined = False, camera_x = 0, camera_y = 0):
         pixel_self_x = self.x * self.block_width
         pixel_self_y = self.y * self.block_width
