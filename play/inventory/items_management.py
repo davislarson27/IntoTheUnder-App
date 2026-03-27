@@ -693,18 +693,17 @@ class Inventory:
             self.execute_clicked((mx, my))
         
     def execute_clicked(self, position_on_release):
-        if self.show_full_item_management: # whether to even run at all
-            swap_index = self.get_slot_from_mouse(position_on_release)
-            if swap_index is None or (self.active_slots[swap_index].allow_swap()): # allows None to be passed in and dealt with in self.full_swap()
-                self.full_swap(swap_index)
-            
-            if swap_index is not None and not self.active_slots[swap_index].block_check_on_click:
-                self.side_pannel.check_on_click(self)
+        swap_index = self.get_slot_from_mouse(position_on_release)
+        if swap_index is None or (self.active_slots[swap_index].allow_swap()): # allows None to be passed in and dealt with in self.full_swap()
+            self.full_swap(swap_index)
+        
+        if swap_index is not None and not self.active_slots[swap_index].block_check_on_click:
+            self.side_pannel.check_on_click(self)
 
-            if swap_index is not None: # now check for special actions
-                special_action = self.active_slots[swap_index].execute_special_action
-                if special_action is not None: 
-                    special_action(self)
+        if swap_index is not None: # now check for special actions
+            special_action = self.active_slots[swap_index].execute_special_action
+            if special_action is not None: 
+                special_action(self)
 
     def full_swap(self, swap_index): # merges if possible
         if self.position_on_click is not None:
@@ -834,12 +833,8 @@ class Inventory:
         # draw inventory
         for i in range(self.items_in_hot_bar):
             
-            if self.show_full_item_management:
-                if i == self.position_on_click: cur_color = self.selected_box_color
-                else: cur_color = self.base_box_color
-            else:
-                if i == self.cur_position_index: cur_color = self.selected_box_color
-                else: cur_color = self.base_box_color
+            if i == self.cur_position_index: cur_color = self.selected_box_color
+            else: cur_color = self.base_box_color
 
             pygame.draw.rect(
                 self.screen,
@@ -849,8 +844,25 @@ class Inventory:
 
             self.draw_item_in_slot(self.expanded_inventory[i])
 
-            if self.show_full_item_management:
-                self.draw_item_label(self.expanded_inventory[i], True)
+    def draw_hot_bar_active(self):
+        # draw background
+        pygame.draw.rect(self.screen, self.hot_bar_background_color, self.inventory_background)
+
+        # draw inventory
+        for i in range(self.items_in_hot_bar):
+            
+            if i == self.position_on_click: cur_color = self.selected_box_color
+            else: cur_color = self.base_box_color
+
+            pygame.draw.rect(
+                self.screen,
+                cur_color,
+                self.expanded_inventory[i].hit_box 
+            )
+
+            self.draw_item_in_slot(self.expanded_inventory[i])
+
+            self.draw_item_label(self.expanded_inventory[i], True)
 
     def draw_expanded_item_management(self):
         # draw background
@@ -898,8 +910,11 @@ class Inventory:
         self.side_pannel.draw(self) # draws all special things that don't work in the normal context of what I'm doing
 
     def draw(self):
+        self.draw_hot_bar_active()
+        self.draw_expanded_item_management()
+
+    def draw_passive(self):
         self.draw_hot_bar()
-        if self.show_full_item_management: self.draw_expanded_item_management()
 
 
 # extra functions to be added (misc)
@@ -926,11 +941,14 @@ class Inventory:
             else:
                 self.cur_position_index -= 1
 
+    def get_recipe_menu(self):
+        return self.crafting_object.crafting_recipes
+    
 
 # --------------------------------------------- open and close functions --------------------------------------------- #
 
     def open(self, side_pannel_use=None):
-        self.show_full_item_management = True
+        # self.show_full_item_management = True
         if side_pannel_use is None:
             self.side_pannel = self.default_side_pannel
         self.set_active_slots()
@@ -941,11 +959,14 @@ class Inventory:
         self.side_pannel.fill_on_open(chest_items)
         self.set_active_slots()
 
-    def is_open(self):
-        return self.show_full_item_management
+    def conditional_close(self, input):
+        if input.e_keypress or input.escape_keypress:
+            self.close()
+            return True
+        else:
+            return False
 
     def close(self):
-        self.show_full_item_management = False
         self.clear_selected_slot_full_inventory()
         self.side_pannel.close(self)
         self.position_on_click = None
@@ -956,28 +977,20 @@ class Inventory:
     def run(self, input):
         # process clicks
         self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
+        self.draw()
+        return self
 
-        # get scrolling for switching inventory
-        if self.show_full_item_management: # don't run if items management is operating            
-            # close inventory
-            if input.e_keypress or input.escape_keypress:
-                self.close()
+    def run_passive(self, input):
+        if abs(input.scroll_change) > 0:
+            self.scroll_change_inventory_position(input.scroll_change)
+            input.scroll_change = 0
 
-
-        else:
-            if abs(input.scroll_change) > 0:
-                self.scroll_change_inventory_position(input.scroll_change)
-                input.scroll_change = 0
-
-            # allow rotating inventory using keyboard
-            if input.return_keypress:
-                if input.l_shift_hold > 0 or input.r_shift_hold > 0:
-                    self.increment_cur_position(False)
-                else:
-                    self.increment_cur_position(True)
-            # open the full inventory
-            if input.e_keypress:
-                self.open()
+        # allow rotating inventory using keyboard
+        if input.return_keypress:
+            if input.l_shift_hold > 0 or input.r_shift_hold > 0:
+                self.increment_cur_position(False)
+            else:
+                self.increment_cur_position(True)
 
            
 class Special_Slot_Polygon:

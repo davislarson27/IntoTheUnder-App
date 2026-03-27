@@ -8,12 +8,16 @@ from components.game_file_reading import save_game
 
 
 class Play:
+
     def __init__(self, screen, BLOCK_WIDTH, grid, inventory, player, world_details, menu):
         # set details
         self.grid, self.inventory, self.player, self.world_details = grid, inventory, player, world_details
         self.menu = menu
         self.screen = screen
         self.BLOCK_WIDTH = BLOCK_WIDTH
+
+        # prep substate
+        self.sub_state = None # holds the run function for submenus when applicable
 
         # prep the world to work
         self.mining_sprite = Mining_Sprite(screen, BLOCK_WIDTH)
@@ -239,12 +243,24 @@ class Play:
 
     def prep_menu(self):
         self.menu.draw_saving_world_screen()
-        if self.inventory.is_open(): self.inventory.close()
+        if self.sub_state is not None: self.sub_state.close()
         blit_letterboxed(self.screen, self.menu.window, self.menu.loading_world_screen_background_color)
         pygame.display.flip()
         pygame.event.pump()
         save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.world_details)
         self.menu.reopen_menu_prep()
+
+    def manage_menus(self, input):
+        """manages the opening and closing of in play menus such as opening the inventory"""
+        if self.sub_state is None:
+            if input.e_keypress:
+                self.sub_state = self.inventory
+                self.inventory.open()
+            elif input.c_keypress:
+                self.sub_state = self.inventory.get_recipe_menu()
+        else:
+            if self.sub_state.conditional_close(input):
+                self.sub_state = None
 
 
     # ---------------------------- interacting with main loop ---------------------------- #
@@ -255,8 +271,12 @@ class Play:
     def run(self, input):
         # initialize return_class
         return_class = self
-        
-        if not self.inventory.show_full_item_management:
+
+        if self.sub_state is not None:
+            self.sub_state = self.sub_state.run(input) # responsible for drawing
+
+        else:
+            # run main game
             return_class = self.run_main_game(input)
             if return_class is not self: return return_class
 
@@ -289,13 +309,17 @@ class Play:
             self.player.draw(self.camera_x, self.cur_camera_y)
 
 
-        # ------------- run inventory ------------- #
-        
-        self.inventory.run(input) # this is resetting the value of self.inventory.show_full_item_mamagement BEFORE the loop runs with that! it forces exit incorrectly. fix!
+            # ------------- run passive inventory ------------- #
+            
+            self.inventory.run_passive(input) # this is resetting the value of self.inventory.show_full_item_mamagement BEFORE the loop runs with that! it forces exit incorrectly. fix!
 
-        # ------------- draw inventory ------------- #
 
-        self.inventory.draw()        
+            # ------------- draw inventory ------------- #
+
+            self.inventory.draw_passive()
+
+        # check for changing menus in game
+        self.manage_menus(input)
 
         return return_class
 
