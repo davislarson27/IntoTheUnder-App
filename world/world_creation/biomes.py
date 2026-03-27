@@ -93,7 +93,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
 
 
     # structures
-    recipe_burrow_chance = 0.0002
+    recipe_burrow_chance = 0.00021
 
 
 class Forest(Biome):
@@ -101,7 +101,7 @@ class Forest(Biome):
     dirt_depth = 2
     small_bushes_chance = 0.01
 
-    tree_chance = 0.35
+    tree_chance = 0.32
 
     water_cave_chance = 0.1
 
