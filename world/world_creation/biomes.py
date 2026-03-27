@@ -71,7 +71,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     gravel_vein_max_size = 8
 
     sulfur_flakes_min_depth = start_floor_depth + sub_surface_layer_depth + 4
-    sulfur_flakes_base_chance = 0.000045
+    sulfur_flakes_base_chance = 0.00006
     sulfur_flakes_inc_chances_by_layer = -1 * sulfur_flakes_base_chance / 20 # only spawns 18 blocks below where it started
     sulfur_flakes_vein_min_size = 1
     sulfur_flakes_vein_max_size = 3
@@ -81,7 +81,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     cave_start_odds = 0.0006
     max_cave_depth = 5
     water_cave_chance = 0.03
-    saltpeter_chance = 0.02
+    saltpeter_chance = 0.018
 
 
     # object generation odds
