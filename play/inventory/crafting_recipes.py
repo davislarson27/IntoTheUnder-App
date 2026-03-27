@@ -298,9 +298,18 @@ class User_Crafting_Recipes_List: # not in use yet
             recipe = self.getRecipeFromString(recipeString)
             self.add_recipe(recipe)
     
-    @staticmethod
-    def getRecipeFromString(recipeString):
-        for recipe in User_Crafting_Recipes_List.additional_possible_recipes:
+    @classmethod
+    def getRecipeFromString(cls, recipeString):
+        for recipe in cls.additional_possible_recipes:
             if str(recipe) == recipeString:
                 return recipe
         return None
+
+    @classmethod
+    def getFindableRecipesList(cls):
+        return cls.additional_possible_recipes
+
+    @classmethod
+    def getAllRecipesList(cls):
+        return cls.default_crafting_recipes + cls.additional_possible_recipes
+    

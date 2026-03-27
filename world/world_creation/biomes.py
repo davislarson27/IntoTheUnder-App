@@ -92,6 +92,9 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     snow_man_chance = 0
 
 
+    # structures
+    recipe_burrow_chance = 0.0002
+
 
 class Forest(Biome):
     max_deviation_floor_lvl = 3
@@ -119,6 +122,8 @@ class Plains(Biome):
 
     small_bushes_chance = 0.03
 
+    recipe_burrow_chance = Biome.recipe_burrow_chance * 1.25
+
 
 class Tundra(Biome):
     # layer classes
@@ -144,6 +149,8 @@ class Tundra(Biome):
 
     sulfur_flakes_base_chance = Biome.sulfur_flakes_base_chance * 5
     sulfur_flakes_inc_chances_by_layer = -1 * sulfur_flakes_base_chance / 18 # only spawns 18 blocks below where it started
+
+    recipe_burrow_chance = Biome.recipe_burrow_chance * 3
 
 
 class Desert(Biome):
@@ -179,6 +186,8 @@ class Lake(Biome):
     iron_ore_base_chance = Biome.iron_ore_base_chance * 1.05 #slight increase of chances to get iron
     dirt_vein_min_depth = start_floor_depth + max_deviation_floor_lvl + 4
     dirt_vein_inc_chances_by_layer = Biome.dirt_vein_inc_chances_by_layer * 1.01 # slight decrease in deep dirt (balances late start)
+
+    recipe_burrow_chance = 0
 
 
 class Glacier(Biome):

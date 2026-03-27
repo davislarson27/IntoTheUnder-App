@@ -43,6 +43,8 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 # to zip without metadata for windows on mac -> zip -r -X IntoTheUnder.zip IntoTheUnder
 
+# to find game files, use: cd ~/Library/Application\ Support/Into\ The\ Under/intotheunder1.5.1/game_files
+
 
 """
 update notes:

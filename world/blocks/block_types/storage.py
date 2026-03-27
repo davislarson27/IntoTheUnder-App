@@ -99,7 +99,6 @@ class Recipe_Frame(Block):
                 self.inventory.add_recipe(self.stored_inventory_items[0])
                 self.stored_inventory_items.pop()
 
-    
     def onDestruction(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
         self.interaction(inventory)
         self.grid.set(self.x, self.y, None)

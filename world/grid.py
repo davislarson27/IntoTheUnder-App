@@ -6,6 +6,8 @@ from .blocks.block_export import *
 from .world_creation.biomes import *
 from play.inventory.inventory_item import Inventory_Item
 from play.inventory.crafting_recipes import *
+from .world_creation.structures.structure_instruction import Structure_Instruction
+from .world_creation.structures.recipe_burrow import *
 
 
 class Grid:
@@ -144,8 +146,6 @@ class Grid:
                         stored_inventory_items.append(User_Crafting_Recipes_List.getRecipeFromString(item[1]))
                     elif len(item) == 2 and item[0] == "Inventory Item":
                         stored_inventory_items.append(Inventory_Item.create_from_array(item[1]))
-                    # else:
-                    #     stored_inventory_items.append(Inventory_Item.create_from_array(item))
                         
             else:
                 stored_inventory_items = None
@@ -421,7 +421,23 @@ class Grid:
         # generate objects throughout world
         for x in range(self.width):
             cur_biome = cur_biome_by_x[x]
-            
+
+            if cur_biome.recipe_burrow_chance > 0:
+                y_start = ground_level[x]
+                isValidBuild = True
+                if x + Recipe_Burrow.get_width() < self.width and y_start + Recipe_Burrow.get_depth() < self.height and y_start + Recipe_Burrow.get_height() > 0: #check for if in bounds
+                    for check_x in range(x, x+Recipe_Burrow.get_width()):
+                        if has_above_ground_object[check_x]:
+                            isValidBuild = False
+                            break
+                    if isValidBuild and random.random() < cur_biome.recipe_burrow_chance:
+                        for set_x in range(x, x+Recipe_Burrow.get_width()): # mark areas a used
+                            has_above_ground_object[set_x] = True
+                        buildInstructions = Recipe_Burrow.getStructureInstructions(x, y_start, self)
+                        for instruction in buildInstructions:
+                            instruction.setBlock(self)
+                        
+
             # trees
             if cur_biome.tree_chance > 0:
                 if x + 2 < self.width and x - 2 > 0: #check for if in bounds
@@ -468,15 +484,3 @@ class Grid:
                                 has_above_ground_object[x-1] = True
                                 has_above_ground_object[x] = True
                                 has_above_ground_object[x+1] = True
-
-            
-        # for testing
-        self.set(self.width//2, 11, Recipe_Frame)
-        self.get(self.width//2, 11).stored_inventory_items = [Crafting_Recipe(
-            "TNT",
-            [
-                Ingredient(Gunpowder, 4),
-                Ingredient(Gravel, 1),
-            ],
-            output=Ingredient(TNT, 1)
-        )]
