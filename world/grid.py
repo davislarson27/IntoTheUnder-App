@@ -7,7 +7,7 @@ from .world_creation.biomes import *
 from play.inventory.inventory_item import Inventory_Item
 from play.inventory.crafting_recipes import *
 from .world_creation.structures.structure_instruction import Structure_Instruction
-from .world_creation.structures.recipe_burrow import *
+from .world_creation.structures.structures import *
 
 
 class Grid:

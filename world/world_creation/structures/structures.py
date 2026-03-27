@@ -1,9 +1,11 @@
+import random
+
 from world.blocks.block_export import *
 from .structure_instruction import Structure_Instruction
 from play.inventory.crafting_recipes import User_Crafting_Recipes_List
 
 class Recipe_Burrow:
-    width = 6
+    width = 8
     height = 3
     depth = 2
 
@@ -75,7 +77,8 @@ class Recipe_Burrow:
         # now add the recipe frame block
         recipeFrame_x, recipeFrame_y = start_x + 6, start_y + bottom_y_add - 1
         recipeFrameBlock = Recipe_Frame(grid, grid.screen, recipeFrame_x, recipeFrame_y, grid.BLOCK_WIDTH)
-        recipeFrameBlock.stored_inventory_items.append(User_Crafting_Recipes_List.getRecipeFromString("TNT"))
+        randomRecipe = random.choice(User_Crafting_Recipes_List.getFindableRecipesList())
+        recipeFrameBlock.stored_inventory_items.append(randomRecipe)
         structureInstructionsList.append(Structure_Instruction(recipeFrame_x, recipeFrame_y, recipeFrameBlock, blockIsInitialized=True))
 
         # return list
