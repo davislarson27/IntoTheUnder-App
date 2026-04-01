@@ -5,7 +5,7 @@ from world.blocks.block_export import *
 
 
 class Crafting_Slots:
-    def __init__(self, input_slots):
+    def __init__(self, input_slots, screen=None):
 
         def can_craft_more(inventory_object):
             cur_recipe = inventory_object.crafting_object.possible_crafting_recipes[inventory_object.crafting_object.cur_recipe_index]
@@ -105,7 +105,7 @@ class Crafting_Slots:
 
         self.cur_recipe_index = 0
 
-        self.crafting_recipes = User_Crafting_Recipes_List()
+        self.crafting_recipes = User_Crafting_Recipes_List(screen=screen)
 
     def close(self, inventory_object):
         for slot in self.crafting_input_slots:

@@ -108,6 +108,8 @@ class Recipe_Slot_Contents:
         self.valid_recipe_color = valid_recipe_color
         self.invalid_recipe_color = invalid_recipe_color
 
+
+
     def set_recipe(self, cur_recipe):
         self.recipe = cur_recipe
         if cur_recipe is not None:
@@ -139,7 +141,7 @@ class Recipe_Slot_Contents:
                 )
 
 
-class User_Crafting_Recipes_List: # not in use yet
+class User_Crafting_Recipes_List:
 
     default_crafting_recipes = [
         Crafting_Recipe(
@@ -235,11 +237,13 @@ class User_Crafting_Recipes_List: # not in use yet
         ),
     ]
 
-    def __init__(self, discovered_recipes=None):
+    def __init__(self, discovered_recipes=None, screen=None):
         self.discovered_recipes = []
         if discovered_recipes is not None:
             for recipe in discovered_recipes:
                 self.append(recipe)
+
+        self.menu_init(screen) # keeps menu initialization out of list initalization
     
     def __getitem__(self, index): # this is the dunder method for the [] operator
         if index < 0:
@@ -313,3 +317,28 @@ class User_Crafting_Recipes_List: # not in use yet
     def getAllRecipesList(cls):
         return cls.default_crafting_recipes + cls.additional_possible_recipes
     
+
+    # -------------------------- displaying recipes for user -------------------------- #
+    def menu_init(self, screen=None):
+        self.screen = screen
+
+    def run(self, input):
+        self.draw()
+        return self
+
+    def open(self):
+        return
+    
+    def conditional_close(self, input):
+        if input.c_keypress or input.escape_keypress:
+            self.close()
+            return True
+        else:
+            return False
+
+    def close(self):
+        return
+
+    def draw(self):
+        background_color = (30, 30, 30)
+        self.screen.fill(background_color)

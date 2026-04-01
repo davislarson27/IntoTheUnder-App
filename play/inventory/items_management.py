@@ -228,7 +228,7 @@ class Inventory:
             item_mng_height
         )
 
-        self.crafting_object = Crafting_Slots(count_crafting_input_slots)
+        self.crafting_object = Crafting_Slots(count_crafting_input_slots, screen)
 
         # ----------------------------- get title ----------------------------- #
 
