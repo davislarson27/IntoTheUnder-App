@@ -320,7 +320,86 @@ class User_Crafting_Recipes_List:
 
     # -------------------------- displaying recipes for user -------------------------- #
     def menu_init(self, screen=None):
+        # set screen
         self.screen = screen
+
+        # set colors (mostly borrowed from the inventory)
+        self.background_color = (30, 30, 30)
+
+        self.base_box_color = (200, 200, 200)
+        self.selected_box_color = (246, 246, 246)
+        self.inventory_text_color = (255, 255, 255)
+        self.hot_bar_background_color = (50, 50, 50)
+        self.item_mng_background_color = (77, 77, 87)
+        self.side_pannel_background_color = (85, 85, 95)
+
+        self.section_title_color = (160, 160, 160)
+        self.slot_label_color = (200, 200, 200)
+
+        # grid sizes
+        self.tot_columns = 48
+        self.tot_rows = 48
+        self.grid_width_px = self.screen.get_width() // self.tot_columns
+        self.grid_height_px = self.screen.get_height() // self.tot_rows
+
+        # box dimentions
+        self.box_width = self.grid_height_px * 4
+
+        # label (textbox) sizing/spacing
+        self.label_gap_y = int(self.grid_height_px * 0.5)
+        self.label_height = max(12, int(self.grid_height_px * 1.0))
+
+        section_label_height = floor(2.4 * self.grid_height_px)
+
+
+        # item frame box details
+        item_percent_of_box = 0.75
+        full_inventory_item_size = floor(self.box_width * item_percent_of_box) # item is 75% as long as its box is
+        full_inventory_item_margin = floor((self.box_width - full_inventory_item_size) / 2)
+
+        # initalize fonts
+        self.hot_bar_font = pygame.font.Font(None, 36)  # None = default font, 36 = size
+        self.percent_font_of_block_full_inventory = 0.75
+        self.full_inventory_font = pygame.font.Font(None, floor(full_inventory_item_size * self.percent_font_of_block_full_inventory))
+
+        self.inventory_item_name_font = pygame.font.Font(None, 16)
+        self.hot_bar_name_font = pygame.font.Font(None, 15)
+        
+        self.section_label = pygame.font.Font(None, section_label_height)
+
+
+        # initalize key section dimentions
+        self.display_height = self.grid_height_px * 7
+        # self.display_start_height = self.screen.get_height() - self.inventory_height
+
+        exp_display_margin_x = 2 * self.grid_width_px
+        exp_display_margin_y = 7 * self.grid_height_px
+
+
+        # ingredients display section
+        section_label_start_height = (exp_display_margin_y - section_label_height) // 3
+        display_label_box = pygame.Rect(
+            0,
+            section_label_start_height,
+            self.screen.get_width(),
+            section_label_height
+        )
+        
+        self.display_label_text_surface = self.section_label.render(  # optional: bigger font
+            "The Recipe Center",
+            True,
+            self.section_title_color
+        )
+
+        self.display_label_rect = self.display_label_text_surface.get_rect(
+            center=display_label_box.center
+        )
+
+        # display category selector bar
+        category_select_bar_start_height = exp_display_margin_y
+        count_of_categories = 5
+
+
 
     def run(self, input):
         self.draw()
@@ -340,5 +419,7 @@ class User_Crafting_Recipes_List:
         return
 
     def draw(self):
-        background_color = (30, 30, 30)
-        self.screen.fill(background_color)
+        self.screen.fill(self.background_color)
+
+        # draw label
+        self.screen.blit(self.display_label_text_surface, self.display_label_rect)

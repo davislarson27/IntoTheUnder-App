@@ -16,14 +16,10 @@ class Inventory:
         self.expanded_inventory = []
         self.active_slots = []
 
-        # ----------------------------------- toggle variables ----------------------------------- #
-
-        self.show_full_item_management = False
-
 
         # ----------------------------------- helper functions ----------------------------------- #
 
-        def triangle_points_in_rect(rect: pygame.Rect, direction: str, pad_px: int = 2):
+        def triangle_points_in_rect(rect: pygame.Rect, direction: str, pad_px: int = 2): # creates arrows for scrolling through recipes
             r = rect.inflate(-2*pad_px, -2*pad_px)
 
             if direction == "up":
