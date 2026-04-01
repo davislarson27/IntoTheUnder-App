@@ -323,8 +323,8 @@ class User_Crafting_Recipes_List:
         # set screen
         self.screen = screen
 
-        # set colors (mostly borrowed from the inventory)
-        self.background_color = (30, 30, 30)
+        # set colors
+        self.background_color = (85, 85, 95)
 
         self.base_box_color = (200, 200, 200)
         self.selected_box_color = (246, 246, 246)
@@ -335,6 +335,9 @@ class User_Crafting_Recipes_List:
 
         self.section_title_color = (160, 160, 160)
         self.slot_label_color = (200, 200, 200)
+
+        self.select_button_color = (180, 180, 180)
+        self.select_button_text = (240, 240, 240)
 
         # grid sizes
         self.tot_columns = 48
@@ -372,8 +375,8 @@ class User_Crafting_Recipes_List:
         self.display_height = self.grid_height_px * 7
         # self.display_start_height = self.screen.get_height() - self.inventory_height
 
-        exp_display_margin_x = 2 * self.grid_width_px
-        exp_display_margin_y = 7 * self.grid_height_px
+        exp_display_margin_x = 3 * self.grid_width_px
+        exp_display_margin_y = 5 * self.grid_height_px
 
 
         # ingredients display section
@@ -385,7 +388,7 @@ class User_Crafting_Recipes_List:
             section_label_height
         )
         
-        self.display_label_text_surface = self.section_label.render(  # optional: bigger font
+        self.display_label_text_surface = self.section_label.render(
             "The Recipe Center",
             True,
             self.section_title_color
@@ -397,7 +400,37 @@ class User_Crafting_Recipes_List:
 
         # display category selector bar
         category_select_bar_start_height = exp_display_margin_y
-        count_of_categories = 5
+        buffer_space_px = 2
+        categories = ["Materials", "Building", "Items", "Minerals", "Special"]
+        self.categories_rects = []
+        self.category_label_text_surfaces = []
+        self.category_label_rects = []
+        category_selector_height = self.grid_height_px * 4
+        category_selector_width = (self.screen.get_width() - (exp_display_margin_x * 2)) // len(categories)
+
+        cur_category_count = 0
+        for category in categories:
+            cur_rect = pygame.Rect(
+                    exp_display_margin_x + (category_selector_width * cur_category_count) + buffer_space_px,
+                    category_select_bar_start_height,
+                    category_selector_width - (buffer_space_px * 2),
+                    category_selector_height
+            )
+            self.categories_rects.append(cur_rect)
+            self.category_label_text_surfaces.append(
+                self.section_label.render(
+                    category,
+                    True,
+                    self.inventory_text_color
+                )
+            )
+            self.category_label_rects.append(
+                self.category_label_text_surfaces[cur_category_count].get_rect(
+                    center=cur_rect.center
+                )
+            )
+
+            cur_category_count+=1
 
 
 
@@ -423,3 +456,14 @@ class User_Crafting_Recipes_List:
 
         # draw label
         self.screen.blit(self.display_label_text_surface, self.display_label_rect)
+
+        # draw category selectors
+        i = 0
+        for category_select_button_box in self.categories_rects:
+            pygame.draw.rect(
+                self.screen,
+                self.select_button_color,
+                category_select_button_box
+            )
+            self.screen.blit(self.category_label_text_surfaces[i], self.category_label_rects[i])
+            i+=1
