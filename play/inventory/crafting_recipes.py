@@ -243,14 +243,14 @@ class User_Crafting_Recipes_List:
             for recipe in discovered_recipes:
                 self.append(recipe)
 
-        self.menu_init(screen) # keeps menu initialization out of list initalization
+        self.menu_init(screen)
     
-    def __getitem__(self, index): # this is the dunder method for the [] operator
+    def __getitem__(self, index):
         if index < 0:
             return list(self)[index]
 
         default_recipe_count = len(self.default_crafting_recipes)            
-        if index < default_recipe_count: # access additional recipes
+        if index < default_recipe_count:
             return self.default_crafting_recipes[index]
         else:
             index_offset = index - default_recipe_count
@@ -259,11 +259,11 @@ class User_Crafting_Recipes_List:
     def __len__(self):
         return len(self.default_crafting_recipes) + len(self.discovered_recipes)
 
-    def __iter__(self): # allows for x in list -> needs tested
+    def __iter__(self):
         yield from self.default_crafting_recipes
         yield from self.discovered_recipes
 
-    def __contains__(self, recipe): # runs the in operator
+    def __contains__(self, recipe):
         for item in self.default_crafting_recipes:
             if item == recipe:
                 return True
@@ -286,7 +286,7 @@ class User_Crafting_Recipes_List:
         # step 3: append recipe onto self.additional_discovered_recipes
         self.discovered_recipes.append(recipe)
 
-    def add_recipe(self, recipe): # returns True if new reciepe was added, false if not
+    def add_recipe(self, recipe):
         if recipe is not None and recipe not in self:
             self.discovered_recipes.append(recipe)
             return True
@@ -318,152 +318,340 @@ class User_Crafting_Recipes_List:
         return cls.default_crafting_recipes + cls.additional_possible_recipes
     
 
-    # -------------------------- displaying recipes for user -------------------------- #
+    # ========================== display / menu ========================== #
+
     def menu_init(self, screen=None):
-        # set screen
         self.screen = screen
 
-        # set colors
-        self.background_color = (85, 85, 95)
+        # colors
+        self.background_color           = (85, 85, 95)
+        self.base_box_color             = (200, 200, 200)
+        self.selected_box_color         = (246, 246, 246)
+        self.inventory_text_color       = (255, 255, 255)
+        self.item_mng_background_color  = (77, 77, 87)
+        self.section_title_color        = (160, 160, 160)
+        self.slot_label_color           = (200, 200, 200)
+        self.select_button_color        = (100, 100, 112)
+        self.select_button_text         = (240, 240, 240)
+        self.recipe_slot_color          = (110, 110, 122)
 
-        self.base_box_color = (200, 200, 200)
-        self.selected_box_color = (246, 246, 246)
-        self.inventory_text_color = (255, 255, 255)
-        self.hot_bar_background_color = (50, 50, 50)
-        self.item_mng_background_color = (77, 77, 87)
-        self.side_pannel_background_color = (85, 85, 95)
-
-        self.section_title_color = (160, 160, 160)
-        self.slot_label_color = (200, 200, 200)
-
-        self.select_button_color = (180, 180, 180)
-        self.select_button_text = (240, 240, 240)
-
-        # grid sizes
-        self.tot_columns = 48
-        self.tot_rows = 48
-        self.grid_width_px = self.screen.get_width() // self.tot_columns
+        # grid unit sizes — mirrors Inventory exactly
+        self.tot_columns    = 48
+        self.tot_rows       = 48
+        self.grid_width_px  = self.screen.get_width()  // self.tot_columns
         self.grid_height_px = self.screen.get_height() // self.tot_rows
+        self.box_width      = self.grid_height_px * 4
 
-        # box dimentions
-        self.box_width = self.grid_height_px * 4
-
-        # label (textbox) sizing/spacing
-        self.label_gap_y = int(self.grid_height_px * 0.5)
-        self.label_height = max(12, int(self.grid_height_px * 1.0))
+        # label sizing
+        self.label_gap_y   = int(self.grid_height_px * 0.5)
+        self.label_height  = max(12, int(self.grid_height_px * 1.0))
 
         section_label_height = floor(2.4 * self.grid_height_px)
 
+        # item frame sizing — matches inventory's 75% rule
+        item_percent_of_box         = 0.75
+        self.full_item_size         = floor(self.box_width * item_percent_of_box)
+        self.full_item_margin       = floor((self.box_width - self.full_item_size) / 2)
 
-        # item frame box details
-        item_percent_of_box = 0.75
-        full_inventory_item_size = floor(self.box_width * item_percent_of_box) # item is 75% as long as its box is
-        full_inventory_item_margin = floor((self.box_width - full_inventory_item_size) / 2)
+        # fonts
+        self.full_inventory_font        = pygame.font.Font(None, floor(self.full_item_size * 0.75))
+        self.inventory_item_name_font   = pygame.font.Font(None, 16)
+        self.section_label_font         = pygame.font.Font(None, section_label_height)
+        self.category_font              = pygame.font.Font(None, floor(1.8 * self.grid_height_px))
 
-        # initalize fonts
-        self.hot_bar_font = pygame.font.Font(None, 36)  # None = default font, 36 = size
-        self.percent_font_of_block_full_inventory = 0.75
-        self.full_inventory_font = pygame.font.Font(None, floor(full_inventory_item_size * self.percent_font_of_block_full_inventory))
+        # ── layout measurements ────────────────────────────────────────── #
 
-        self.inventory_item_name_font = pygame.font.Font(None, 16)
-        self.hot_bar_name_font = pygame.font.Font(None, 15)
+        exp_display_margin_x     =  3 * self.grid_width_px
+        display_grid_margin_x    =  5 * self.grid_width_px
+        exp_display_margin_y     =  5 * self.grid_height_px   # top of tab bar
+        category_selector_height =  4 * self.grid_height_px
         
-        self.section_label = pygame.font.Font(None, section_label_height)
+        buffer_space_px = 2
 
+        # grid starts below tab bar, with a small breathing gap
+        grid_top_gap    = self.grid_height_px * 2            # gap between tab bar bottom and first grid row
+        self.grid_top_y = exp_display_margin_y + category_selector_height + grid_top_gap
 
-        # initalize key section dimentions
-        self.display_height = self.grid_height_px * 7
-        # self.display_start_height = self.screen.get_height() - self.inventory_height
+        # ingredient strip at the bottom — same height as the inventory hot bar
+        self.ingr_strip_height  = self.grid_height_px * 7
+        self.ingr_strip_top_y   = self.screen.get_height() - self.ingr_strip_height
 
-        exp_display_margin_x = 3 * self.grid_width_px
-        exp_display_margin_y = 5 * self.grid_height_px
+        # usable vertical space for the recipe grid
+        grid_bottom_pad = self.grid_height_px * 3  # breathing room above the strip
+        grid_available_h = self.ingr_strip_top_y - self.grid_top_y - grid_bottom_pad
 
+        # grid layout: 8 columns, as many full rows as fit
+        self.boxes_per_row  = 8
+        max_rows            = 4   # cap rows so slots don't crowd the strip
 
-        # ingredients display section
+        # horizontal spacing — mirrors inventory's margin calculation
+        grid_usable_w = self.screen.get_width() - (display_grid_margin_x * 2)
+        self.margin_between_boxes_x = (
+            grid_usable_w - (self.boxes_per_row * self.box_width)
+        ) // (self.boxes_per_row - 1)
+
+        # vertical spacing — divide available height evenly across rows
+        self.margin_between_boxes_y = (
+            grid_available_h - (max_rows * self.box_width)
+        ) // (max_rows - 1)  # gap between rows
+
+        self.boxes_high = max_rows
+
+        # ── title label ───────────────────────────────────────────────── #
+
         section_label_start_height = (exp_display_margin_y - section_label_height) // 3
         display_label_box = pygame.Rect(
-            0,
-            section_label_start_height,
-            self.screen.get_width(),
-            section_label_height
+            0, section_label_start_height,
+            self.screen.get_width(), section_label_height
         )
-        
-        self.display_label_text_surface = self.section_label.render(
-            "The Recipe Center",
-            True,
-            self.section_title_color
+        self.display_label_text_surface = self.section_label_font.render(
+            "The Recipe Center", True, self.section_title_color
         )
-
         self.display_label_rect = self.display_label_text_surface.get_rect(
             center=display_label_box.center
         )
 
-        # display category selector bar
-        category_select_bar_start_height = exp_display_margin_y
-        buffer_space_px = 2
+        # ── category tab bar ──────────────────────────────────────────── #
         categories = ["Materials", "Building", "Items", "Minerals", "Special"]
-        self.categories_rects = []
-        self.category_label_text_surfaces = []
-        self.category_label_rects = []
-        category_selector_height = self.grid_height_px * 4
-        category_selector_width = (self.screen.get_width() - (exp_display_margin_x * 2)) // len(categories)
+        self.categories_rects           = []
+        self.category_label_surfaces    = []
+        self.category_label_rects       = []
 
-        cur_category_count = 0
-        for category in categories:
+        category_selector_width = (
+            self.screen.get_width() - (exp_display_margin_x * 2)
+        ) // len(categories)
+
+        for i, category in enumerate(categories):
             cur_rect = pygame.Rect(
-                    exp_display_margin_x + (category_selector_width * cur_category_count) + buffer_space_px,
-                    category_select_bar_start_height,
-                    category_selector_width - (buffer_space_px * 2),
-                    category_selector_height
+                exp_display_margin_x + (category_selector_width * i) + buffer_space_px,
+                exp_display_margin_y,
+                category_selector_width - (buffer_space_px * 2),
+                category_selector_height
             )
             self.categories_rects.append(cur_rect)
-            self.category_label_text_surfaces.append(
-                self.section_label.render(
-                    category,
-                    True,
-                    self.inventory_text_color
+
+            surf = self.category_font.render(category, True, self.select_button_text)
+            self.category_label_surfaces.append(surf)
+            self.category_label_rects.append(surf.get_rect(center=cur_rect.center))
+
+        # ── recipe grid slot rects ────────────────────────────────────── #
+        # build hit_box and item_frame for every grid position up front,
+        # exactly like the inventory does for expanded_inventory.
+
+        self.recipe_slot_hit_boxes  = []   # pygame.Rect — for click detection
+        self.recipe_slot_item_frames = []  # pygame.Rect — where the block icon is drawn
+        self.recipe_slot_label_rects = []  # pygame.Rect — name label below slot
+
+        for row in range(self.boxes_high):
+            for col in range(self.boxes_per_row):
+                x = (
+                    display_grid_margin_x
+                    + col * (self.box_width + self.margin_between_boxes_x)
                 )
-            )
-            self.category_label_rects.append(
-                self.category_label_text_surfaces[cur_category_count].get_rect(
-                    center=cur_rect.center
+                y = (
+                    self.grid_top_y
+                    + row * (self.box_width + self.margin_between_boxes_y)
                 )
-            )
 
-            cur_category_count+=1
+                hit_box = pygame.Rect(x, y, self.box_width, self.box_width)
+
+                item_frame = pygame.Rect(
+                    x + self.full_item_margin,
+                    y + self.full_item_margin,
+                    self.full_item_size,
+                    self.full_item_size
+                )
+
+                label_rect = pygame.Rect(
+                    hit_box.x,
+                    hit_box.bottom + self.label_gap_y,
+                    hit_box.width,
+                    self.label_height
+                )
+
+                self.recipe_slot_hit_boxes.append(hit_box)
+                self.recipe_slot_item_frames.append(item_frame)
+                self.recipe_slot_label_rects.append(label_rect)
+
+        self.slots_per_page = self.boxes_per_row * self.boxes_high
+
+        # ── ingredient strip background rect ─────────────────────────── #
+
+        self.ingr_strip_rect = pygame.Rect(
+            0,
+            self.ingr_strip_top_y,
+            self.screen.get_width(),
+            self.ingr_strip_height
+        )
+
+        # track selected recipe (None = nothing selected)
+        self.selected_recipe = None
 
 
+    # ------------------------------------------------------------------ #
+    #  open / close / run                                                  #
+    # ------------------------------------------------------------------ #
 
     def run(self, input):
         self.draw()
         return self
 
     def open(self):
-        return
-    
+        self.selected_recipe = None
+
     def conditional_close(self, input):
         if input.c_keypress or input.escape_keypress:
             self.close()
             return True
-        else:
-            return False
+        return False
 
     def close(self):
-        return
+        self.selected_recipe = None
+
+
+    # ------------------------------------------------------------------ #
+    #  drawing                                                             #
+    # ------------------------------------------------------------------ #
 
     def draw(self):
         self.screen.fill(self.background_color)
+        self._draw_title()
+        self._draw_category_tabs()
+        self._draw_recipe_grid()
+        self._draw_ingredient_strip()
 
-        # draw label
+    def _draw_title(self):
         self.screen.blit(self.display_label_text_surface, self.display_label_rect)
 
-        # draw category selectors
-        i = 0
-        for category_select_button_box in self.categories_rects:
-            pygame.draw.rect(
-                self.screen,
-                self.select_button_color,
-                category_select_button_box
+    def _draw_category_tabs(self):
+        for i, rect in enumerate(self.categories_rects):
+            pygame.draw.rect(self.screen, self.select_button_color, rect)
+            self.screen.blit(self.category_label_surfaces[i], self.category_label_rects[i])
+
+    def _draw_recipe_grid(self):
+        all_recipes = list(self)   # iterates default + discovered via __iter__
+
+        for slot_index in range(self.slots_per_page):
+            hit_box    = self.recipe_slot_hit_boxes[slot_index]
+            item_frame = self.recipe_slot_item_frames[slot_index]
+            label_rect = self.recipe_slot_label_rects[slot_index]
+
+            if slot_index >= len(all_recipes):
+                # empty slot — draw an outline-only box so the grid shape is clear
+                pygame.draw.rect(self.screen, self.recipe_slot_color, hit_box, 1)
+                continue
+
+            recipe = all_recipes[slot_index]
+            is_selected = (recipe is self.selected_recipe)
+
+            # slot background
+            slot_bg = self.selected_box_color if is_selected else self.recipe_slot_color
+            pygame.draw.rect(self.screen, slot_bg, hit_box)
+
+            # output block icon
+            if recipe.output is not None:
+                recipe.output.block_type.draw_manual(
+                    self.screen,
+                    item_frame.x,
+                    item_frame.y,
+                    item_frame.width,
+                    is_grid_coordinates=False
+                )
+
+            # recipe name label below slot
+            name_surf = self.inventory_item_name_font.render(
+                recipe.name, True, self.slot_label_color
             )
-            self.screen.blit(self.category_label_text_surfaces[i], self.category_label_rects[i])
-            i+=1
+            name_rect = name_surf.get_rect(center=label_rect.center)
+            self.screen.blit(name_surf, name_rect)
+
+    def _draw_ingredient_strip(self):
+        # darker background to separate it from the grid area
+        strip_bg = (60, 60, 70)
+        pygame.draw.rect(self.screen, strip_bg, self.ingr_strip_rect)
+
+        # top border line
+        pygame.draw.rect(
+            self.screen, (40, 40, 50),
+            pygame.Rect(0, self.ingr_strip_top_y, self.screen.get_width(), 2)
+        )
+
+        if self.selected_recipe is None:
+            # placeholder hint text
+            hint_surf = self.inventory_item_name_font.render(
+                "Select a recipe to see ingredients", True, (130, 130, 140)
+            )
+            hint_rect = hint_surf.get_rect(center=self.ingr_strip_rect.center)
+            self.screen.blit(hint_surf, hint_rect)
+            return
+
+        # ── draw selected recipe detail in the strip ─────────────────── #
+        # Layout: [output icon + name]  |  [ingr icon x count]  [ingr icon x count] ...
+        #          left zone                right zone (one slot per ingredient)
+
+        recipe      = self.selected_recipe
+        strip_cx_y  = self.ingr_strip_rect.centery
+        icon_size   = self.full_item_size
+        icon_margin = self.full_item_margin
+        pad_x       = self.grid_width_px * 3
+
+        # output icon on the far left
+        out_icon_x = pad_x
+        out_icon_y = strip_cx_y - icon_size // 2
+
+        if recipe.output is not None:
+            recipe.output.block_type.draw_manual(
+                self.screen, out_icon_x, out_icon_y, icon_size,
+                is_grid_coordinates=False
+            )
+            # name below icon
+            out_name_surf = self.inventory_item_name_font.render(
+                recipe.name, True, self.slot_label_color
+            )
+            out_name_rect = out_name_surf.get_rect(
+                centerx=out_icon_x + icon_size // 2,
+                top=out_icon_y + icon_size + 3
+            )
+            self.screen.blit(out_name_surf, out_name_rect)
+
+            # output count
+            out_count_surf = self.full_inventory_font.render(
+                f"x{recipe.output.count}", True, (255, 255, 255)
+            )
+            self.screen.blit(out_count_surf, (out_icon_x, out_icon_y))
+
+        # divider between output and ingredients
+        divider_x = out_icon_x + icon_size + self.grid_width_px * 3
+        pygame.draw.rect(
+            self.screen, (90, 90, 100),
+            pygame.Rect(divider_x, self.ingr_strip_top_y + 8, 2, self.ingr_strip_height - 16)
+        )
+
+        # ingredients to the right of the divider
+        ingr_start_x = divider_x + self.grid_width_px * 3
+        ingr_step_x  = self.box_width + self.grid_width_px * 2
+
+        for i, ingredient in enumerate(recipe.requirement_list):
+            ix = ingr_start_x + i * ingr_step_x
+            iy = strip_cx_y - icon_size // 2
+
+            ingredient.block_type.draw_manual(
+                self.screen, ix, iy, icon_size,
+                is_grid_coordinates=False
+            )
+
+            # count badge
+            ingr_count_surf = self.full_inventory_font.render(
+                f"x{ingredient.count}", True, (255, 255, 255)
+            )
+            self.screen.blit(ingr_count_surf, (ix, iy))
+
+            # ingredient name below icon
+            ingr_name_surf = self.inventory_item_name_font.render(
+                ingredient.block_type.str_name, True, self.slot_label_color
+            )
+            ingr_name_rect = ingr_name_surf.get_rect(
+                centerx=ix + icon_size // 2,
+                top=iy + icon_size + 3
+            )
+            self.screen.blit(ingr_name_surf, ingr_name_rect)
