@@ -362,6 +362,7 @@ class User_Crafting_Recipes_List:
         self.select_button_text         = (240, 240, 240)
         self.recipe_slot_color          = (200, 200, 200) # alt dark mode => (110, 110, 122) — matches inventory base_box_color
         self.selected_tab_color         = (130, 130, 145)
+        self.unused_recipe_slot_color   = (140, 140, 150)
 
         # grid unit sizes — mirrors Inventory exactly
         self.tot_columns    = 48
@@ -531,7 +532,6 @@ class User_Crafting_Recipes_List:
         self.selected_tab_index = 0
         self.cur_tab_recipe_list = [r for r in self if r.category == self.categories[self.selected_tab_index]]
 
-
     def conditional_close(self, input):
         if input.c_keypress or input.escape_keypress:
             self.close()
@@ -637,7 +637,7 @@ class User_Crafting_Recipes_List:
 
             if slot_index >= len(all_recipes):
                 # empty slot — draw an outline-only box so the grid shape is clear
-                pygame.draw.rect(self.screen, self.recipe_slot_color, hit_box)
+                pygame.draw.rect(self.screen, self.unused_recipe_slot_color, hit_box)
                 continue
 
             recipe = all_recipes[slot_index]
