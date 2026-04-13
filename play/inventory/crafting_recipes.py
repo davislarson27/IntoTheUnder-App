@@ -323,6 +323,10 @@ class User_Crafting_Recipes_List:
     def menu_init(self, screen=None):
         self.screen = screen
 
+        # click processing variables
+        self.is_clicked = False
+        self.recipe_selected_index = None
+
         # colors
         self.background_color           = (77, 77, 87)   # alt dark mode => (85, 85, 95) — matches item_mng_background_color
         self.base_box_color             = (200, 200, 200)
@@ -493,11 +497,13 @@ class User_Crafting_Recipes_List:
     # ------------------------------------------------------------------ #
 
     def run(self, input):
+        self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
         self.draw()
         return self
 
     def open(self):
         self.selected_recipe = None
+        self.recipe_selected_index = None
 
     def conditional_close(self, input):
         if input.c_keypress or input.escape_keypress:
@@ -507,6 +513,45 @@ class User_Crafting_Recipes_List:
 
     def close(self):
         self.selected_recipe = None
+        self.recipe_selected_index = None
+
+
+    # ------------------------------------------------------------------ #
+    # run helper functions
+    # ------------------------------------------------------------------ #
+
+    def check_click(self, mouse, mx, my):
+        if not self.is_clicked and mouse.get_pressed()[0]:
+            self.is_clicked = True
+        elif self.is_clicked and not mouse.get_pressed()[0]:
+            self.is_clicked = False
+            self.execute_clicked((mx, my))
+
+    def execute_clicked(self, position_on_release):
+        recipe_slot_selected = self.get_slot_from_mouse(position_on_release)
+
+        if recipe_slot_selected is None:
+            self.recipe_selected_index = None
+            self.selected_recipe = None
+            return
+
+        if self.recipe_selected_index == recipe_slot_selected:
+            self.recipe_selected_index = None
+            self.selected_recipe = None
+        else:
+            self.recipe_selected_index = recipe_slot_selected
+            all_recipes = list(self)
+            if recipe_slot_selected < len(all_recipes):
+                self.selected_recipe = all_recipes[recipe_slot_selected]
+            else:
+                self.selected_recipe = None
+                self.recipe_selected_index = None
+
+    def get_slot_from_mouse(self, mouse_position):
+        for i in range(len(self.recipe_slot_hit_boxes)):
+            if self.recipe_slot_hit_boxes[i].collidepoint(mouse_position):
+                return i
+        return None
 
 
     # ------------------------------------------------------------------ #
@@ -655,3 +700,4 @@ class User_Crafting_Recipes_List:
                 top=iy + icon_size + 3
             )
             self.screen.blit(ingr_name_surf, ingr_name_rect)
+    
