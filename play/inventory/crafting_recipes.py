@@ -1,14 +1,16 @@
 import pygame
+from enum import Enum
 
 from world.blocks.block_export import *
 from .inventory_item import Inventory_Item
 
 
 class Crafting_Recipe:
-    def __init__(self, recipe_name, requirement_list, output=None):
+    def __init__(self, recipe_name, requirement_list, output=None, category=None):
         self.name = recipe_name
         self.requirement_list = requirement_list # expected to be type list<ingredient>
         self.output = output # expected to be type ingredient
+        self.category = category
 
     def __eq__(self, other):
         if not isinstance(other, Crafting_Recipe):
@@ -141,6 +143,13 @@ class Recipe_Slot_Contents:
                 )
 
 
+class Recipe_Category(Enum):
+    Materials = "Materials"
+    Resources = "Resources"
+    Building = "Building"
+    Explosives = "Explosives"
+
+
 class User_Crafting_Recipes_List:
 
     default_crafting_recipes = [
@@ -149,7 +158,8 @@ class User_Crafting_Recipes_List:
             [
                 Ingredient(Grass, 1)
             ],
-            output=Ingredient(Dirt, 1)
+            output=Ingredient(Dirt, 1),
+            category=Recipe_Category.Materials
         ),
         Crafting_Recipe(
             "Chest",
@@ -157,63 +167,72 @@ class User_Crafting_Recipes_List:
                 Ingredient(Wood_Planks, 6), 
                 Ingredient(Iron_Ingot, 1)
             ],
-            output=Ingredient(Chest, 1)
+            output=Ingredient(Chest, 1),
+            category=Recipe_Category.Building
         ),
         Crafting_Recipe(
             "Iron Ore Ingot",
             [
                 Ingredient(Iron_Ore_Block, 1),
             ],
-            output=Ingredient(Iron_Ingot, 1)
+            output=Ingredient(Iron_Ingot, 1),
+            category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
             "Gold Ore Ingot",
             [
                 Ingredient(Gold_Ore_Block, 1),
             ],
-            output=Ingredient(Gold_Ingot, 1)
+            output=Ingredient(Gold_Ingot, 1),
+            category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
             "Gravel",
             [
                 Ingredient(Rock, 1),
             ],
-            output=Ingredient(Gravel, 2)
+            output=Ingredient(Gravel, 2),
+            category=Recipe_Category.Materials
         ),
         Crafting_Recipe(
             "Door",
             [
                 Ingredient(Wood_Planks, 3),
             ],
-            output=Ingredient(Door, 2)
+            output=Ingredient(Door, 2),
+            category=Recipe_Category.Building
         ),
         Crafting_Recipe(
             "Wood Planks",
             [
                 Ingredient(Log, 1),
             ],
-            output=Ingredient(Wood_Planks, 3)
+            output=Ingredient(Wood_Planks, 3),
+            category=Recipe_Category.Building
         ),
         Crafting_Recipe(
             "Sulfur Powder",
             [
                 Ingredient(Sulfur_Flakes_Block, 3),
             ],
-            output=Ingredient(Sulfur_Powder, 1)
+            output=Ingredient(Sulfur_Powder, 1),
+            category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
             "Saltpeter Powder",
             [
                 Ingredient(Saltpeter, 1),
             ],
-            output=Ingredient(Saltpeter_Powder, 5)
+            output=Ingredient(Saltpeter_Powder, 5),
+            category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
             "Coal",
             [
                 Ingredient(Coal_Ore_Block, 1),
             ],
-            output=Ingredient(Coal, 1)
+            output=Ingredient(Coal, 1),
+            category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
             "Gun Powder",
@@ -222,7 +241,8 @@ class User_Crafting_Recipes_List:
                 Ingredient(Coal, 2),
                 Ingredient(Sulfur_Powder, 1),
             ],
-            output=Ingredient(Gunpowder, 5)
+            output=Ingredient(Gunpowder, 5),
+            category=Recipe_Category.Explosives
         ),
     ]
 
@@ -233,7 +253,8 @@ class User_Crafting_Recipes_List:
                 Ingredient(Gunpowder, 4),
                 Ingredient(Gravel, 1),
             ],
-            output=Ingredient(TNT, 1)
+            output=Ingredient(TNT, 1),
+            category=Recipe_Category.Explosives
         ),
     ]
 
@@ -326,6 +347,8 @@ class User_Crafting_Recipes_List:
         # click processing variables
         self.is_clicked = False
         self.recipe_selected_index = None
+        self.selected_recipe = None
+        self.selected_tab_index = 0
 
         # colors
         self.background_color           = (77, 77, 87)   # alt dark mode => (85, 85, 95) — matches item_mng_background_color
@@ -338,6 +361,7 @@ class User_Crafting_Recipes_List:
         self.select_button_color        = (100, 100, 112)
         self.select_button_text         = (240, 240, 240)
         self.recipe_slot_color          = (200, 200, 200) # alt dark mode => (110, 110, 122) — matches inventory base_box_color
+        self.selected_tab_color         = (130, 130, 145)
 
         # grid unit sizes — mirrors Inventory exactly
         self.tot_columns    = 48
@@ -416,16 +440,17 @@ class User_Crafting_Recipes_List:
         )
 
         # ── category tab bar ──────────────────────────────────────────── #
-        categories = ["Materials", "Building", "Items", "Minerals", "Special"]
+        self.categories = [Recipe_Category.Materials, Recipe_Category.Resources,Recipe_Category.Building, Recipe_Category.Explosives]
+        category_strings = [category.value for category in self.categories]
         self.categories_rects           = []
         self.category_label_surfaces    = []
         self.category_label_rects       = []
 
         category_selector_width = (
             self.screen.get_width() - (exp_display_margin_x * 2)
-        ) // len(categories)
+        ) // len(self.categories)
 
-        for i, category in enumerate(categories):
+        for i, category in enumerate(category_strings):
             cur_rect = pygame.Rect(
                 exp_display_margin_x + (category_selector_width * i) + buffer_space_px,
                 exp_display_margin_y,
@@ -488,9 +513,8 @@ class User_Crafting_Recipes_List:
             self.ingr_strip_height
         )
 
-        # track selected recipe (None = nothing selected)
-        self.selected_recipe = None
-
+        default_tab = Recipe_Category.Materials
+        self.cur_tab_recipe_list = [r for r in list(self) if r.category == default_tab]
 
     # ------------------------------------------------------------------ #
     #  open / close / run                                                  #
@@ -504,6 +528,9 @@ class User_Crafting_Recipes_List:
     def open(self):
         self.selected_recipe = None
         self.recipe_selected_index = None
+        self.selected_tab_index = 0
+        self.cur_tab_recipe_list = [r for r in self if r.category == self.categories[self.selected_tab_index]]
+
 
     def conditional_close(self, input):
         if input.c_keypress or input.escape_keypress:
@@ -514,6 +541,7 @@ class User_Crafting_Recipes_List:
     def close(self):
         self.selected_recipe = None
         self.recipe_selected_index = None
+        self.selected_tab_index = 0
 
 
     # ------------------------------------------------------------------ #
@@ -528,6 +556,14 @@ class User_Crafting_Recipes_List:
             self.execute_clicked((mx, my))
 
     def execute_clicked(self, position_on_release):
+        # check for if a tap is selected
+        temp_selected_tab_index = self.get_tab_from_mouse(position_on_release)
+        if temp_selected_tab_index is not None:
+            if not temp_selected_tab_index == self.selected_tab_index:
+                self.switch_tab(temp_selected_tab_index)
+            return
+
+        # now look at each slot
         recipe_slot_selected = self.get_slot_from_mouse(position_on_release)
 
         if recipe_slot_selected is None:
@@ -540,12 +576,26 @@ class User_Crafting_Recipes_List:
             self.selected_recipe = None
         else:
             self.recipe_selected_index = recipe_slot_selected
-            all_recipes = list(self)
+            all_recipes = self.cur_tab_recipe_list
             if recipe_slot_selected < len(all_recipes):
                 self.selected_recipe = all_recipes[recipe_slot_selected]
             else:
                 self.selected_recipe = None
                 self.recipe_selected_index = None
+
+    def get_tab_from_mouse(self, mouse_position):
+        for i in range(len(self.categories_rects)):
+            if self.categories_rects[i].collidepoint(mouse_position):
+                return i
+        return None
+
+    def switch_tab(self, newTabIndex):
+        self.selected_tab_index = newTabIndex
+        self.selected_recipe = None
+        self.recipe_selected_index = None
+
+        category_enum = self.categories[newTabIndex]
+        self.cur_tab_recipe_list = [r for r in list(self) if r.category == category_enum]
 
     def get_slot_from_mouse(self, mouse_position):
         for i in range(len(self.recipe_slot_hit_boxes)):
@@ -570,11 +620,15 @@ class User_Crafting_Recipes_List:
 
     def _draw_category_tabs(self):
         for i, rect in enumerate(self.categories_rects):
-            pygame.draw.rect(self.screen, self.select_button_color, rect)
+            if i == self.selected_tab_index:
+                color = self.selected_tab_color  # or any highlight color you prefer
+            else:
+                color = self.select_button_color
+            pygame.draw.rect(self.screen, color, rect)
             self.screen.blit(self.category_label_surfaces[i], self.category_label_rects[i])
 
     def _draw_recipe_grid(self):
-        all_recipes = list(self)   # iterates default + discovered via __iter__
+        all_recipes = self.cur_tab_recipe_list   # iterates default + discovered via __iter__
 
         for slot_index in range(self.slots_per_page):
             hit_box    = self.recipe_slot_hit_boxes[slot_index]
