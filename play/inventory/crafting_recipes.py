@@ -324,7 +324,7 @@ class User_Crafting_Recipes_List:
         self.screen = screen
 
         # colors
-        self.background_color           = (85, 85, 95)
+        self.background_color           = (77, 77, 87)   # alt dark mode => (85, 85, 95) — matches item_mng_background_color
         self.base_box_color             = (200, 200, 200)
         self.selected_box_color         = (246, 246, 246)
         self.inventory_text_color       = (255, 255, 255)
@@ -333,7 +333,7 @@ class User_Crafting_Recipes_List:
         self.slot_label_color           = (200, 200, 200)
         self.select_button_color        = (100, 100, 112)
         self.select_button_text         = (240, 240, 240)
-        self.recipe_slot_color          = (110, 110, 122)
+        self.recipe_slot_color          = (200, 200, 200) # alt dark mode => (110, 110, 122) — matches inventory base_box_color
 
         # grid unit sizes — mirrors Inventory exactly
         self.tot_columns    = 48
@@ -538,7 +538,7 @@ class User_Crafting_Recipes_List:
 
             if slot_index >= len(all_recipes):
                 # empty slot — draw an outline-only box so the grid shape is clear
-                pygame.draw.rect(self.screen, self.recipe_slot_color, hit_box, 1)
+                pygame.draw.rect(self.screen, self.recipe_slot_color, hit_box)
                 continue
 
             recipe = all_recipes[slot_index]
