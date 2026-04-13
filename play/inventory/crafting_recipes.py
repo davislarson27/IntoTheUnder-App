@@ -611,18 +611,14 @@ class User_Crafting_Recipes_List:
             self.screen.blit(name_surf, name_rect)
 
     def _draw_ingredient_strip(self):
-        # darker background to separate it from the grid area
         strip_bg = (60, 60, 70)
         pygame.draw.rect(self.screen, strip_bg, self.ingr_strip_rect)
-
-        # top border line
         pygame.draw.rect(
             self.screen, (40, 40, 50),
             pygame.Rect(0, self.ingr_strip_top_y, self.screen.get_width(), 2)
         )
 
         if self.selected_recipe is None:
-            # placeholder hint text
             hint_surf = self.inventory_item_name_font.render(
                 "Select a recipe to see ingredients", True, (130, 130, 140)
             )
@@ -630,74 +626,61 @@ class User_Crafting_Recipes_List:
             self.screen.blit(hint_surf, hint_rect)
             return
 
-        # ── draw selected recipe detail in the strip ─────────────────── #
-        # Layout: [output icon + name]  |  [ingr icon x count]  [ingr icon x count] ...
-        #          left zone                right zone (one slot per ingredient)
+        recipe    = self.selected_recipe
+        strip_cx_y = self.ingr_strip_rect.centery
+        icon_size  = self.full_item_size
 
-        recipe      = self.selected_recipe
-        strip_cx_y  = self.ingr_strip_rect.centery
-        icon_size   = self.full_item_size
-        icon_margin = self.full_item_margin
-        pad_x       = self.grid_width_px * 3
+        pad_x        = 5 * self.grid_width_px
+        divider_pad  = self.grid_width_px * 3
+        ingr_step_x  = self.box_width + self.grid_width_px * 2
 
-        # output icon on the far left
+        # vertically center the whole block (icon + gap + label)
+        total_item_h = icon_size + self.label_gap_y + self.label_height
+        icon_y = strip_cx_y - total_item_h // 2 + self.label_gap_y // 2
+
         out_icon_x = pad_x
-        out_icon_y = strip_cx_y - icon_size // 2
 
         if recipe.output is not None:
             recipe.output.block_type.draw_manual(
-                self.screen, out_icon_x, out_icon_y, icon_size,
+                self.screen, out_icon_x, icon_y, icon_size,
                 is_grid_coordinates=False
             )
-            # name below icon
             out_name_surf = self.inventory_item_name_font.render(
                 recipe.name, True, self.slot_label_color
             )
-            out_name_rect = out_name_surf.get_rect(
+            self.screen.blit(out_name_surf, out_name_surf.get_rect(
                 centerx=out_icon_x + icon_size // 2,
-                top=out_icon_y + icon_size + 3
-            )
-            self.screen.blit(out_name_surf, out_name_rect)
-
-            # output count
+                top=icon_y + icon_size + self.label_gap_y
+            ))
             out_count_surf = self.full_inventory_font.render(
                 f"x{recipe.output.count}", True, (255, 255, 255)
             )
-            self.screen.blit(out_count_surf, (out_icon_x, out_icon_y))
+            self.screen.blit(out_count_surf, (out_icon_x, icon_y))
 
-        # divider between output and ingredients
-        divider_x = out_icon_x + icon_size + self.grid_width_px * 3
+        divider_x = out_icon_x + icon_size + divider_pad
         pygame.draw.rect(
             self.screen, (90, 90, 100),
             pygame.Rect(divider_x, self.ingr_strip_top_y + 8, 2, self.ingr_strip_height - 16)
         )
 
-        # ingredients to the right of the divider
-        ingr_start_x = divider_x + self.grid_width_px * 3
-        ingr_step_x  = self.box_width + self.grid_width_px * 2
+        ingr_start_x = divider_x + 2 + divider_pad
 
         for i, ingredient in enumerate(recipe.requirement_list):
             ix = ingr_start_x + i * ingr_step_x
-            iy = strip_cx_y - icon_size // 2
 
             ingredient.block_type.draw_manual(
-                self.screen, ix, iy, icon_size,
+                self.screen, ix, icon_y, icon_size,
                 is_grid_coordinates=False
             )
-
-            # count badge
             ingr_count_surf = self.full_inventory_font.render(
                 f"x{ingredient.count}", True, (255, 255, 255)
             )
-            self.screen.blit(ingr_count_surf, (ix, iy))
-
-            # ingredient name below icon
+            self.screen.blit(ingr_count_surf, (ix, icon_y))
             ingr_name_surf = self.inventory_item_name_font.render(
                 ingredient.block_type.str_name, True, self.slot_label_color
             )
-            ingr_name_rect = ingr_name_surf.get_rect(
+            self.screen.blit(ingr_name_surf, ingr_name_surf.get_rect(
                 centerx=ix + icon_size // 2,
-                top=iy + icon_size + 3
-            )
-            self.screen.blit(ingr_name_surf, ingr_name_rect)
-    
+                top=icon_y + icon_size + self.label_gap_y
+            ))
+            
