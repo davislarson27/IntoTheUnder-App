@@ -222,7 +222,7 @@ class User_Crafting_Recipes_List:
                 Ingredient(Coal, 2),
                 Ingredient(Sulfur_Powder, 1),
             ],
-            output=Ingredient(Gunpowder, 1)
+            output=Ingredient(Gunpowder, 5)
         ),
     ]
 
@@ -683,4 +683,4 @@ class User_Crafting_Recipes_List:
                 centerx=ix + icon_size // 2,
                 top=icon_y + icon_size + self.label_gap_y
             ))
-            
+    
