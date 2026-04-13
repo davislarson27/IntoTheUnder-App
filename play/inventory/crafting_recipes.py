@@ -441,7 +441,7 @@ class User_Crafting_Recipes_List:
         )
 
         # ── category tab bar ──────────────────────────────────────────── #
-        self.categories = [Recipe_Category.Materials, Recipe_Category.Resources,Recipe_Category.Building, Recipe_Category.Explosives]
+        self.categories = [Recipe_Category.Building, Recipe_Category.Materials, Recipe_Category.Resources, Recipe_Category.Explosives]
         category_strings = [category.value for category in self.categories]
         self.categories_rects           = []
         self.category_label_surfaces    = []
@@ -468,7 +468,7 @@ class User_Crafting_Recipes_List:
         # build hit_box and item_frame for every grid position up front,
         # exactly like the inventory does for expanded_inventory.
 
-        self.recipe_slot_hit_boxes  = []   # pygame.Rect — for click detection
+        self.recipe_slot_hit_boxes   = []   # pygame.Rect — for click detection
         self.recipe_slot_item_frames = []  # pygame.Rect — where the block icon is drawn
         self.recipe_slot_label_rects = []  # pygame.Rect — name label below slot
 
@@ -514,7 +514,7 @@ class User_Crafting_Recipes_List:
             self.ingr_strip_height
         )
 
-        default_tab = Recipe_Category.Materials
+        default_tab = self.categories[0]
         self.cur_tab_recipe_list = [r for r in list(self) if r.category == default_tab]
 
     # ------------------------------------------------------------------ #
