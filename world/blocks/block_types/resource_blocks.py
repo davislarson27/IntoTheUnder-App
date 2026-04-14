@@ -32,7 +32,6 @@ class Iron_Block(Block):
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
 
-
 class Emerald_Block(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
@@ -63,7 +62,6 @@ class Emerald_Block(Block):
             (min(secondary_color[0] + added_color, 255), min(secondary_color[1] + added_color, 255), min(secondary_color[2] + added_color, 255)),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
-
 
 class Diamond_Block(Block):
 
@@ -96,7 +94,6 @@ class Diamond_Block(Block):
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
 
-
 class Coal_Block(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
@@ -127,7 +124,6 @@ class Coal_Block(Block):
             (min(secondary_color[0] + added_color, 255), min(secondary_color[1] + added_color, 255), min(secondary_color[2] + added_color, 255)),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
-
 
 class Gold_Block(Block):
 

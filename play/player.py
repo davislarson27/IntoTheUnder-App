@@ -45,15 +45,10 @@ class Player:
         return (x_blocks, y_blocks)
     
     def is_touching(self, block_positions, Block_Type):
-        # if type(self.grid.get(block_positions[0][0], block_positions[1][0])) == Block_Type:
-        #     return True
         if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
             return True
-        # if type(self.grid.get(block_positions[0][1], block_positions[1][0])) == Block_Type:
-        #     return True
         if issubclass(type(self.grid.get(block_positions[0][1], block_positions[1][1])), Block_Type):
             return True
-        
         return False
     
     def get_player_physics(self, default_y_acceleration):
@@ -129,8 +124,7 @@ class Player:
             "health": self.health_bar.get_health(),
             "is_left_facing": self.is_left_facing
         }
-
-    
+ 
     def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
         if is_interacting:
             if self.is_left_facing: # check for if the player is facing left and the mouse is on the right
@@ -148,7 +142,6 @@ class Player:
                 if distance_move_x < 0:
                     self.is_left_facing = True
     
-
     def draw(self, screen_x = 0, screen_y = 0):
 
         if self.is_left_facing:
@@ -167,6 +160,7 @@ class Player:
 
 
     # ----------------------------- runs player physics ----------------------------- #
+
     def move(self, input, physics): # returns assessed damage object
         # ---------------------- step 1: set cur iteration variables ---------------------- #
         dx = 0
