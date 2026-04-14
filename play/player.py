@@ -6,7 +6,7 @@ from play.entity_health import Entity_Health
 
 
 class Player:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 1, ticks_inc = True, inventory_bar_height = 100, health_bar_height = 25, images = None, is_left_facing = True):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 0, ticks_inc = False, inventory_bar_height = 100, health_bar_height = 25, images = None, is_left_facing = True):
         MAX_HEALTH = 100
         
         self.grid = grid
@@ -173,12 +173,6 @@ class Player:
     
 
     def draw(self, screen_x = 0, screen_y = 0):
-
-        # pygame.draw.rect(
-        #     self.screen,
-        #     (0, 200, 255), #color
-        #     (self.x - screen_x, self.y - screen_y, self.x_size, self.y_size) #position
-        # )
 
         if self.is_left_facing:
             player_rect = self.images.player_left.get_rect(

@@ -211,6 +211,6 @@ class Glacier(Biome):
 
     dirt_vein_base_chance = 0
 
-    snow_man_chance = 0.021
+    snow_man_chance = 0.018
 
     iron_ore_min_depth = 25
