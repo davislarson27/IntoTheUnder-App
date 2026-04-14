@@ -272,4 +272,3 @@ class Snow_Block(Block):
             (225 + added_color, 235 + added_color, 245 + added_color),
             (x, y, block_width, block_width)
         )
-

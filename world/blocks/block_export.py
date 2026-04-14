@@ -64,6 +64,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Gold_Block,
         Stone_Bricks,
         Frozen_Stone_Bricks,
+        Ice_Bricks,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,
