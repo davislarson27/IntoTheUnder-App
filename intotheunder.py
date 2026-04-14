@@ -53,6 +53,7 @@ update notes:
  - fixed issues with physics
  - removed the fall speed cap
  - added 15 new blocks & items
+ - updated water mechanics
 """
 
 """
