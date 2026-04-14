@@ -204,6 +204,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Sand Bricks",
+            [
+                Ingredient(Sand_Stone, 2),
+            ],
+            output=Ingredient(Sand_Bricks, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Iron Block",
             [
                 Ingredient(Iron_Ingot, 8),
@@ -257,7 +265,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Packed Dirt",
             [
-                Ingredient(Dirt, 2)
+                Ingredient(Dirt, 3)
             ],
             output=Ingredient(Packed_Dirt, 1),
             category=Recipe_Category.Materials
@@ -281,7 +289,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Sand Stone",
             [
-                Ingredient(Sand, 2),
+                Ingredient(Sand, 4),
             ],
             output=Ingredient(Sand_Stone, 1),
             category=Recipe_Category.Materials
