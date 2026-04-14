@@ -12,6 +12,7 @@ from .block_types.storage import *
 from .block_types.terrain import *
 from .block_types.water import *
 from .block_types.wood import *
+from .block_types.resource_blocks import *
 
 """
 make sure ot add each block to the get_str_to_block() function and add any new files to the import list
@@ -53,6 +54,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Gunpowder,
         TNT,
         Recipe_Frame,
+        Iron_Block,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

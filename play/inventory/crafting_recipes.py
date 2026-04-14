@@ -252,6 +252,14 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond, 1),
             category=Recipe_Category.Resources
         ),
+        Crafting_Recipe(
+            "Iron Block",
+            [
+                Ingredient(Iron_Ingot, 8),
+            ],
+            output=Ingredient(Iron_Block, 1),
+            category=Recipe_Category.Building
+        ),
 
     ]
 
@@ -264,6 +272,14 @@ class User_Crafting_Recipes_List:
             ],
             output=Ingredient(TNT, 1),
             category=Recipe_Category.Explosives
+        ),
+        Crafting_Recipe(
+            "Snowman Head",
+            [
+                Ingredient(Snow_Block, 1),
+            ],
+            output=Ingredient(Snow_Man_Head, 1),
+            category=Recipe_Category.Building
         ),
     ]
 
