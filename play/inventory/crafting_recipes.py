@@ -188,6 +188,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Coal Block",
+            [
+                Ingredient(Coal, 8),
+            ],
+            output=Ingredient(Coal_Block, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Emerald Block",
             [
                 Ingredient(Emerald, 8),
@@ -203,6 +211,15 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond_Block, 1),
             category=Recipe_Category.Building
         ),
+        # Crafting_Recipe(
+        #     "Iron Clump",
+        #     [
+        #         Ingredient(Iron_Ore_Block, 8),
+        #     ],
+        #     output=Ingredient(Iron_Clump, 1),
+        #     category=Recipe_Category.Building
+        # ),
+
 
         # materials
         Crafting_Recipe(
@@ -279,6 +296,15 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond, 1),
             category=Recipe_Category.Resources
         ),
+        Crafting_Recipe(
+            "Mabelite",
+            [
+                Ingredient(Mabelite_Ore_Block, 1),
+            ],
+            output=Ingredient(Mabelite, 1),
+            category=Recipe_Category.Resources
+        ),
+
 
         # explosives
         Crafting_Recipe(
@@ -304,7 +330,7 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Snow_Man_Head, 1),
             category=Recipe_Category.Building
         ),
-        
+
         # materials
 
         # resources

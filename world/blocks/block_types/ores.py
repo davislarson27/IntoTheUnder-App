@@ -184,7 +184,6 @@ class Mabelite_Ore_Block(Block):
             (x, y, block_width, block_width)
             
         )
-        #(80, 200, 120)
 
         pygame.draw.rect(
             screen,

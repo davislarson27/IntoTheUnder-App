@@ -48,6 +48,10 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 """
 update notes:
+ - added the recipe center
+ - added more gems and blocks
+ - fixed issues with physics
+ - removed the fall speed cap
 """
 
 """

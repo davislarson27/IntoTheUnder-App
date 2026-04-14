@@ -4,7 +4,7 @@ from .block_types.explosives import *
 from .block_types.ingots import *
 from .block_types.ingots import *
 from .block_types.multiblocks import *
-from .block_types.ore_derivatives import *
+from .block_types.gems import *
 from .block_types.ores import *
 from .block_types.powders import *
 from .block_types.special_terrain import *
@@ -32,6 +32,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Coal,
         Diamond,
         Emerald,
+        Mabelite,
         Dirt,
         Grass,
         Log,
@@ -58,6 +59,8 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Iron_Block,
         Emerald_Block,
         Diamond_Block,
+        Coal_Block,
+        # Iron_Clump,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

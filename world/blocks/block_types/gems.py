@@ -97,3 +97,52 @@ class Emerald(Item):
         pygame.draw.polygon(screen, outer_mid, outer_points)
         pygame.draw.polygon(screen, inner_light, inner_points)
         pygame.draw.polygon(screen, outer_dark, outer_points, 1)
+
+class Mabelite(Item):
+    str_name = "Mabelite"
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        # gold core
+        outer_dark  = (20, 100, 60)
+        outer_mid   = (30, 155, 90)
+        inner_light = (195, 155, 20)
+
+        # # purple
+        # outer_dark  = (20, 100, 60)
+        # outer_mid   = (30, 155, 90)
+        # inner_light = (160, 80, 210)
+
+        # # black core
+        # outer_dark  = (20, 100, 60)
+        # outer_mid   = (30, 155, 90)
+        # inner_light = (15, 25, 20)
+
+
+        outer_points = [
+            (x + int(block_width * 0.40), y + int(block_width * 0.20)),  # top left
+            (x + int(block_width * 0.60), y + int(block_width * 0.20)),  # top right
+            (x + int(block_width * 0.78), y + int(block_width * 0.40)),  # right upper
+            (x + int(block_width * 0.78), y + int(block_width * 0.60)),  # right lower
+            (x + int(block_width * 0.60), y + int(block_width * 0.80)),  # bottom right
+            (x + int(block_width * 0.40), y + int(block_width * 0.80)),  # bottom left
+            (x + int(block_width * 0.22), y + int(block_width * 0.60)),  # left lower
+            (x + int(block_width * 0.22), y + int(block_width * 0.40)),  # left upper
+        ]
+        inner_points = [
+            (x + int(block_width * 0.50), y + int(block_width * 0.32)),
+            (x + int(block_width * 0.62), y + int(block_width * 0.42)),
+            (x + int(block_width * 0.62), y + int(block_width * 0.58)),
+            (x + int(block_width * 0.50), y + int(block_width * 0.68)),
+            (x + int(block_width * 0.38), y + int(block_width * 0.58)),
+            (x + int(block_width * 0.38), y + int(block_width * 0.42)),
+        ]
+        
+        pygame.draw.polygon(screen, outer_mid, outer_points)
+        pygame.draw.polygon(screen, inner_light, inner_points)
+        pygame.draw.polygon(screen, outer_dark, outer_points, 1)
+    
