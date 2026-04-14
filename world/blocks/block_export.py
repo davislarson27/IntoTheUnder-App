@@ -45,6 +45,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Snow_Block,
         Snow_Man_Head,
         Ice,
+        Packed_Ice,
         Frozen_Rock,
         Chest,
         Door,

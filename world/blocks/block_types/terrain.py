@@ -235,10 +235,38 @@ class Ice(Block):
             x *= block_width
             y *= block_width
         
+        color = (180, 230, 245)
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (color[0] + added_color, color[1] + added_color, color[2] + added_color),           # color
+            (x, y, block_width, block_width)
+        )
+
+class Packed_Ice(Block):
+    
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Packed Ice"
+    ticks_to_mine = 50
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 10
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        color = (160, 210, 235)
+        
         #(180, 230, 255)
         pygame.draw.rect( # draw base color
             screen,
-            (180 + added_color, 230 + added_color, 245 + added_color),           # color
+            (color[0] + added_color, color[1] + added_color, color[2] + added_color),           # color
             (x, y, block_width, block_width)
         )
 

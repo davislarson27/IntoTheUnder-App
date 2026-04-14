@@ -295,6 +295,15 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Ice, 2),
             category=Recipe_Category.Materials
         ),
+        Crafting_Recipe(
+            "Packed Ice",
+            [
+                Ingredient(Ice, 3),
+            ],
+            output=Ingredient(Packed_Ice, 1),
+            category=Recipe_Category.Materials
+        ),
+
 
 
         # resources
