@@ -491,8 +491,7 @@ class User_Crafting_Recipes_List:
             self.category_label_rects.append(surf.get_rect(center=cur_rect.center))
 
         # ── recipe grid slot rects ────────────────────────────────────── #
-        # build hit_box and item_frame for every grid position up front,
-        # exactly like the inventory does for expanded_inventory.
+        # build hit_box and item_frame for every grid position up front
 
         self.recipe_slot_hit_boxes   = []   # pygame.Rect — for click detection
         self.recipe_slot_item_frames = []  # pygame.Rect — where the block icon is drawn
@@ -540,8 +539,8 @@ class User_Crafting_Recipes_List:
             self.ingr_strip_height
         )
 
-        default_tab = self.categories[0]
-        self.cur_tab_recipe_list = [r for r in list(self) if r.category == default_tab]
+        self.default_tab = self.categories[0]
+        self.cur_tab_recipe_list = []
 
     # ------------------------------------------------------------------ #
     #  open / close / run                                                  #
@@ -553,10 +552,7 @@ class User_Crafting_Recipes_List:
         return self
 
     def open(self):
-        self.selected_recipe = None
-        self.recipe_selected_index = None
-        self.selected_tab_index = 0
-        self.cur_tab_recipe_list = [r for r in self if r.category == self.categories[self.selected_tab_index]]
+        self.switch_tab(self.default_tab)
 
     def conditional_close(self, input):
         if input.c_keypress or input.escape_keypress:
