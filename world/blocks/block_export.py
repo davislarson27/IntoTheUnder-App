@@ -35,6 +35,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Emerald,
         Mabelite,
         Dirt,
+        Packed_Dirt,
         Grass,
         Log,
         Leaves,

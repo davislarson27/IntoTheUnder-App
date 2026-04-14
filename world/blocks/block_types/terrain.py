@@ -47,14 +47,50 @@ class Dirt(Block):
             x *= block_width
             y *= block_width
         
+        base_color = (150, 130, 110)
+        secondary_color = (140, 120, 110)
+        
         pygame.draw.rect( # draw base color
             screen,
-            (150 + added_color, 130 + added_color, 110 + added_color),           # color
+            (base_color[0] + added_color, base_color[1] + added_color, base_color[2] + added_color),
             (x, y, block_width, block_width)
         )
         pygame.draw.rect(
             screen,
-            (140 + added_color, 120 + added_color, 110 + added_color),           # color
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + (block_width // 10) , y + (block_width // 10), block_width // 4, block_width // 4)
+        )
+
+class Packed_Dirt(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Packed Dirt"
+    ticks_to_mine = 40
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        base_color = (121, 101, 81)
+        secondary_color = (135, 115, 95)
+        # secondary_color = (110, 90, 80)
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (base_color[0] + added_color, base_color[1] + added_color, base_color[2] + added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
             ((x) + (block_width // 10) , y + (block_width // 10), block_width // 4, block_width // 4)
         )
 
@@ -77,12 +113,12 @@ class Grass(Block):
         
         pygame.draw.rect( # draw base color
             screen,
-            (150 + added_color, 130 + added_color, 110 + added_color),           # color
+            (150 + added_color, 130 + added_color, 110 + added_color),
             (x, y, block_width, block_width)
         )
         pygame.draw.rect( # draw rectangle for grass
             screen,
-            (120 + added_color, 135 + added_color, 110 + added_color),           # color
+            (120 + added_color, 135 + added_color, 110 + added_color),
             ((x), (y), block_width, block_width // 3)
         )
 

@@ -255,6 +255,15 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Materials
         ),
         Crafting_Recipe(
+            "Packed Dirt",
+            [
+                Ingredient(Dirt, 2)
+            ],
+            output=Ingredient(Packed_Dirt, 1),
+            category=Recipe_Category.Materials
+        ),
+
+        Crafting_Recipe(
             "Gravel",
             [
                 Ingredient(Rock, 1),
