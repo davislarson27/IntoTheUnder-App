@@ -90,7 +90,7 @@ class Play:
             grid_x = floor((start_x + ux * step) / grid.BLOCK_WIDTH)
             grid_y = floor((start_y + uy * step) / grid.BLOCK_WIDTH)
 
-            if grid.get(grid_x, grid_y) is not None:
+            if grid.get(grid_x, grid_y) is not None and not issubclass(type(grid.get(grid_x, grid_y)), Water):
                 return grid_x, grid_y
             
             distrance_stepped_sq = ((ux * step) * (ux * step)) + ((uy * step) * (uy * step))
@@ -123,7 +123,7 @@ class Play:
             grid_x = floor((start_x + ux * step) / grid.BLOCK_WIDTH)
             grid_y = floor((start_y + uy * step) / grid.BLOCK_WIDTH)
 
-            if grid.get(grid_x, grid_y) is not None:
+            if grid.get(grid_x, grid_y) is not None and not issubclass(type(grid.get(grid_x, grid_y)), Water):
                 if acknowledge_interactions:
                     if grid.get(grid_x, grid_y).interaction(inventory):
                         return None, None
