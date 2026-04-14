@@ -312,6 +312,48 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Saltpeter_Powder, 5),
             category=Recipe_Category.Resources
         ),
+        Crafting_Recipe(
+            "Iron Ore Ingot",
+            [
+                Ingredient(Iron_Block, 1),
+            ],
+            output=Ingredient(Iron_Ingot, 8),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Gold Ore Ingot",
+            [
+                Ingredient(Gold_Block, 1),
+            ],
+            output=Ingredient(Gold_Ingot, 8),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Coal",
+            [
+                Ingredient(Coal_Block, 1),
+            ],
+            output=Ingredient(Coal, 8),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Emerald",
+            [
+                Ingredient(Emerald_Block, 1),
+            ],
+            output=Ingredient(Emerald, 8),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Diamond",
+            [
+                Ingredient(Diamond_Block, 1),
+            ],
+            output=Ingredient(Diamond, 8),
+            category=Recipe_Category.Resources
+        ),
+
+
 
 
         # explosives
