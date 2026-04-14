@@ -65,7 +65,7 @@ class Stone_Bricks(Block): # used the wrong color and doesn't look good yet
 class Frozen_Stone_Bricks(Block): # used the wrong color and doesn't look good yet
 
     str_name = "Frozen Stone Bricks"
-    ticks_to_mine = 55
+    ticks_to_mine = 60
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -128,7 +128,7 @@ class Frozen_Stone_Bricks(Block): # used the wrong color and doesn't look good y
 class Ice_Bricks(Block): # used the wrong color and doesn't look good yet
 
     str_name = "Ice Bricks"
-    ticks_to_mine = 55
+    ticks_to_mine = 35
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -191,7 +191,7 @@ class Ice_Bricks(Block): # used the wrong color and doesn't look good yet
 class Sand_Bricks(Block): # used the wrong color and doesn't look good yet
 
     str_name = "Sand Bricks"
-    ticks_to_mine = 55
+    ticks_to_mine = 50
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
