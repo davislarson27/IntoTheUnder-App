@@ -83,7 +83,7 @@ class Play:
             ux, uy = dx / length, dy / length
 
         # now step outward
-        reach_sq = 4 * grid.BLOCK_WIDTH * 4 * grid.BLOCK_WIDTH # reach of 4 blocks squared
+        reach_sq = 4.5 * grid.BLOCK_WIDTH * 4.5 * grid.BLOCK_WIDTH # reach of 4 blocks squared
         distrance_stepped_sq = 0
         step = 0
         while distrance_stepped_sq < reach_sq:
@@ -116,7 +116,7 @@ class Play:
 
         # now step outward
         d_step = 0.025
-        reach_sq = 4 * grid.BLOCK_WIDTH * 4 * grid.BLOCK_WIDTH # reach of 4 blocks squared
+        reach_sq = 4.5 * grid.BLOCK_WIDTH * 4.5 * grid.BLOCK_WIDTH # reach of 4 blocks squared
         distrance_stepped_sq = 0
         step = 0
         while distrance_stepped_sq < reach_sq:
