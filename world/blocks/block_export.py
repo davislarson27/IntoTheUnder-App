@@ -29,6 +29,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Mabelite_Ore_Block,
         Coal_Ore_Block,
         Coal,
+        Diamond,
         Dirt,
         Grass,
         Log,

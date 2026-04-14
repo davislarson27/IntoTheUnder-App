@@ -244,6 +244,15 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Gunpowder, 5),
             category=Recipe_Category.Explosives
         ),
+        Crafting_Recipe(
+            "Diamond Crystal",
+            [
+                Ingredient(Diamond_Ore_Block, 1),
+            ],
+            output=Ingredient(Diamond, 1),
+            category=Recipe_Category.Resources
+        ),
+
     ]
 
     additional_possible_recipes = [
