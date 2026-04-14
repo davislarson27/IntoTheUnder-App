@@ -196,6 +196,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Gold Block",
+            [
+                Ingredient(Gold_Ingot, 8),
+            ],
+            output=Ingredient(Gold_Block, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Coal Block",
             [
                 Ingredient(Coal, 8),
@@ -219,7 +227,7 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond_Block, 1),
             category=Recipe_Category.Building
         ),
-        
+
 
         # materials
         Crafting_Recipe(
@@ -257,22 +265,6 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
-            "Sulfur Powder",
-            [
-                Ingredient(Sulfur_Flakes_Block, 3),
-            ],
-            output=Ingredient(Sulfur_Powder, 1),
-            category=Recipe_Category.Resources
-        ),
-        Crafting_Recipe(
-            "Saltpeter Powder",
-            [
-                Ingredient(Saltpeter, 1),
-            ],
-            output=Ingredient(Saltpeter_Powder, 5),
-            category=Recipe_Category.Resources
-        ),
-        Crafting_Recipe(
             "Coal",
             [
                 Ingredient(Coal_Ore_Block, 1),
@@ -302,6 +294,22 @@ class User_Crafting_Recipes_List:
                 Ingredient(Mabelite_Ore_Block, 1),
             ],
             output=Ingredient(Mabelite, 1),
+            category=Recipe_Category.Resources
+        ),
+                Crafting_Recipe(
+            "Sulfur Powder",
+            [
+                Ingredient(Sulfur_Flakes_Block, 3),
+            ],
+            output=Ingredient(Sulfur_Powder, 1),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Saltpeter Powder",
+            [
+                Ingredient(Saltpeter, 1),
+            ],
+            output=Ingredient(Saltpeter_Powder, 5),
             category=Recipe_Category.Resources
         ),
 

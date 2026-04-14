@@ -102,7 +102,7 @@ class Coal_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Coal Block"
-    ticks_to_mine = 100
+    ticks_to_mine = 80
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -129,4 +129,56 @@ class Coal_Block(Block):
         )
 
 
-# idea: make a metal gate! 30 155 90
+class Gold_Block(Block):
+
+    str_name = "Gold Block"
+    ticks_to_mine = 70
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        # cooler, less orange gold
+        base_color = (186, 170, 70)
+        light_color = (210, 195, 100)   # lighter inset
+        highlight_color = (225, 215, 130)
+
+        added_color = 20 if being_mined else 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        # full gold base
+        pygame.draw.rect(
+            screen,
+            (
+                min(base_color[0] + added_color, 255),
+                min(base_color[1] + added_color, 255),
+                min(base_color[2] + added_color, 255)
+            ),
+            (x, y, block_width, block_width)
+        )
+
+        # lighter inset (feels like shine instead of a hole)
+        pygame.draw.rect(
+            screen,
+            (
+                min(light_color[0] + added_color, 255),
+                min(light_color[1] + added_color, 255),
+                min(light_color[2] + added_color, 255)
+            ),
+            (x + block_width // 10, y + block_width // 10, block_width // 4, block_width // 4)
+        )
+
+        # subtle top highlight
+        pygame.draw.line(
+            screen,
+            (
+                min(highlight_color[0] + added_color, 255),
+                min(highlight_color[1] + added_color, 255),
+                min(highlight_color[2] + added_color, 255)
+            ),
+            (x, y),
+            (x + block_width - 1, y)
+        )        
+
+# idea: make a metal gate!
