@@ -153,14 +153,7 @@ class Recipe_Category(Enum):
 class User_Crafting_Recipes_List:
 
     default_crafting_recipes = [
-        Crafting_Recipe(
-            "Dirt",
-            [
-                Ingredient(Grass, 1)
-            ],
-            output=Ingredient(Dirt, 1),
-            category=Recipe_Category.Materials
-        ),
+        # building
         Crafting_Recipe(
             "Chest",
             [
@@ -169,30 +162,6 @@ class User_Crafting_Recipes_List:
             ],
             output=Ingredient(Chest, 1),
             category=Recipe_Category.Building
-        ),
-        Crafting_Recipe(
-            "Iron Ore Ingot",
-            [
-                Ingredient(Iron_Ore_Block, 1),
-            ],
-            output=Ingredient(Iron_Ingot, 1),
-            category=Recipe_Category.Resources
-        ),
-        Crafting_Recipe(
-            "Gold Ore Ingot",
-            [
-                Ingredient(Gold_Ore_Block, 1),
-            ],
-            output=Ingredient(Gold_Ingot, 1),
-            category=Recipe_Category.Resources
-        ),
-        Crafting_Recipe(
-            "Gravel",
-            [
-                Ingredient(Rock, 1),
-            ],
-            output=Ingredient(Gravel, 2),
-            category=Recipe_Category.Materials
         ),
         Crafting_Recipe(
             "Door",
@@ -209,6 +178,66 @@ class User_Crafting_Recipes_List:
             ],
             output=Ingredient(Wood_Planks, 3),
             category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
+            "Iron Block",
+            [
+                Ingredient(Iron_Ingot, 8),
+            ],
+            output=Ingredient(Iron_Block, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
+            "Emerald Block",
+            [
+                Ingredient(Emerald, 8),
+            ],
+            output=Ingredient(Emerald_Block, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
+            "Diamond Block",
+            [
+                Ingredient(Diamond, 8),
+            ],
+            output=Ingredient(Diamond_Block, 1),
+            category=Recipe_Category.Building
+        ),
+
+        # materials
+        Crafting_Recipe(
+            "Dirt",
+            [
+                Ingredient(Grass, 1)
+            ],
+            output=Ingredient(Dirt, 1),
+            category=Recipe_Category.Materials
+        ),
+        Crafting_Recipe(
+            "Gravel",
+            [
+                Ingredient(Rock, 1),
+            ],
+            output=Ingredient(Gravel, 2),
+            category=Recipe_Category.Materials
+        ),
+
+        # resources
+        Crafting_Recipe(
+            "Iron Ore Ingot",
+            [
+                Ingredient(Iron_Ore_Block, 1),
+            ],
+            output=Ingredient(Iron_Ingot, 1),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Gold Ore Ingot",
+            [
+                Ingredient(Gold_Ore_Block, 1),
+            ],
+            output=Ingredient(Gold_Ingot, 1),
+            category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
             "Sulfur Powder",
@@ -235,16 +264,6 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Resources
         ),
         Crafting_Recipe(
-            "Gun Powder",
-            [
-                Ingredient(Saltpeter_Powder, 7),
-                Ingredient(Coal, 2),
-                Ingredient(Sulfur_Powder, 1),
-            ],
-            output=Ingredient(Gunpowder, 5),
-            category=Recipe_Category.Explosives
-        ),
-        Crafting_Recipe(
             "Emerald",
             [
                 Ingredient(Emerald_Ore_Block, 1),
@@ -260,42 +279,22 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond, 1),
             category=Recipe_Category.Resources
         ),
+
+        # explosives
         Crafting_Recipe(
-            "Iron Block",
+            "Gun Powder",
             [
-                Ingredient(Iron_Ingot, 8),
+                Ingredient(Saltpeter_Powder, 7),
+                Ingredient(Coal, 2),
+                Ingredient(Sulfur_Powder, 1),
             ],
-            output=Ingredient(Iron_Block, 1),
-            category=Recipe_Category.Building
-        ),
-        Crafting_Recipe(
-            "Emerald Block",
-            [
-                Ingredient(Emerald, 8),
-            ],
-            output=Ingredient(Emerald_Block, 1),
-            category=Recipe_Category.Building
-        ),
-        Crafting_Recipe(
-            "Diamond Block",
-            [
-                Ingredient(Diamond, 8),
-            ],
-            output=Ingredient(Diamond_Block, 1),
-            category=Recipe_Category.Building
+            output=Ingredient(Gunpowder, 5),
+            category=Recipe_Category.Explosives
         ),
     ]
 
     additional_possible_recipes = [
-        Crafting_Recipe(
-            "TNT",
-            [
-                Ingredient(Gunpowder, 4),
-                Ingredient(Gravel, 1),
-            ],
-            output=Ingredient(TNT, 1),
-            category=Recipe_Category.Explosives
-        ),
+        # building
         Crafting_Recipe(
             "Snowman Head",
             [
@@ -304,6 +303,21 @@ class User_Crafting_Recipes_List:
             ],
             output=Ingredient(Snow_Man_Head, 1),
             category=Recipe_Category.Building
+        ),
+        
+        # materials
+
+        # resources
+
+        # explosives
+        Crafting_Recipe(
+            "TNT",
+            [
+                Ingredient(Gunpowder, 4),
+                Ingredient(Gravel, 1),
+            ],
+            output=Ingredient(TNT, 1),
+            category=Recipe_Category.Explosives
         ),
     ]
 
