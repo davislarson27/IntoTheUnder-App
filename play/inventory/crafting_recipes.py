@@ -245,7 +245,7 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Explosives
         ),
         Crafting_Recipe(
-            "Diamond Crystal",
+            "Diamond",
             [
                 Ingredient(Diamond_Ore_Block, 1),
             ],
