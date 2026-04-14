@@ -269,6 +269,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Emerald Block",
+            [
+                Ingredient(Emerald, 8),
+            ],
+            output=Ingredient(Emerald_Block, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Diamond Block",
             [
                 Ingredient(Diamond, 8),

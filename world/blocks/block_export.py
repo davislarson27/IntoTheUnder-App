@@ -56,6 +56,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         TNT,
         Recipe_Frame,
         Iron_Block,
+        Emerald_Block,
         Diamond_Block,
         Water, # water subclasses after this
             Water_R1,
