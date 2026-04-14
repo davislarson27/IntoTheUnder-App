@@ -28,6 +28,7 @@ class Player:
         self.is_left_facing = is_left_facing
 
         self.dx = 0
+        self.y_remainder = 0
 
 
     # needs redone to account for widths and heights
@@ -178,13 +179,13 @@ class Player:
         if input.d_hold > 0:
             dx += cur_player_speed_x 
         if input.w_hold > 0 or input.space_hold > 0:
-            if not self.is_not_block_below() and jump_is_possible: # add jump_is_possible
+            if not self.is_not_block_below() and jump_is_possible:
                 self.y_vel = physics.JUMP_VELOCITY
                 self.ticks_falling = 1
             if water_movement:
-                cur_y_acceleration = physics.WATER_UPWARD_ACCEL
+                self.y_vel = -cur_player_speed_y
         if input.s_hold > 0:
-            if water_movement: 
+            if water_movement:
                 self.y_vel = cur_player_speed_y
 
         # ---------------------- step 3: move ---------------------- #
@@ -192,8 +193,16 @@ class Player:
         dy += self.y_vel
 
         # check if motion is legal
-        if water_movement: dy *= 0.4
-        collided = self.is_move_ok_y(dy)
+        if water_movement:
+            self.y_vel *= 0.5
+            dy *= 0.4
+            dy = max(-cur_player_speed_y, min(cur_player_speed_y, dy))
+        
+        self.y_remainder += dy
+        int_dy = int(self.y_remainder)
+        self.y_remainder -= int_dy
+
+        collided = self.is_move_ok_y(int_dy)
 
         # if collided and dy > 0 and abs(self.y_vel) > self.take_damage_threshold_velocity:
         #     print("executed")
