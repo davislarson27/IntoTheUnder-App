@@ -245,6 +245,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Explosives
         ),
         Crafting_Recipe(
+            "Emerald",
+            [
+                Ingredient(Emerald_Ore_Block, 1),
+            ],
+            output=Ingredient(Emerald, 1),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
             "Diamond",
             [
                 Ingredient(Diamond_Ore_Block, 1),
@@ -260,7 +268,14 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Iron_Block, 1),
             category=Recipe_Category.Building
         ),
-
+        Crafting_Recipe(
+            "Diamond Block",
+            [
+                Ingredient(Diamond, 8),
+            ],
+            output=Ingredient(Diamond_Block, 1),
+            category=Recipe_Category.Building
+        ),
     ]
 
     additional_possible_recipes = [
