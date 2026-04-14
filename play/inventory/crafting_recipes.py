@@ -277,6 +277,7 @@ class User_Crafting_Recipes_List:
             "Snowman Head",
             [
                 Ingredient(Snow_Block, 1),
+                Ingredient(Coal, 2),
             ],
             output=Ingredient(Snow_Man_Head, 1),
             category=Recipe_Category.Building
