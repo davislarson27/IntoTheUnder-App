@@ -52,6 +52,7 @@ update notes:
  - added more gems and blocks
  - fixed issues with physics
  - removed the fall speed cap
+ - added 15 new blocks & items
 """
 
 """
