@@ -539,7 +539,6 @@ class User_Crafting_Recipes_List:
             self.ingr_strip_height
         )
 
-        self.default_tab = self.categories[0]
         self.cur_tab_recipe_list = []
 
     # ------------------------------------------------------------------ #
@@ -552,7 +551,8 @@ class User_Crafting_Recipes_List:
         return self
 
     def open(self):
-        self.switch_tab(self.default_tab)
+        start_tab = 0
+        self.switch_tab(start_tab)
 
     def conditional_close(self, input):
         if input.c_keypress or input.escape_keypress:
