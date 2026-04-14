@@ -64,43 +64,20 @@ class Player:
             return Water.accel_reduction(default_y_acceleration), new_velocity, new_velocity, False
         return default_y_acceleration, self.player_speed, 0, True
 
+    def is_move_ok_y_helper(self, check_y):
+        if self.is_move_ok(floor(self.x / self.BLOCK_WIDTH), floor(check_y / self.BLOCK_WIDTH)):
+            if self.is_move_ok(floor((self.x + self.x_size - 1) / self.BLOCK_WIDTH), floor(check_y / self.BLOCK_WIDTH)):
+                return True
+        return False
 
-    
     def is_move_ok_y(self, y_change):
-        """returns True if a collision happened"""
-        if y_change < 0:
-            if self.is_move_ok_y_helper(y_change):
-                self.y += y_change
-                return False
-            return True
-        else:
-            if self.is_move_ok_y_helper(y_change + self.y_size - 1):
-                self.y += y_change
-                return False
+        step = 1 if y_change > 0 else -1
+        for _ in range(abs(int(y_change))):
+            check_y = self.y + self.y_size if step > 0 else self.y + step
+            if self.is_move_ok_y_helper(check_y):
+                self.y += step
             else:
-                y_change -= 1
-                for i in range(floor(y_change)):
-                    if self.is_move_ok_y_helper(y_change + self.y_size - 1):
-                        self.y += y_change
-                    else:
-                        y_change -= 1
-            return True
-
-    # def is_move_ok_y(self, y_change):
-    #     block_positions = self.get_block_positions(0, y_change)
-    #     x_min, x_max = block_positions[0][0], block_positions[0][1]
-    #     y_min, y_max = block_positions[1][0], block_positions[1][1]
-
-    #     for y in range(y_min, y_max + 1):
-    #         for x in range(x_min, x_max + 1):
-    #             if not self.is_move_ok(x, y):
-    #                 return False
-    #     return True
-
-    
-    def is_move_ok_y_helper(self, y_change): #uses old logic but still works
-        if self.is_move_ok(floor(self.x / self.BLOCK_WIDTH), floor((self.y + y_change) / self.BLOCK_WIDTH)):
-            if self.is_move_ok(floor((self.x + self.x_size - 1) / self.BLOCK_WIDTH), floor((self.y + y_change) / self.BLOCK_WIDTH)):
+                self.y_vel = 0
                 return True
         return False
 
