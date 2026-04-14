@@ -180,6 +180,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Stone Bricks",
+            [
+                Ingredient(Rock, 2),
+            ],
+            output=Ingredient(Stone_Bricks, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Iron Block",
             [
                 Ingredient(Iron_Ingot, 8),
@@ -211,15 +219,7 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond_Block, 1),
             category=Recipe_Category.Building
         ),
-        # Crafting_Recipe(
-        #     "Iron Clump",
-        #     [
-        #         Ingredient(Iron_Ore_Block, 8),
-        #     ],
-        #     output=Ingredient(Iron_Clump, 1),
-        #     category=Recipe_Category.Building
-        # ),
-
+        
 
         # materials
         Crafting_Recipe(
