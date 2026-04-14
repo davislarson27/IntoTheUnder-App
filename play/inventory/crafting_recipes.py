@@ -188,6 +188,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Frozen Stone Bricks",
+            [
+                Ingredient(Frozen_Rock, 2),
+            ],
+            output=Ingredient(Frozen_Stone_Bricks, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Iron Block",
             [
                 Ingredient(Iron_Ingot, 8),
@@ -247,11 +255,19 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Materials
         ),
         Crafting_Recipe(
-            "Stone",
+            "Rock",
             [
                 Ingredient(Stone_Bricks, 1),
             ],
-            output=Ingredient(Rock, 3),
+            output=Ingredient(Rock, 2),
+            category=Recipe_Category.Materials
+        ),
+        Crafting_Recipe(
+            "Frozen Rock",
+            [
+                Ingredient(Frozen_Stone_Bricks, 1),
+            ],
+            output=Ingredient(Frozen_Rock, 2),
             category=Recipe_Category.Materials
         ),
 

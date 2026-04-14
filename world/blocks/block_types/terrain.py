@@ -226,14 +226,14 @@ class Frozen_Rock(Block):
 
         pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),           # color
+            (70 + added_color, 75 + added_color, 80 + added_color),
             (x, y, block_width, block_width)
             
         )
-        #(145, 155, 165) (175, 190, 205)
+        #(145, 155, 165)
         pygame.draw.rect(
             screen,
-            (145 + added_color, 155 + added_color, 165 + added_color),           # color
+            (145 + added_color, 155 + added_color, 165 + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
 
@@ -269,7 +269,7 @@ class Snow_Block(Block):
         
         pygame.draw.rect( # draw base color
             screen,
-            (225 + added_color, 235 + added_color, 245 + added_color),           # color
+            (225 + added_color, 235 + added_color, 245 + added_color),
             (x, y, block_width, block_width)
         )
 
