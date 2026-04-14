@@ -127,17 +127,13 @@ images = Images(resource_path(f"game_files/{IMAGES_FILE_NAME}"), BLOCK_WIDTH)
 true_height = screen_height_px - INVENTORY_HEIGHT
 MOVEMENT_ALTITUDE_PX = (true_height * 13) // 16
 
-# set grid size
-grid_width = 5000
-grid_height = 100
-
-
 # clock features
 clock = pygame.time.Clock()
 TICKS = 60
 
 # run details
-running = True
+grid_width = 5000
+grid_height = 100
 world_generation_settings = World_Generation_Settings(VERSION, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, grid_width, grid_height)
 menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME), directory, world_generation_settings)
 
