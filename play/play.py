@@ -204,7 +204,7 @@ class Play:
                     if build_affected_x is not None and not self.player.reject_block_placement(build_affected_x, build_affected_y):
                         # now build the block
                         Block_Type = self.inventory.get_current()
-                        if Block_Type is not None:
+                        if Block_Type is not None and not issubclass(Block_Type, Item):
                             if issubclass(Block_Type, MutliBlock):
                                 if Block_Type.BuildMulti(self.grid, build_affected_x, build_affected_y) == True:
                                     self.inventory.build_from_current()
