@@ -252,8 +252,7 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
 
-
-        # materials
+        # ---------------------------------- materials ---------------------------------- #
         Crafting_Recipe(
             "Dirt",
             [
@@ -320,9 +319,7 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Materials
         ),
 
-
-
-        # resources
+        # ---------------------------------- resources ---------------------------------- #
         Crafting_Recipe(
             "Iron Ore Ingot",
             [
@@ -428,10 +425,7 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Resources
         ),
 
-
-
-
-        # explosives
+        # ---------------------------------- explosives ---------------------------------- #
         Crafting_Recipe(
             "Gun Powder",
             [
@@ -445,7 +439,7 @@ class User_Crafting_Recipes_List:
     ]
 
     additional_possible_recipes = [
-        # building
+        # ---------------------------------- building ---------------------------------- #
         Crafting_Recipe(
             "Snowman Head",
             [
@@ -456,11 +450,11 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
 
-        # materials
+        # ---------------------------------- materials ---------------------------------- #
 
-        # resources
+        # ---------------------------------- resources ---------------------------------- #
 
-        # explosives
+        # ---------------------------------- explosives ---------------------------------- #
         Crafting_Recipe(
             "TNT",
             [
