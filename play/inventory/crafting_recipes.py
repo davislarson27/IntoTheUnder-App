@@ -246,6 +246,15 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Gravel, 2),
             category=Recipe_Category.Materials
         ),
+        Crafting_Recipe(
+            "Stone",
+            [
+                Ingredient(Stone_Bricks, 1),
+            ],
+            output=Ingredient(Rock, 3),
+            category=Recipe_Category.Materials
+        ),
+
 
         # resources
         Crafting_Recipe(
