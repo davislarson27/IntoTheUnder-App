@@ -88,37 +88,23 @@ class Item(Block):
 class Ingot(Item): # this is just here to help draw other ingots
     @staticmethod
     def draw_ingot_manual(screen, x, y, block_width, base_color, being_mined=False, is_grid_coordinates=True):
-        added = 20 if being_mined else 0
-
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
 
-        # ----- helpers -----
-        def clamp(c):
-            return max(0, min(255, c))
+        added = 20 if being_mined else 0
+        r, g, b = base_color
+        base    = (min(255, r+added), min(255, g+added), min(255, b+added))
+        light   = (min(255, r+added+40), min(255, g+added+40), min(255, b+added+40))
+        dark    = (max(0, r+added-40), max(0, g+added-40), max(0, b+added-40))
 
-        def shade(rgb, delta):
-            r, g, b = rgb
-            return (clamp(r + delta), clamp(g + delta), clamp(b + delta))
-
-        base = shade(base_color, added)
-        outline = shade(base, -55)
-        shadow  = shade(base, -35)
-        light   = shade(base, +25)
-        shine   = shade(base, +45)
-
-        # ----- geometry -----
-        bar_w = int(block_width * 0.78)
-        bar_h = int(block_width * 0.28)
-
+        bar_w = int(block_width * 0.72)
+        bar_h = int(block_width * 0.30)
         bx = x + (block_width - bar_w) // 2
         by = y + (block_width - bar_h) // 2
-
         cham = max(2, bar_h // 2)
-        border = max(1, block_width // 24)
 
-        # Main polygon (horizontal bar with diagonal ends)
+        # main shape
         pts = [
             (bx + cham, by),
             (bx + bar_w - cham, by),
@@ -127,70 +113,19 @@ class Ingot(Item): # this is just here to help draw other ingots
             (bx + cham, by + bar_h),
             (bx, by + bar_h // 2),
         ]
-
         pygame.draw.polygon(screen, base, pts)
-        pygame.draw.polygon(screen, outline, pts, width=border)
 
-        # Top highlight
-        inset = border + 1
-        top_h = max(2, bar_h // 3)
-
+        # top half lighter
         pts_top = [
-            (bx + cham + inset, by + inset),
-            (bx + bar_w - cham - inset, by + inset),
-            (bx + bar_w - inset, by + top_h),
-            (bx + inset, by + top_h),
+            (bx + cham, by),
+            (bx + bar_w - cham, by),
+            (bx + bar_w, by + bar_h // 2),
+            (bx, by + bar_h // 2),
         ]
-
         pygame.draw.polygon(screen, light, pts_top)
 
-        # Bottom shadow
-        bot_h = max(2, bar_h // 3)
-
-        pts_bot = [
-            (bx + inset, by + bar_h - bot_h),
-            (bx + bar_w - inset, by + bar_h - bot_h),
-            (bx + bar_w - cham - inset, by + bar_h - inset),
-            (bx + cham + inset, by + bar_h - inset),
-        ]
-
-        pygame.draw.polygon(screen, shadow, pts_bot)
-
-        # Shine notch
-        notch_w = max(3, bar_w // 8)
-        notch_h = max(2, top_h // 2)
-        pygame.draw.rect(screen, shine,
-                        (bx + cham + inset + 1, by + inset + 1, notch_w, notch_h))
-
-        # ----- subtle ITU stamp -----
-        stamp_color = shade(base, -28)
-
-        stamp_h = max(3, bar_h // 2)
-        stamp_w = max(1, bar_h // 10)
-
-        sx = bx + bar_w // 2
-        sy = by + (bar_h - stamp_h) // 2
-
-        gap = max(1, stamp_w)
-        letter_w = stamp_w * 2
-
-        # I
-        pygame.draw.rect(screen, stamp_color,
-                        (sx - (letter_w*3 + gap*2)//2, sy, stamp_w, stamp_h))
-
-        # T
-        tx = sx - (letter_w + gap)//2
-        pygame.draw.rect(screen, stamp_color, (tx, sy, letter_w, stamp_w))
-        pygame.draw.rect(screen, stamp_color,
-                        (tx + letter_w//2 - stamp_w//2, sy, stamp_w, stamp_h))
-
-        # U
-        ux = sx + (letter_w + gap)//2
-        pygame.draw.rect(screen, stamp_color, (ux, sy, stamp_w, stamp_h))
-        pygame.draw.rect(screen, stamp_color,
-                        (ux + letter_w - stamp_w, sy, stamp_w, stamp_h))
-        pygame.draw.rect(screen, stamp_color,
-                        (ux, sy + stamp_h - stamp_w, letter_w, stamp_w))
+        # outline
+        pygame.draw.polygon(screen, dark, pts, width=max(1, block_width // 24))
 
 class PowderPile(Item):
     @staticmethod
