@@ -5,6 +5,7 @@ from world.blocks.block_export import *
 from play.mining_sprite import Mining_Sprite
 from components.blit_letterboxed import blit_letterboxed
 from components.game_file_reading import save_game
+from .physics_rules import Physics_Rules
 
 
 class Play:
@@ -327,14 +328,3 @@ class Play:
     def on_quit(self):
         self.prep_menu()
         
-class Physics_Rules:
-    def __init__(self, screen, inventory_height):
-        # set physics rules
-        self.Y_ACCELERATION = 0.7
-        self.WATER_UPWARD_ACCEL = -0.05
-        self.JUMP_VELOCITY = -14
-
-        self.BUILD_HOLD_THRESHOLD = 10 # count of frames held before destroyed motion happens
-
-        self.true_height = screen.get_height() - inventory_height
-        self.MOVEMENT_ALTITUDE_PX = (self.true_height * 13) // 16

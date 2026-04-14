@@ -187,7 +187,6 @@ class Player:
             if not self.is_not_block_below() and jump_is_possible: # add jump_is_possible
                 self.y_vel = physics.JUMP_VELOCITY
                 self.ticks_falling = 1
-                self.ticks_inc = False
             if water_movement:
                 cur_y_acceleration = physics.WATER_UPWARD_ACCEL
         if input.s_hold > 0:
@@ -196,17 +195,15 @@ class Player:
 
         # ---------------------- step 3: move ---------------------- #
         # apply gravity and jumping
-        if self.y_vel + (cur_y_acceleration * self.ticks_falling) < self.BLOCK_WIDTH: #limits gravity at 1 block per tick
-            dy += self.y_vel + (cur_y_acceleration * self.ticks_falling)
-
+        dy += self.y_vel
 
         # check if motion is legal
         if water_movement: dy *= 0.4
         collided = self.is_move_ok_y(dy)
 
-        # if collided and dy > 0 and abs(player.y_vel) > player.take_damage_threshold_velocity:
+        # if collided and dy > 0 and abs(self.y_vel) > self.take_damage_threshold_velocity:
         #     print("executed")
-        #     if player.health_bar.health > 0: player.health_bar.health -= player.loss_per_velocity * (abs(player.y_vel) - player.take_damage_threshold_velocity )
+        #     if self.health_bar.health > 0: self.health_bar.health -= self.loss_per_velocity * (abs(self.y_vel) - self.take_damage_threshold_velocity )
 
         x_move = abs(dx)
         if dx < 0: x_direction = -1
@@ -218,14 +215,6 @@ class Player:
             x_move -= 1
 
         # increment gravity
-        if dy == 0:
-            self.y_vel = 0
-            self.ticks_falling = 1
-        else:
-            self.y_vel += cur_y_acceleration
-            if self.ticks_inc:
-                self.ticks_falling += 1
-            else:
-                self.ticks_inc = True
+        self.y_vel += cur_y_acceleration
 
         self.dx = dx
