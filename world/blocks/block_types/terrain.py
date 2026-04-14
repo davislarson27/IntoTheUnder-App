@@ -81,7 +81,6 @@ class Packed_Dirt(Block):
 
         base_color = (121, 101, 81)
         secondary_color = (135, 115, 95)
-        # secondary_color = (110, 90, 80)
         
         pygame.draw.rect( # draw base color
             screen,
@@ -152,11 +151,10 @@ class Sand(Block):
             x *= block_width
             y *= block_width
 
-        # (200, 185, 150) (210, 195, 155) (205, 203, 198) (185, 182, 172) (170, 168, 158)
-        
+
         pygame.draw.rect( # draw base color
             screen,
-            (215 + added_color, 200 + added_color, 155 + added_color),           # color
+            (215 + added_color, 200 + added_color, 155 + added_color),
             (x, y, block_width, block_width)
         )
 
@@ -165,9 +163,41 @@ class Sand(Block):
             for sub_x in range(x + 1, x+block_width , spec_width * 3):
                 pygame.draw.rect(
                     screen,
-                    (170 + added_color, 168 + added_color, 158 + added_color),           # color
+                    (170 + added_color, 168 + added_color, 158 + added_color),
                     (sub_x , sub_y, spec_width, spec_width)
                 )
+
+class Sand_Stone(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Sand Stone"
+    ticks_to_mine = 40
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        base_color = (215, 200, 155)
+        secondary_color = (220, 215, 170)
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (base_color[0] + added_color, base_color[1] + added_color, base_color[2] + added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + (block_width // 10) , y + (block_width // 10), block_width // 4, block_width // 4)
+        )
 
 class Gravel(Block):
 
