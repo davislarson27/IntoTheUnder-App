@@ -71,7 +71,7 @@ class Biome: #generic biome made so that not every type needs to be added - basi
     gravel_vein_max_size = 8
 
     sulfur_flakes_min_depth = start_floor_depth + sub_surface_layer_depth + 4
-    sulfur_flakes_base_chance = 0.00006
+    sulfur_flakes_base_chance = 0.00008
     sulfur_flakes_inc_chances_by_layer = -1 * sulfur_flakes_base_chance / 20 # only spawns 18 blocks below where it started
     sulfur_flakes_vein_min_size = 1
     sulfur_flakes_vein_max_size = 3
@@ -147,8 +147,8 @@ class Tundra(Biome):
     dirt_vein_base_chance = 0.00005
     dirt_vein_inc_chances_by_layer = -0.000009
 
-    sulfur_flakes_base_chance = Biome.sulfur_flakes_base_chance * 5
-    sulfur_flakes_inc_chances_by_layer = -1 * sulfur_flakes_base_chance / 18 # only spawns 18 blocks below where it started
+    sulfur_flakes_base_chance = Biome.sulfur_flakes_base_chance * 6
+    sulfur_flakes_inc_chances_by_layer = -1 * sulfur_flakes_base_chance / 20 # only spawns 18 blocks below where it started
 
     recipe_burrow_chance = Biome.recipe_burrow_chance * 3
 
