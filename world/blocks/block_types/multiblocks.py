@@ -73,6 +73,8 @@ class Door_Top(SubMultiBlock):
     str_name = "Door Top"
     ticks_to_mine = 45
 
+    draw_background = True
+
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         added = 20 if being_mined else 0
@@ -153,6 +155,8 @@ class Door_Bottom(SubMultiBlock):
 
     str_name = "Door Bottom"
     ticks_to_mine = 45
+
+    draw_background = True
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

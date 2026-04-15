@@ -13,6 +13,14 @@ class Block:
 
     inventory = None
 
+    draw_background = False # this informs the grid that it shouldn't draw the background behind this block (set to true for doors, windows, etc)
+    # ignore_shading = {
+    #     (0, 1): False, 
+    #     (0, -1): False, 
+    #     (1, 0): False,
+    #     (-1, 0): False
+    # }
+
     def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through = False, ticks_till_physics = 0, stored_inventory_items=None, special_value=True):
         self.grid = grid
         self.screen = screen

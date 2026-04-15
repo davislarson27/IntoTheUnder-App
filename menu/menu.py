@@ -734,6 +734,7 @@ class Menu:
         grid.generate_terrain()
 
         background_grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
+        background_grid.generate_terrain() # this isn't correct long term -> gemerates completely unique terrain behind the cur terrain
 
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)

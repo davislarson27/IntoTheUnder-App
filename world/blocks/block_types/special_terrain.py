@@ -113,6 +113,8 @@ class Saltpeter(Block):
 
     ticks_to_mine = 45
 
+    draw_background = True
+
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         if being_mined:

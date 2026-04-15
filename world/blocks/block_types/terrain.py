@@ -19,14 +19,22 @@ class Rock(Block):
             x *= block_width
             y *= block_width
 
+        # # original color
+        # primary_background_color = (70, 75, 80)
+        # detail_color = (90, 95, 100)
+
+        # new warmer and lighter colors
+        primary_background_color = (95, 100, 102)
+        detail_color = (115, 120, 122)
+
         pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
             (x, y, block_width, block_width)
         )
         pygame.draw.rect(
             screen,
-            (90 + added_color, 95 + added_color, 100 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
 
