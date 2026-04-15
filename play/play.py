@@ -37,6 +37,8 @@ class Play:
         self.physics_rules = Physics_Rules(screen, inventory.inventory_height)
         self.background_color = (30, 30, 30)
 
+        self.active_grid = self.grid
+
         self.bg_overlay_cache = {}
         self.build_bg_overlay_cache()
 
@@ -71,7 +73,7 @@ class Play:
             return None, None
         return out_of_bounds_x, out_of_bounds_y
 
-    def get_affected_block_pointer(self, player, grid, pointer_x, pointer_y, build_mode = True): #pointers (expected as 1, 0, or -1) give direction of arrow
+    def get_affected_block_pointer(self, player, grid, pointer_x, pointer_y): #pointers (expected as 1, 0, or -1) give direction of arrow
         # using vector raycasting
         start_x = player.x + floor(0.5 * player.x_size)
         start_y = player.y + floor(0.5 * player.y_size)
@@ -281,6 +283,8 @@ class Play:
 
     def interact_with_grid(self, input):
 
+        allow_bg_interactions = input.caps_lock
+
         if input.l_shift_hold > 0: prevent_block_interaction = True
         else: prevent_block_interaction = False
 
@@ -288,7 +292,13 @@ class Play:
         world_mouse_y = input.virtual_mouse_y + self.cur_camera_y
 
         # process block interaction data
-        self.affected_x, self.affected_y = self.get_affected_block_pointer(self.player, self.grid, world_mouse_x, world_mouse_y)
+        if allow_bg_interactions: self.active_grid = self.background_grid
+        else: self.active_grid = self.grid
+
+        # set mining sprite grid
+        self.mining_sprite.set_grid(self.active_grid)
+        
+        self.affected_x, self.affected_y = self.get_affected_block_pointer(self.player, self.active_grid, world_mouse_x, world_mouse_y)
 
         if input.mouse.get_pressed()[0] and self.affected_x is not None:
             self.destroy_held_time+=1
@@ -308,23 +318,23 @@ class Play:
         if self.affected_x is not None:
             if input.mouse.get_pressed()[2]:
                 if (self.build_held_time - 1) % self.physics_rules.BUILD_HOLD_THRESHOLD == 0 and self.build_held_time - 1 != self.physics_rules.BUILD_HOLD_THRESHOLD:
-                    build_affected_x, build_affected_y = self.get_affected_block_pointer_build(self.player, self.grid, world_mouse_x, world_mouse_y, self.inventory, acknowledge_interactions=not prevent_block_interaction)
+                    build_affected_x, build_affected_y = self.get_affected_block_pointer_build(self.player, self.active_grid, world_mouse_x, world_mouse_y, self.inventory, acknowledge_interactions=not prevent_block_interaction)
                     # check to see if the block can be built
                     if build_affected_x is not None and not self.player.reject_block_placement(build_affected_x, build_affected_y):
                         # now build the block
                         Block_Type = self.inventory.get_current()
                         if Block_Type is not None and not issubclass(Block_Type, Item):
                             if issubclass(Block_Type, MutliBlock):
-                                if Block_Type.BuildMulti(self.grid, build_affected_x, build_affected_y) == True:
+                                if Block_Type.BuildMulti(self.active_grid, build_affected_x, build_affected_y) == True:
                                     self.inventory.build_from_current()
                             else:
-                                self.grid.set(build_affected_x, build_affected_y, Block_Type)
+                                self.active_grid.set(build_affected_x, build_affected_y, Block_Type)
                                 self.inventory.build_from_current()
             
             elif input.mouse.get_pressed()[0]:
-                if self.grid.get(self.affected_x, self.affected_y) is not None and self.destroy_held_time > self.grid.get(self.affected_x, self.affected_y).ticks_to_mine:
+                if self.active_grid.get(self.affected_x, self.affected_y) is not None and self.destroy_held_time > self.active_grid.get(self.affected_x, self.affected_y).ticks_to_mine:
                     self.destroy_held_time = 0
-                    selected_block = self.grid.get(self.affected_x, self.affected_y)
+                    selected_block = self.active_grid.get(self.affected_x, self.affected_y)
                     if issubclass(type(selected_block), SubMultiBlock):
                         inventory_block_type = selected_block.onDestroy()
                         if inventory_block_type is not None:
@@ -333,7 +343,7 @@ class Play:
                         if selected_block.can_move_to_inventory():
                             selected_block.onDestruction(self.inventory) # run any onDestruction methods
                             self.inventory.add_item(type(selected_block))
-                        self.grid.set(self.affected_x, self.affected_y, None)
+                        self.active_grid.set(self.affected_x, self.affected_y, None)
 
     def run_main_game(self, input):
         
@@ -414,12 +424,12 @@ class Play:
             # draw main grid
             self.grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
 
-            if self.affected_x != None and not self.build_mode and self.grid.get(self.affected_x, self.affected_y) != None:
+            if self.affected_x != None and not self.build_mode and self.active_grid.get(self.affected_x, self.affected_y) != None:
                 if self.destroy_held_time > 0:
-                    self.grid.get(self.affected_x, self.affected_y).draw(True, camera_x = self.camera_x, camera_y = self.cur_camera_y)
+                    self.active_grid.get(self.affected_x, self.affected_y).draw(True, camera_x = self.camera_x, camera_y = self.cur_camera_y)
                     self.mining_sprite.draw(self.camera_x, self.cur_camera_y)
                 else:
-                    self.grid.get(self.affected_x, self.affected_y).draw(True, camera_x = self.camera_x, camera_y = self.cur_camera_y)
+                    self.active_grid.get(self.affected_x, self.affected_y).draw(True, camera_x = self.camera_x, camera_y = self.cur_camera_y)
                     
             self.player.draw(self.camera_x, self.cur_camera_y)
 
