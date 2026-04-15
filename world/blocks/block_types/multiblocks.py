@@ -74,6 +74,12 @@ class Door_Top(SubMultiBlock):
     ticks_to_mine = 45
 
     draw_background = True
+    ignore_shading_from = {
+        (0, 1): False, # coming from the top
+        (0, -1): True, # coming from the bottom
+        (1, 0): False, # coming from the right
+        (-1, 0): False # comin from the left
+    }
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -157,6 +163,12 @@ class Door_Bottom(SubMultiBlock):
     ticks_to_mine = 45
 
     draw_background = True
+    ignore_shading_from = {
+        (0, 1): True, # coming from the top
+        (0, -1): False, # coming from the bottom
+        (1, 0): False, # coming from the right
+        (-1, 0): False # comin from the left
+    }
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

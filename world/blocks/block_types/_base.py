@@ -14,12 +14,12 @@ class Block:
     inventory = None
 
     draw_background = False # this informs the grid that it shouldn't draw the background behind this block (set to true for doors, windows, etc)
-    # ignore_shading = {
-    #     (0, 1): False, 
-    #     (0, -1): False, 
-    #     (1, 0): False,
-    #     (-1, 0): False
-    # }
+    ignore_shading_from = {
+        (0, 1): False, # coming from the top
+        (0, -1): False, # coming from the bottom
+        (1, 0): False, # coming from the right
+        (-1, 0): False # comin from the left
+    }
 
     def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through = False, ticks_till_physics = 0, stored_inventory_items=None, special_value=True):
         self.grid = grid
@@ -87,8 +87,13 @@ class Block:
         self.grid.set(self.x, self.y, None)
         return block_type
     
+    def block_edge_shade(self, directionOfBgBlock_x, directionofBgBlock_y):
+        """returns true or false if the bg block should be shaded on the corner"""
+        return self.ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
+
     def __str__(self): # used so when the type is initialized the str() method can be used
         return self.str_name
+
 
 class Item(Block):
     can_place = False

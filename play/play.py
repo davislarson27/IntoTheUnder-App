@@ -237,10 +237,10 @@ class Play:
             return
         
 
-        exposed_top    = self.grid.get(grid_x, grid_y-1) is not None and self.grid.get(grid_x, grid_y-1).draw_background == False
-        exposed_bottom = self.grid.get(grid_x, grid_y+1) is not None and self.grid.get(grid_x, grid_y+1).draw_background == False
-        exposed_left   = self.grid.get(grid_x-1, grid_y) is not None and self.grid.get(grid_x-1, grid_y).draw_background == False
-        exposed_right  = self.grid.get(grid_x+1, grid_y) is not None and self.grid.get(grid_x+1, grid_y).draw_background == False
+        exposed_top    = self.grid.get(grid_x, grid_y-1) is not None and self.grid.get(grid_x, grid_y-1).block_edge_shade(0, -1) == False
+        exposed_bottom = self.grid.get(grid_x, grid_y+1) is not None and self.grid.get(grid_x, grid_y+1).block_edge_shade(0, 1) == False
+        exposed_left   = self.grid.get(grid_x-1, grid_y) is not None and self.grid.get(grid_x-1, grid_y).block_edge_shade(-1, 0) == False
+        exposed_right  = self.grid.get(grid_x+1, grid_y) is not None and self.grid.get(grid_x+1, grid_y).block_edge_shade(1, 0) == False
 
         draw_x = grid_x * self.BLOCK_WIDTH - camera_x
         draw_y = grid_y * self.BLOCK_WIDTH - camera_y
