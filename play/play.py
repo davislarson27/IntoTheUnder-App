@@ -10,9 +10,10 @@ from .physics_rules import Physics_Rules
 
 class Play:
 
-    def __init__(self, screen, BLOCK_WIDTH, grid, inventory, player, world_details, menu):
+    def __init__(self, screen, BLOCK_WIDTH, grid, background_grid, inventory, player, world_details, menu):
         # set details
         self.grid, self.inventory, self.player, self.world_details = grid, inventory, player, world_details
+        self.background_grid = background_grid
         self.menu = menu
         self.screen = screen
         self.BLOCK_WIDTH = BLOCK_WIDTH
@@ -248,7 +249,7 @@ class Play:
         blit_letterboxed(self.screen, self.menu.window, self.menu.loading_world_screen_background_color)
         pygame.display.flip()
         pygame.event.pump()
-        save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.world_details)
+        save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.background_grid, self.world_details)
         self.menu.reopen_menu_prep()
 
     def manage_menus(self, input):

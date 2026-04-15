@@ -730,21 +730,27 @@ class Menu:
     # helper functions
     def create_new_world(self):
         # initialize grid and terrain
-        grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen) #sets width at 200 blocks
+        grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
         grid.generate_terrain()
+
+        background_grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
 
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
 
-        return grid, inventory, player, world_details
+        return grid, background_grid, inventory, player, world_details
     
     def load_world_from_file(self):
         worlds_directory = f"{self.game_files_directory}/{self.world_name}"
         with open(f"{worlds_directory}/grid.json", "r") as grid_file:
             grid_dict = json.load(grid_file)
             grid = Grid.fill_from_dict(grid_dict, self.screen, self.block_width)
+
+        with open(f"{worlds_directory}/background_grid.json", "r") as grid_file:
+            bg_grid_dict = json.load(grid_file)
+            bg_grid = Grid.fill_from_dict(bg_grid_dict, self.screen, self.block_width)
 
         with open(f"{worlds_directory}/inventory.json", "r") as inventory_file:
             inventory_dict = json.load(inventory_file)
@@ -763,7 +769,7 @@ class Menu:
             world_details_dict = json.load(world_details_file)
             world_details = World_Details.fill_from_dict(world_details_dict)
 
-        return grid, inventory, player, world_details
+        return grid, bg_grid, inventory, player, world_details
         
     def reopen_menu_prep(self):
         self.world_names_list.remove(self.world_name)
@@ -795,16 +801,16 @@ class Menu:
             play_object = None
 
             if self.load_world:
-                grid, inventory, player, world_details = self.load_world_from_file()
-                play_object = Play(self.screen, self.block_width, grid, inventory, player, world_details, self)
+                grid, background_grid, inventory, player, world_details = self.load_world_from_file()
+                play_object = Play(self.screen, self.block_width, grid, background_grid, inventory, player, world_details, self)
 
             elif self.generate_new_world:
                 self.world_names_list.insert(0, self.world_name)
-                grid, inventory, player, world_details = self.create_new_world()
+                grid, background_grid, inventory, player, world_details = self.create_new_world()
                 new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
                 new_directory_path.mkdir()
-                save_game(new_directory_path, player, inventory, grid, world_details)
-                play_object = Play(self.screen, self.block_width, grid, inventory, player, world_details, self)
+                save_game(new_directory_path, player, inventory, grid, background_grid, world_details)
+                play_object = Play(self.screen, self.block_width, grid, background_grid, inventory, player, world_details, self)
 
             if play_object is None: return self
 
