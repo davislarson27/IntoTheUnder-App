@@ -31,6 +31,9 @@ class Input:
         self.c_keypress = False
         self.return_keypress = False
 
+        # caps lock toggle
+        self.caps_lock = False
+
         # quit key
         self.quit = False
 
@@ -103,6 +106,8 @@ class Input:
 
             if keys[pygame.K_BACKSPACE]: self.backspace_hold += 1
             else: self.backspace_hold = 0
+
+        self.caps_lock = bool(pygame.key.get_mods() & pygame.KMOD_CAPS)
 
     @staticmethod
     def get_scaled_mouse_click(scale, mouse_x, mouse_y, offx, offy):
