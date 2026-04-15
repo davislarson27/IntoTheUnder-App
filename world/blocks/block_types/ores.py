@@ -20,21 +20,22 @@ class Iron_Ore_Block(Block):
             x *= block_width
             y *= block_width
 
+        primary_background_color = (95, 100, 102)
+        detail_color = (190, 155, 130)
+
         pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),           # color
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
             (x, y, block_width, block_width)
-            
         )
-        #(215, 180, 155) (190, 155, 130)
         pygame.draw.rect(
             screen,
-            (190 + added_color, 155 + added_color, 130 + added_color),           # color
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
         pygame.draw.rect(
             screen,
-            (190 + added_color, 155 + added_color, 130 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
 
@@ -55,9 +56,10 @@ class Gold_Ore_Block(Block):
             y *= block_width
 
         # --- rock base (can brighten when mined) ---
+        primary_background_color = (95, 100, 102)
         pygame.draw.rect(
             screen,
-            (70 + added, 75 + added, 80 + added),
+            (primary_background_color[0] + added, primary_background_color[1] + added, primary_background_color[2] + added),
             (x, y, block_width, block_width)
         )
 
@@ -106,21 +108,23 @@ class Diamond_Ore_Block(Block):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
+        
+        primary_background_color = (95, 100, 102)
+        detail_color = (90, 215, 235)
 
         pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),           # color
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
             (x, y, block_width, block_width)
-            
         )
         pygame.draw.rect(
             screen,
-            (90 + added_color, 215 + added_color, 235 + added_color),           # color
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
         pygame.draw.rect(
             screen,
-            (90 + added_color, 215 + added_color, 235 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
 
@@ -141,22 +145,22 @@ class Emerald_Ore_Block(Block):
             x *= block_width
             y *= block_width
 
-        pygame.draw.rect(
-            screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),           # color
-            (x, y, block_width, block_width)
-            
-        )
-        #(80, 200, 120)
+        primary_background_color = (95, 100, 102)
+        detail_color = (90, 210, 130)
 
         pygame.draw.rect(
             screen,
-            (90 + added_color, 210 + added_color, 130 + added_color),           # color
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
         pygame.draw.rect(
             screen,
-            (90 + added_color, 210 + added_color, 130 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
 
@@ -178,22 +182,22 @@ class Mabelite_Ore_Block(Block):
             x *= block_width
             y *= block_width
 
-        pygame.draw.rect(
-            screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),           # color
-            (x, y, block_width, block_width)
-            
-        )
+        primary_background_color = (95, 100, 102)
+        detail_color = (30, 155, 90)
 
         pygame.draw.rect(
             screen,
-            (30 + added_color, 155 + added_color, 90 + added_color),           # color
-            ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
+            (x, y, block_width, block_width)
         )
-        #(184, 115, 85)
         pygame.draw.rect(
             screen,
-            (30 + added_color, 155 + added_color, 90 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
+            ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
+        )
+        pygame.draw.rect(
+            screen,
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
 
@@ -216,20 +220,23 @@ class Coal_Ore_Block(Block):
             x *= block_width
             y *= block_width
 
-        pygame.draw.rect( # stone background
+
+        primary_background_color = (95, 100, 102)
+        detail_color = (22, 21, 22)
+
+        pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
             (x, y, block_width, block_width)
-            
         )
-        pygame.draw.rect( # coal spot
+        pygame.draw.rect(
             screen,
-            (22 + added_color, 21 + added_color, 22 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
-        pygame.draw.rect( # second coal spot
+        pygame.draw.rect(
             screen,
-            (22 + added_color, 21 + added_color, 22 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width * 6 // 10) , (y) + (block_width * 8// 10), block_width // 6, block_width // 6)
         )
 
@@ -249,9 +256,10 @@ class Sulfur_Flakes_Block(Block):
             y *= block_width
 
         # base stone
+        primary_background_color = (95, 100, 102)
         pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
             (x, y, block_width, block_width)
         )
 
@@ -288,4 +296,3 @@ class Sulfur_Flakes_Block(Block):
                     size
                 )
             )
-

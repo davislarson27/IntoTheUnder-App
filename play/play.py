@@ -242,6 +242,17 @@ class Play:
         exposed_left   = self.grid.get(grid_x-1, grid_y) is not None and self.grid.get(grid_x-1, grid_y).block_edge_shade(-1, 0) == False
         exposed_right  = self.grid.get(grid_x+1, grid_y) is not None and self.grid.get(grid_x+1, grid_y).block_edge_shade(1, 0) == False
 
+        # # get the net vert/horiz shadow shift
+        # horiz_shift_px = 0
+        # vert_shift_px = 0
+        # if self.grid.get(grid_x-1, grid_y) is not None:
+        #     horiz_shift_px += self.grid.get(grid_x-1, grid_y).get_shadow_offset(-1, 0)
+        # if self.grid.get(grid_x+1, grid_y) is not None:
+        #     horiz_shift_px += self.grid.get(grid_x+1, grid_y).get_shadow_offset(1, 0)
+
+        # # draw_x = grid_x * self.BLOCK_WIDTH - camera_x + horiz_shift_px
+        # # draw_y = grid_y * self.BLOCK_WIDTH - camera_y + vert_shift_px
+
         draw_x = grid_x * self.BLOCK_WIDTH - camera_x
         draw_y = grid_y * self.BLOCK_WIDTH - camera_y
 

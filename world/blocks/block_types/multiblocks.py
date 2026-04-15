@@ -135,7 +135,6 @@ class Door_Top(SubMultiBlock):
         pygame.draw.rect(screen, metal, (hx, y + int(block_width * 0.20), hinge_dot, hinge_dot))
         pygame.draw.rect(screen, metal, (hx, y + int(block_width * 0.65), hinge_dot, hinge_dot))
 
-
     def onDestroy(self):
         # get both self and the top and set to none, return a door object
         self.grid.set(self.x, self.y, None)
@@ -153,6 +152,24 @@ class Door_Top(SubMultiBlock):
         self.pass_through = not self.pass_through
         bottom_half.pass_through = self.pass_through
         return True
+    
+    # def get_shadow_offset(self, from_x, from_y):
+    #     if self.pass_through:
+    #         shadow_offset_rules = {
+    #             (0, 1): 0,
+    #             (0, -1): 0,
+    #             (1, 0): 0,
+    #             (-1, 0): -max(2, self.block_width // 4) # shifts the right shadow to the left when open
+    #         }
+    #         return shadow_offset_rules[(from_x, from_y)]
+    #     else:
+    #         shadow_offset_rules = {
+    #             (0, 1): 0,
+    #             (0, -1): 0,
+    #             (1, 0): 0,
+    #             (-1, 0): 0 
+    #         }
+    #         return shadow_offset_rules[(from_x, from_y)]
 
 class Door_Bottom(SubMultiBlock):
     # special_value -> True = door open, False = door closed
@@ -242,8 +259,6 @@ class Door_Bottom(SubMultiBlock):
 
         pygame.draw.rect(screen, knobc, (knob_x, knob_y, knob_sz, knob_sz))
 
-
-
     def onDestroy(self):
         # get both self and the top and set to none, return a door object
         self.grid.set(self.x, self.y, None)
@@ -261,3 +276,21 @@ class Door_Bottom(SubMultiBlock):
         self.pass_through = not self.pass_through
         top_half.pass_through = self.pass_through
         return True
+
+    # def get_shadow_offset(self, from_x, from_y):
+    #     if self.pass_through:
+    #         shadow_offset_rules = {
+    #             (0, 1): 0,
+    #             (0, -1): 0,
+    #             (1, 0): - max(2, self.block_width // 4), # shifts the right shadow to the left when open
+    #             (-1, 0): 0
+    #         }
+    #         return shadow_offset_rules[(from_x, from_y)]
+    #     else:
+    #         shadow_offset_rules = {
+    #             (0, 1): 0,
+    #             (0, -1): 0,
+    #             (1, 0): 0,
+    #             (-1, 0): 0 
+    #         }
+    #         return shadow_offset_rules[(from_x, from_y)]

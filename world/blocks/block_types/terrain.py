@@ -19,10 +19,6 @@ class Rock(Block):
             x *= block_width
             y *= block_width
 
-        # # original color
-        # primary_background_color = (70, 75, 80)
-        # detail_color = (90, 95, 100)
-
         # new warmer and lighter colors
         primary_background_color = (95, 100, 102)
         detail_color = (115, 120, 122)
