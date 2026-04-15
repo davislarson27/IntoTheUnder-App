@@ -16,6 +16,12 @@ class Stone_Bricks(Block): # used the wrong color and doesn't look good yet
         dark  = (40, 47, 55)
         light = (100, 105, 110)
 
+        if being_mined:
+            addedColor = 20
+            base = (base[0]+addedColor, base[1]+addedColor, base[2]+addedColor)
+            dark = (dark[0]+addedColor, dark[1]+addedColor, dark[2]+addedColor)
+            light = (light[0]+addedColor, light[1]+addedColor, light[2]+addedColor)
+
         # background fill
         pygame.draw.rect(screen, dark, (x, y, block_width, block_width))
 
@@ -77,6 +83,12 @@ class Frozen_Stone_Bricks(Block): # used the wrong color and doesn't look good y
         base  = (70, 75, 80)     # main frozen stone color
         dark  = (93, 103, 115)   # cool mortar / cracks
         light = (100, 105, 110)  # frosty highlight
+
+        if being_mined:
+            addedColor = 20
+            base = (base[0]+addedColor, base[1]+addedColor, base[2]+addedColor)
+            dark = (dark[0]+addedColor, dark[1]+addedColor, dark[2]+addedColor)
+            light = (light[0]+addedColor, light[1]+addedColor, light[2]+addedColor)
 
 
         # background fill
@@ -141,6 +153,12 @@ class Ice_Bricks(Block): # used the wrong color and doesn't look good yet
         dark  = (120, 170, 200)   # cracks / separation
         light = (220, 245, 255)   # icy highlight
 
+        if being_mined:
+            addedColor = 20
+            base = (min(base[0]+addedColor, 255), min(base[1]+addedColor, 255), min(base[2]+addedColor, 255))
+            dark = (min(dark[0]+addedColor, 255), min(dark[1]+addedColor, 255), min(dark[2]+addedColor, 255))
+            light = (min(light[0]+addedColor, 255), min(light[1]+addedColor, 255), min(light[2]+addedColor, 255))
+
 
         # background fill
         pygame.draw.rect(screen, dark, (x, y, block_width, block_width))
@@ -204,6 +222,11 @@ class Sand_Bricks(Block): # used the wrong color and doesn't look good yet
         dark  = (175, 160, 120)   # cracks / separation
         light = (220, 215, 170)   # highlight
 
+        if being_mined:
+            addedColor = 20
+            base = (min(base[0]+addedColor, 255), min(base[1]+addedColor, 255), min(base[2]+addedColor, 255))
+            dark = (min(dark[0]+addedColor, 255), min(dark[1]+addedColor, 255), min(dark[2]+addedColor, 255))
+            light = (min(light[0]+addedColor, 255), min(light[1]+addedColor, 255), min(light[2]+addedColor, 255))
 
         # background fill
         pygame.draw.rect(screen, dark, (x, y, block_width, block_width))
