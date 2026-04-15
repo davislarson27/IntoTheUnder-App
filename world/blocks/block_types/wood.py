@@ -165,4 +165,3 @@ class Wood_Planks(Block):
 
         # Bottom seam to frame the tile slightly (optional but helps readability)
         pygame.draw.rect(screen, seam, (x, y + block_width - 1, block_width, 1))
-

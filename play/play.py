@@ -105,7 +105,7 @@ class Play:
 
         return None, None
 
-    def get_affected_block_pointer_build(self, player, grid, pointer_x, pointer_y, inventory, build_mode = True, acknowledge_interactions=True): #pointers (expected as 1, 0, or -1) give direction of arrow
+    def get_affected_block_pointer_build(self, player, grid, pointer_x, pointer_y, inventory, build_mode=True, acknowledge_interactions=True): #pointers (expected as 1, 0, or -1) give direction of arrow
         # using vector raycasting
         start_x = player.x + floor(0.5 * player.x_size)
         start_y = player.y + floor(0.5 * player.y_size)
@@ -371,6 +371,11 @@ class Play:
 
     def manage_menus(self, input):
         """manages the opening and closing of in play menus such as opening the inventory"""
+        if self.inventory.open_off_cycle():
+            self.sub_state = self.inventory
+            self.sub_state.open()
+            return
+
         if self.sub_state is None:
             if input.e_keypress:
                 self.sub_state = self.inventory

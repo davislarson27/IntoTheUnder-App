@@ -16,6 +16,8 @@ class Inventory:
         self.expanded_inventory = []
         self.active_slots = []
 
+        self.openNextFrame = False
+
 
         # ----------------------------------- helper functions ----------------------------------- #
 
@@ -576,7 +578,7 @@ class Inventory:
 
                 # --------------------------------------- general side pannel logic --------------------------------------- #
                 self.default_side_pannel = self.crafting_object
-                self.side_pannel = None
+                self.side_pannel = self.default_side_pannel
 
                 self.side_pannel_slots = 0
 
@@ -944,16 +946,21 @@ class Inventory:
 # --------------------------------------------- open and close functions --------------------------------------------- #
 
     def open(self, side_pannel_use=None):
-        # self.show_full_item_management = True
-        if side_pannel_use is None:
-            self.side_pannel = self.default_side_pannel
-        self.set_active_slots()
+        if not self.openNextFrame:
+            if side_pannel_use is not None:
+                self.side_pannel = side_pannel_use
+            self.set_active_slots()
+        else:
+            self.openNextFrame = False
+
+    def open_off_cycle(self):
+        return self.openNextFrame
 
     def open_chest(self, chest_items):
-        self.show_full_item_management = True
         self.side_pannel = self.chest_side_pannel
         self.side_pannel.fill_on_open(chest_items)
         self.set_active_slots()
+        self.openNextFrame = True
 
     def conditional_close(self, input):
         if input.e_keypress or input.escape_keypress:
@@ -965,7 +972,9 @@ class Inventory:
     def close(self):
         self.clear_selected_slot_full_inventory()
         self.side_pannel.close(self)
+        self.side_pannel = self.default_side_pannel
         self.position_on_click = None
+        self.openNextFrame = False
 
 
 # -------------------------------------------------- run functions -------------------------------------------------- #
