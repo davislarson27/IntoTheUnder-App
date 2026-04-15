@@ -73,7 +73,7 @@ class Play:
             return None, None
         return out_of_bounds_x, out_of_bounds_y
 
-    def get_affected_block_pointer(self, player, grid, pointer_x, pointer_y): #pointers (expected as 1, 0, or -1) give direction of arrow
+    def get_affected_block_pointer(self, player, pointer_x, pointer_y, allowBgInteract): #pointers (expected as 1, 0, or -1) give direction of arrow
         # using vector raycasting
         start_x = player.x + floor(0.5 * player.x_size)
         start_y = player.y + floor(0.5 * player.y_size)
@@ -82,28 +82,32 @@ class Play:
         dx, dy = pointer_x - start_x, pointer_y - start_y        
         length = sqrt(dx*dx + dy*dy)
         if length == 0: # if the player's cursor is exactly in their center it will just return the player's center's block
-            if grid.get(self.pixel_to_grid(start_x, grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, grid.BLOCK_WIDTH)) is None:
-                return None, None
+            if self.grid.get(self.pixel_to_grid(start_x, self.grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.grid.BLOCK_WIDTH)) is None:
+                return None, None, self.grid
+            elif allowBgInteract and self.background_grid.get(self.pixel_to_grid(start_x, self.background_grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.background_grid.BLOCK_WIDTH)) is None:
+                return None, None, self.background_grid
             else:
-                return self.pixel_to_grid(start_x, grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, grid.BLOCK_WIDTH)
+                return self.pixel_to_grid(start_x, self.grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.grid.BLOCK_WIDTH), self.grid
         else:
             ux, uy = dx / length, dy / length
 
         # now step outward
-        reach_sq = 4.5 * grid.BLOCK_WIDTH * 4.5 * grid.BLOCK_WIDTH # reach of 4 blocks squared
+        reach_sq = 4.5 * self.grid.BLOCK_WIDTH * 4.5 * self.grid.BLOCK_WIDTH # reach of 4 blocks squared
         distrance_stepped_sq = 0
         step = 0
         while distrance_stepped_sq < reach_sq:
-            grid_x = floor((start_x + ux * step) / grid.BLOCK_WIDTH)
-            grid_y = floor((start_y + uy * step) / grid.BLOCK_WIDTH)
+            grid_x = floor((start_x + ux * step) / self.grid.BLOCK_WIDTH)
+            grid_y = floor((start_y + uy * step) / self.grid.BLOCK_WIDTH)
 
-            if grid.get(grid_x, grid_y) is not None and not issubclass(type(grid.get(grid_x, grid_y)), Water):
-                return grid_x, grid_y
-            
+            if self.grid.get(grid_x, grid_y) is not None and not issubclass(type(self.grid.get(grid_x, grid_y)), Water):
+                return grid_x, grid_y, self.grid
+            elif allowBgInteract and self.background_grid.get(grid_x, grid_y) is not None and not issubclass(type(self.background_grid.get(grid_x, grid_y)), Water):
+                return grid_x, grid_y, self.background_grid
+
             distrance_stepped_sq = ((ux * step) * (ux * step)) + ((uy * step) * (uy * step))
             step += 0.025
 
-        return None, None
+        return None, None, self.grid
 
     def get_affected_block_pointer_build(self, player, grid, pointer_x, pointer_y, inventory, build_mode=True, acknowledge_interactions=True): #pointers (expected as 1, 0, or -1) give direction of arrow
         # using vector raycasting
@@ -290,15 +294,11 @@ class Play:
 
         world_mouse_x = input.virtual_mouse_x + self.camera_x
         world_mouse_y = input.virtual_mouse_y + self.cur_camera_y
-
-        # process block interaction data
-        if allow_bg_interactions: self.active_grid = self.background_grid
-        else: self.active_grid = self.grid
+        
+        self.affected_x, self.affected_y, self.active_grid = self.get_affected_block_pointer(self.player, world_mouse_x, world_mouse_y, allow_bg_interactions)
 
         # set mining sprite grid
         self.mining_sprite.set_grid(self.active_grid)
-        
-        self.affected_x, self.affected_y = self.get_affected_block_pointer(self.player, self.active_grid, world_mouse_x, world_mouse_y)
 
         if input.mouse.get_pressed()[0] and self.affected_x is not None:
             self.destroy_held_time+=1
@@ -319,6 +319,11 @@ class Play:
             if input.mouse.get_pressed()[2]:
                 if (self.build_held_time - 1) % self.physics_rules.BUILD_HOLD_THRESHOLD == 0 and self.build_held_time - 1 != self.physics_rules.BUILD_HOLD_THRESHOLD:
                     build_affected_x, build_affected_y = self.get_affected_block_pointer_build(self.player, self.active_grid, world_mouse_x, world_mouse_y, self.inventory, acknowledge_interactions=not prevent_block_interaction)
+                    
+                    # reselect the grid for building AFTER identifying where to place the block if necessary
+                    if self.build_mode and allow_bg_interactions:
+                        self.active_grid = self.background_grid
+
                     # check to see if the block can be built
                     if build_affected_x is not None and not self.player.reject_block_placement(build_affected_x, build_affected_y):
                         # now build the block
@@ -429,6 +434,7 @@ class Play:
             # draw main grid
             self.grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
 
+            # draw selected block
             if self.affected_x != None and not self.build_mode and self.active_grid.get(self.affected_x, self.affected_y) != None:
                 if self.destroy_held_time > 0:
                     self.active_grid.get(self.affected_x, self.affected_y).draw(True, camera_x = self.camera_x, camera_y = self.cur_camera_y)
@@ -436,6 +442,10 @@ class Play:
                 else:
                     self.active_grid.get(self.affected_x, self.affected_y).draw(True, camera_x = self.camera_x, camera_y = self.cur_camera_y)
                     
+            # redraw overlay if the grid is in background mode
+            if self.active_grid is self.background_grid and self.affected_x is not None:
+                self.draw_bg_overlay_at(self.affected_x, self.affected_y, self.camera_x, self.cur_camera_y)
+
             self.player.draw(self.camera_x, self.cur_camera_y)
 
 
