@@ -153,23 +153,18 @@ class Door_Top(SubMultiBlock):
         bottom_half.pass_through = self.pass_through
         return True
     
-    # def get_shadow_offset(self, from_x, from_y):
-    #     if self.pass_through:
-    #         shadow_offset_rules = {
-    #             (0, 1): 0,
-    #             (0, -1): 0,
-    #             (1, 0): 0,
-    #             (-1, 0): -max(2, self.block_width // 4) # shifts the right shadow to the left when open
-    #         }
-    #         return shadow_offset_rules[(from_x, from_y)]
-    #     else:
-    #         shadow_offset_rules = {
-    #             (0, 1): 0,
-    #             (0, -1): 0,
-    #             (1, 0): 0,
-    #             (-1, 0): 0 
-    #         }
-    #         return shadow_offset_rules[(from_x, from_y)]
+    def block_edge_shade(self, directionOfBgBlock_x, directionofBgBlock_y):
+        """returns true or false if the bg block should be shaded on the corner"""
+        if self.pass_through:
+            temp_ignore_shading_from = {
+                (0, 1): True, # coming from the top
+                (0, -1): True, # coming from the bottom
+                (1, 0): False, # coming from the right
+                (-1, 0): True # comin from the left
+            }
+            return temp_ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
+        else:
+            return self.ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
 
 class Door_Bottom(SubMultiBlock):
     # special_value -> True = door open, False = door closed
@@ -277,20 +272,15 @@ class Door_Bottom(SubMultiBlock):
         top_half.pass_through = self.pass_through
         return True
 
-    # def get_shadow_offset(self, from_x, from_y):
-    #     if self.pass_through:
-    #         shadow_offset_rules = {
-    #             (0, 1): 0,
-    #             (0, -1): 0,
-    #             (1, 0): - max(2, self.block_width // 4), # shifts the right shadow to the left when open
-    #             (-1, 0): 0
-    #         }
-    #         return shadow_offset_rules[(from_x, from_y)]
-    #     else:
-    #         shadow_offset_rules = {
-    #             (0, 1): 0,
-    #             (0, -1): 0,
-    #             (1, 0): 0,
-    #             (-1, 0): 0 
-    #         }
-    #         return shadow_offset_rules[(from_x, from_y)]
+    def block_edge_shade(self, directionOfBgBlock_x, directionofBgBlock_y):
+        """returns true or false if the bg block should be shaded on the corner"""
+        if self.pass_through:
+            temp_ignore_shading_from = {
+                (0, 1): True, # coming from the top
+                (0, -1): True, # coming from the bottom
+                (1, 0): False, # coming from the right
+                (-1, 0): True # comin from the left
+            }
+            return temp_ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
+        else:
+            return self.ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]

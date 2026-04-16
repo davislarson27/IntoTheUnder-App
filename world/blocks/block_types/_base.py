@@ -91,9 +91,6 @@ class Block:
         """returns true or false if the bg block should be shaded on the corner"""
         return self.ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
 
-    # def get_shadow_offset(self, from_x, from_y):
-    #     return 0 # this would be a dictionary that checks (see the door top or door bottom) but the answer is always 0 by default
-
     def __str__(self): # used so when the type is initialized the str() method can be used
         return self.str_name
 
