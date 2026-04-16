@@ -141,11 +141,17 @@ class Play:
                     else:
                         x_place_spot = floor((start_x + ux*(step - d_step)) / grid.BLOCK_WIDTH)
                         y_place_spot = floor((start_y + uy*(step - d_step)) / grid.BLOCK_WIDTH)
+                        
+                        if grid.get(x_place_spot, y_place_spot) is not None and not issubclass(type(grid.get(x_place_spot, y_place_spot)), Water):
+                            return None, None
 
                         return x_place_spot, y_place_spot
                 else:
                     x_place_spot = floor((start_x + ux*(step - d_step)) / grid.BLOCK_WIDTH)
                     y_place_spot = floor((start_y + uy*(step - d_step)) / grid.BLOCK_WIDTH)
+
+                    if grid.get(x_place_spot, y_place_spot) is not None and not issubclass(type(grid.get(x_place_spot, y_place_spot)), Water):
+                        return None, None
 
                     return x_place_spot, y_place_spot
 
