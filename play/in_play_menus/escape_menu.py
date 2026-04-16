@@ -102,10 +102,10 @@ class Escape_Menu:
         if self.btn_resume.collidepoint(pos):
             return None
         elif self.btn_help.collidepoint(pos):
-            return self  # temporary not functional
+            pass
         elif self.btn_quit.collidepoint(pos):
             self.quitValue = True
-            return self
+        return self
 
     # ------------------------------------------------------------------ #
     #  drawing                                                           #
