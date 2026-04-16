@@ -6,6 +6,7 @@ from play.mining_sprite import Mining_Sprite
 from components.blit_letterboxed import blit_letterboxed
 from components.game_file_reading import save_game
 from .physics_rules import Physics_Rules
+from .in_play_menus.escape_menu import Escape_Menu
 
 
 class Play:
@@ -17,6 +18,9 @@ class Play:
         self.menu = menu
         self.screen = screen
         self.BLOCK_WIDTH = BLOCK_WIDTH
+
+        # generate in play menus
+        self.escape_menu = Escape_Menu(screen)
 
         # prep substate
         self.sub_state = None # holds the run function for submenus when applicable
@@ -370,22 +374,39 @@ class Play:
 
     def manage_menus(self, input):
         """manages the opening and closing of in play menus such as opening the inventory"""
+        # check for off cycle inventory open first (meaning open came from a block rather than a keypress, happened on the last loop)
         if self.inventory.open_off_cycle():
             self.sub_state = self.inventory
             self.sub_state.open()
             return
 
-        if self.sub_state is None:
-            if input.e_keypress:
-                self.sub_state = self.inventory
-                self.sub_state.open()
-            elif input.c_keypress:
-                self.sub_state = self.inventory.get_recipe_menu()
-                self.sub_state.open()
-        else:
-            if self.sub_state.conditional_close(input):
-                self.sub_state = None
+        # if self.sub_state is None:
+        #     if input.e_keypress:
+        #         self.sub_state = self.inventory
+        #         self.sub_state.open()
+        #     elif input.c_keypress:
+        #         self.sub_state = self.inventory.get_recipe_menu()
+        #         self.sub_state.open()
+        # else:
+        #     if self.sub_state.conditional_close(input):
+        #         self.sub_state = None
 
+        def operate_menu(menu):
+            if self.sub_state is menu:
+                self.sub_state.close()
+                self.sub_state = None
+            else:
+                if self.sub_state is not None:
+                    self.sub_state.close()
+                self.sub_state = menu
+                self.sub_state.open()
+
+        if input.e_keypress:
+            operate_menu(self.inventory)
+        elif input.c_keypress:
+            operate_menu(self.inventory.get_recipe_menu())
+        elif input.escape_keypress: # this one works differently
+            operate_menu(self.escape_menu)
 
     # ---------------------------- interacting with main loop ---------------------------- #
 
@@ -397,6 +418,7 @@ class Play:
         return_class = self
 
         if self.sub_state is not None:
+            # run sub_state
             self.sub_state = self.sub_state.run(input) # responsible for drawing
 
         else:
