@@ -969,6 +969,9 @@ class Inventory:
         self.position_on_click = None
         self.openNextFrame = False
 
+    def sub_state_full_quit(self):
+        return False
+    
 
 # -------------------------------------------------- run functions -------------------------------------------------- #
 

@@ -741,6 +741,8 @@ class User_Crafting_Recipes_List:
         self.recipe_selected_index = None
         self.selected_tab_index = 0
 
+    def sub_state_full_quit(self):
+        return False
 
     # ------------------------------------------------------------------ #
     # run helper functions

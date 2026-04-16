@@ -351,9 +351,9 @@ class Play:
     def run_main_game(self, input):
         
         # step 1: check for if the player wants to quit BEFORE running frame logic
-        if input.escape_keypress:
-            self.prep_menu()
-            return self.menu
+        # if input.escape_keypress:
+        #     self.prep_menu()
+        #     return self.menu
 
         # step 2: interact with blocks
         self.interact_with_grid(input)
@@ -407,6 +407,11 @@ class Play:
         return_class = self
 
         if self.sub_state is not None:
+            # check for if a sub_state wants the the play class to quit and return to the menu
+            if self.sub_state.sub_state_full_quit():
+                self.prep_menu()
+                return self.menu
+
             # run sub_state
             self.sub_state = self.sub_state.run(input) # responsible for drawing
 
