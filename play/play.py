@@ -380,17 +380,6 @@ class Play:
             self.sub_state.open()
             return
 
-        # if self.sub_state is None:
-        #     if input.e_keypress:
-        #         self.sub_state = self.inventory
-        #         self.sub_state.open()
-        #     elif input.c_keypress:
-        #         self.sub_state = self.inventory.get_recipe_menu()
-        #         self.sub_state.open()
-        # else:
-        #     if self.sub_state.conditional_close(input):
-        #         self.sub_state = None
-
         def operate_menu(menu):
             if self.sub_state is menu:
                 self.sub_state.close()

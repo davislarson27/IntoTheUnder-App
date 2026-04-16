@@ -1,5 +1,5 @@
 import pygame
-from play.inventory.items_management import Inventory
+from play.inventory.inventory import Inventory
 from components.blocks.blocks import *
 
 # Initialize Pygame

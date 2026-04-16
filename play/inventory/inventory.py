@@ -962,13 +962,6 @@ class Inventory:
         self.set_active_slots()
         self.openNextFrame = True
 
-    def conditional_close(self, input):
-        if input.e_keypress or input.escape_keypress:
-            self.close()
-            return True
-        else:
-            return False
-
     def close(self):
         self.clear_selected_slot_full_inventory()
         self.side_pannel.close(self)

@@ -1,6 +1,6 @@
 import json
 from world.grid import Grid
-from play.inventory.items_management import Inventory
+from play.inventory.inventory import Inventory
 from play.player import Player
 from components.world_details import World_Details
 

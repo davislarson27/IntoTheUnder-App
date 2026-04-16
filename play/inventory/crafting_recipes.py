@@ -736,12 +736,6 @@ class User_Crafting_Recipes_List:
         start_tab = 0
         self.switch_tab(start_tab)
 
-    def conditional_close(self, input):
-        if input.c_keypress or input.escape_keypress:
-            self.close()
-            return True
-        return False
-
     def close(self):
         self.selected_recipe = None
         self.recipe_selected_index = None
