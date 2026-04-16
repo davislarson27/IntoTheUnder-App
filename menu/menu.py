@@ -9,6 +9,7 @@ from components.text_box import Text_Box
 from play.play import Play
 from components.blit_letterboxed import blit_letterboxed
 from components.game_file_reading import *
+from world.world_creation.world_generation_settings import World_Generation_Settings
 
 """
 
@@ -95,13 +96,10 @@ class Menu:
         self.title_space = pygame.Rect(self.menu_block_width * title_column_margin_x, self.menu_block_height * 5, self.menu_block_width * title_column_width, self.menu_block_height * 4)
         self.small_title_space = pygame.Rect(self.menu_block_width * title_column_margin_x, self.menu_block_height * 5, self.menu_block_width * title_column_width, self.menu_block_height * 4)
         self.main_text_surf = self.title_font.render("Into the Under", True, (255, 255, 255))
-        # self.load_screen_text_surf = self.small_title_font.render("Select World", True, (255, 255, 255))
-        # self.load_screen_text_surf = self.small_title_font.render(f"Select World ({self.load_screen_factor+1}/{self.get_max_load_screens()})", True, (255, 255, 255))
 
         # text box details
         self.padding = 12
         self.new_world_name_text_box = Text_Box()
-        # self.text_box_list = [self.new_world_name_text_box]
 
         # buttons on the menu
         self.button0_dimentions = pygame.Rect(floor(self.menu_block_width * 0.5), self.menu_block_height * 1, floor(self.menu_block_width * 2.5), floor(self.menu_block_height * 1.75))
@@ -200,8 +198,22 @@ class Menu:
         self.width_blocks = (width_px // load_screen_block_width) * 3
         self.height_blocks = (height_px // load_screen_block_width) + 1
         self.background_world_width_px = floor(self.width_blocks * load_screen_block_width)
-        self.background_grid = Grid(self.width_blocks, self.height_blocks, load_screen_block_width, screen)
-        self.background_grid.generate_terrain()
+
+        menu_world_settings = World_Generation_Settings(
+            world_generation_settings.version, 
+            0, 
+            0, 
+            self.width_blocks, 
+            self.height_blocks, 
+            load_screen_block_width
+        )
+        menu_world_settings.reset_ground_level(13)
+        grid_superstructure = Grid_Superstructure(screen, menu_world_settings)
+        grid_superstructure.generate_world()
+        self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
+
+        # self.background_grid = Grid(self.width_blocks, self.height_blocks, load_screen_block_width, screen)
+        # self.background_grid.generate_terrain()
 
 
     def get_max_load_screens(self):
@@ -731,13 +743,7 @@ class Menu:
     # helper functions
     def create_new_world(self):
         # initialize grid and terrain
-        # grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
-        # grid.generate_terrain()
-
-        # background_grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
-        # background_grid.generate_terrain() # this isn't correct long term -> gemerates completely unique terrain behind the cur terrain
-
-
+        self.world_generation_settings.reset_ground_level(50)
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
         grid_superstructure.generate_world()
         grid, background_grid = grid_superstructure.get_grids()
