@@ -19,25 +19,28 @@ class Log(Block):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
+
+        primary_color = (102, 87, 72)
+        secondary_color = (44, 29, 14)
         
         pygame.draw.rect( # draw base color
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),
+            (primary_color[0] + added_color, primary_color[1] + added_color, primary_color[2] + added_color),
             (x, y, block_width, block_width)
         )
         pygame.draw.rect(
             screen,
-            (40 + added_color, 25 + added_color, 10 + added_color),
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
             ((x) + floor(block_width * 0.15) , y + floor(block_width * 0.25), block_width // 25, block_width // 1.75)
         )
         pygame.draw.rect(
             screen,
-            (40 + added_color, 25 + added_color, 10 + added_color),
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
             ((x) + (block_width // 2) , y + (block_width // 3), block_width // 25, block_width // 1.75)
         )
         pygame.draw.rect(
             screen,
-            (40 + added_color, 25 + added_color, 10 + added_color),
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
             ((x) + floor(block_width * 0.8) , y + floor(block_width * 0.2), block_width // 25, block_width // 1.75)
         )
 
