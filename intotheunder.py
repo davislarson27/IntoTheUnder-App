@@ -135,7 +135,7 @@ TICKS = 60
 # run details
 grid_width = 5000
 grid_height = 100
-world_generation_settings = World_Generation_Settings(VERSION, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, grid_width, grid_height)
+world_generation_settings = World_Generation_Settings(VERSION, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, grid_width, grid_height, BLOCK_WIDTH)
 menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME), directory, world_generation_settings)
 
 # running class

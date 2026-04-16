@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 from world.grid import Grid
+from world.world_creation.generate_world import *
 from components.text_box import Text_Box
 from play.play import Play
 from components.blit_letterboxed import blit_letterboxed
@@ -730,11 +731,16 @@ class Menu:
     # helper functions
     def create_new_world(self):
         # initialize grid and terrain
-        grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
-        grid.generate_terrain()
+        # grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
+        # grid.generate_terrain()
 
-        background_grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
-        background_grid.generate_terrain() # this isn't correct long term -> gemerates completely unique terrain behind the cur terrain
+        # background_grid = Grid(self.world_generation_settings.grid_width, self.world_generation_settings.grid_depth, self.block_width, self.screen)
+        # background_grid.generate_terrain() # this isn't correct long term -> gemerates completely unique terrain behind the cur terrain
+
+
+        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
+        grid_superstructure.generate_world()
+        grid, background_grid = grid_superstructure.get_grids()
 
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
