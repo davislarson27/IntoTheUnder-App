@@ -250,3 +250,35 @@ class Grid_Superstructure:
                 running_odds_total += structureIdentifier.odds
             
             x += 1
+
+        # generate ground level objects & structures for the background
+        x = 1 # structures don't generate at x=0
+        while x < self.background_grid.width:
+            # get biome
+            biome = self.get_biome(x)
+
+            # get seed based random number (hashed based on x)
+            hash = int(hashlib.sha256(f"{self.seed}_bg_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0  # value 0.0–1.0
+
+            subStructure_hash = int(hashlib.sha256(f"{self.seed}_bg_sub_struct_{x}".encode()).hexdigest(), 16)
+            instruction_variance_chance = (subStructure_hash % 1000) / 1000.0  # value 0.0–1.0
+
+            # get structure to generate based on biome
+            running_odds_total = 0
+            for structureIdentifier in biome.bg_structures:
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    # build structure
+                    structure = structureIdentifier.structure
+                    y = self.get_bg_terrain_height(x + structure.get_x_difference_for_y())
+                    buildInstructions = structure.getStructureInstructions(x, y, self.background_grid, instruction_variance_chance)
+                    for instruction in buildInstructions:
+                        instruction.setBlock(self.background_grid)
+
+                    # jump x past the end of the structure
+                    x += structure.get_width()
+
+                    break
+                running_odds_total += structureIdentifier.odds
+            
+            x += 1

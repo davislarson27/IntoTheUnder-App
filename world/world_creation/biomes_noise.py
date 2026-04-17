@@ -28,9 +28,13 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.005),
+        Structure_Identifier(Recipe_Burrow, 0.0005),
         Structure_Identifier(Tree, 0.1)
     ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.1)
+    ]
+
 
 # elev checks for mountains
 class Mountain(Biome):
