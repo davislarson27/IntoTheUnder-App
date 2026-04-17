@@ -145,6 +145,13 @@ class Grid_Superstructure:
             
 
     def generate_world(self):
+        for generation_udpate in self._generate_world():
+            print(generation_udpate)
+
+
+    def _generate_world(self):
+
+        yield 'generating grid', 0
 
         # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
@@ -175,7 +182,8 @@ class Grid_Superstructure:
                     if ore_noise.find(x, y, biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
                 i+=1
-
+        
+        # yield 'generating lakes'
 
         # # identify water basins pass
         # water_basin_anchors = []
@@ -206,6 +214,7 @@ class Grid_Superstructure:
         #     # print(f'generated water from x={start_x} to x={end_x}')
 
 
+        yield 'generating background grid', 30
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
@@ -226,6 +235,7 @@ class Grid_Superstructure:
             for y in range(cur_depth_down, self.background_grid.height):
                 self.background_grid.set(x, y, biome.sub_layer)
                 
+        yield 'generating structures', 50
 
         # generate ground level objects & structures for the background
         # should this be run with the foreground so foreground & background structures don't overlap?
@@ -295,3 +305,5 @@ class Grid_Superstructure:
                 running_odds_total += structureIdentifier.odds
             
             x += 1
+
+        return 'saving world', 60
