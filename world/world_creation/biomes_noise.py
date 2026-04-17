@@ -1,4 +1,7 @@
 from world.blocks.block_export import *
+from world.world_creation.structures.structures import *
+from world.world_creation.structures.structure_identifier import Structure_Identifier
+
 
 class Layer:
     def __init__(self, block, layer_depth, variation_amp=2, variation_freq=6):
@@ -23,6 +26,11 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         Mabelite_Ore_Block: 0.00015,
         Sulfur_Flakes_Block: -0.001
     }
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.005),
+        Structure_Identifier(Tree, 0.1)
+    ]
 
 # elev checks for mountains
 class Mountain(Biome):

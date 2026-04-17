@@ -135,12 +135,6 @@ class Grid_Superstructure:
 
     def generate_world(self):
 
-
-        # idea: have lakes spawn when the mountain or hill value drops below a value (because i know it is a short term dip) and the humidity is low and have it spawn water down until the value hops back up)
-        # # start at maybe elevation level when the value dips then have each chunk where the value is true look over to its left to find it where the start happened
-
-
-
         # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
             biome = self.get_biome(x)
@@ -177,6 +171,9 @@ class Grid_Superstructure:
         for x in range(self.foreground_grid.width):
             suddenDepthValue = self.lake_depth_value(x)
             humidity = self.get_humidity(x)
+            # absolute_height = self.get_bg_terrain_height(x)
+            # elevation = self.get_base_elevation(x)
+            # if absolute_height < elevation and suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
             if suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
                 if len(water_basin_anchors) == 0 or water_basin_anchors[-1] != x - 1:
                     water_basin_anchors.append(x)
@@ -218,3 +215,31 @@ class Grid_Superstructure:
             for y in range(cur_depth_down, self.background_grid.height):
                 self.background_grid.set(x, y, biome.sub_layer)
                 
+
+        # generate ground level objects & structures
+        for x in range(self.foreground_grid.width):
+            # get biome
+            biome = self.get_biome(x)
+
+            # get seed based random number (hashed based on x)
+            hash = int(hashlib.sha256(f"{self.seed}_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0  # value 0.0–1.0
+
+            subStructure_hash = int(hashlib.sha256(f"{self.seed}_sub_struct_{x}".encode()).hexdigest(), 16)
+            instruction_variance_chance = (subStructure_hash % 1000) / 1000.0  # value 0.0–1.0
+
+            # get structure to generate based on biome
+            running_odds_total = 0
+            for structureIdentifier in biome.structures:
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    # build structure
+                    y = self.get_terrain_height(x)
+                    structure = structureIdentifier.structure
+                    buildInstructions = structure.getStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance)
+                    for instruction in buildInstructions:
+                        instruction.setBlock(self.foreground_grid)
+
+                    # end loop
+                    break
+                running_odds_total += structureIdentifier.odds
+            
