@@ -217,7 +217,8 @@ class Grid_Superstructure:
                 
 
         # generate ground level objects & structures
-        for x in range(self.foreground_grid.width):
+        x = 1 # structures don't generate at x=0
+        while x < self.foreground_grid.width:
             # get biome
             biome = self.get_biome(x)
 
@@ -233,13 +234,19 @@ class Grid_Superstructure:
             for structureIdentifier in biome.structures:
                 if structureIdentifier.odds + running_odds_total > structure_odds:
                     # build structure
-                    y = self.get_terrain_height(x)
                     structure = structureIdentifier.structure
+                    y = self.get_terrain_height(x + structure.get_x_difference_for_y())
                     buildInstructions = structure.getStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance)
                     for instruction in buildInstructions:
                         instruction.setBlock(self.foreground_grid)
+                    bg_build_instructions = structure.getBgStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance)
+                    for instruction in bg_build_instructions:
+                        instruction.setBlock(self.background_grid)
 
-                    # end loop
+                    # jump x past the end of the structure
+                    x += structure.get_width()
+
                     break
                 running_odds_total += structureIdentifier.odds
             
+            x += 1
