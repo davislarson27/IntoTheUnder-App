@@ -91,13 +91,13 @@ class Forest(Biome):
     layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3)]
     sub_layer = Rock
     
-class Montane_Forest(Biome):
+class Montane_Forest(Biome): # at some point get more gravel to appear here near the surface
     def claim(elevation, temp, humidity, mountain):
         if humidity >= 0 and temp < 0 and elevation < 0:
             return True
         return False
     
-    layers = [Layer(Grass, 1, variation_amp=0), Layer(Packed_Dirt, 3), Layer(Frozen_Rock, 1)]
+    layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3), Layer(Frozen_Rock, 1)]
     sub_layer = Rock
     
 

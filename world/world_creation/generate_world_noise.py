@@ -22,14 +22,14 @@ class Grid_Superstructure:
         self.terrain_variation_seed = make_seed(self.seed, 'terVar')
         self.humidity_seed = make_seed(self.seed, 'humidity')
         self.temp_seed = make_seed(self.seed, 'temp')
-        self.bg_hill_seed = make_seed(self.seed, 'bg')
-        self.bg_ter_var_seed = make_seed(self.seed, 'bg')
+        self.bg_hill_seed = make_seed(self.seed, 'bg_hill')
+        self.bg_ter_var_seed = make_seed(self.seed, 'bg_ter_var')
 
         self.layer_1_var_seed = make_seed(self.seed, 'layer1')
         self.layer_2_var_seed = make_seed(self.seed, 'layer2')
         self.layer_3_var_seed = make_seed(self.seed, 'layer3')
 
-        self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Lake, Forest, Plains]
+        self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Lake, Forest, Montane_Forest, Plains]
 
         # amplitutdes of different generators
         self.elevation_amp = 15
@@ -122,6 +122,13 @@ class Grid_Superstructure:
     
 
     def generate_world(self):
+
+
+        # idea: have lakes spawn when the mountain or hill value drops below a value (because i know it is a short term dip) and the humidity is low and have it spawn water down until the value hops back up)
+        # # start at maybe elevation level when the value dips then have each chunk where the value is true look over to its left to find it where the start happened
+
+
+
         # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
             biome = self.get_biome(x)
