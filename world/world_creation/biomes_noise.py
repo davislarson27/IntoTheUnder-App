@@ -16,7 +16,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
 # elev checks for mountains
 class Mountain(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if mountain > 10:
+        if mountain < -10:
             return True
         return False
     
@@ -25,7 +25,7 @@ class Mountain(Biome):
 
 class Ravine(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if mountain < -10:
+        if mountain > 10:
             return True
         return False
     
@@ -45,7 +45,7 @@ class Desert(Biome):
 
 class Tundra(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if humidity < 0 and temp < 0 and elevation >= 0:
+        if humidity < 0 and temp < 0 and elevation < 0:
             return True
         return False
     
@@ -54,7 +54,7 @@ class Tundra(Biome):
 
 class Glacier(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if humidity < 0 and temp < 0 and elevation < 0:
+        if humidity < 0 and temp < 0 and elevation >= 0:
             return True
         return False
     
@@ -64,7 +64,7 @@ class Glacier(Biome):
 # high humidity
 class Lake(Biome): # set water level, any time humidity gets over a threshold near that point it will iterate around itself filling in water maybe
     def claim(elevation, temp, humidity, mountain):
-        if humidity > 0 and temp > 0 and elevation < 0:
+        if humidity >= 0 and temp >= 0 and elevation >= 0:
             return True
         return False
     
@@ -73,7 +73,7 @@ class Lake(Biome): # set water level, any time humidity gets over a threshold ne
 
 class Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if humidity > 0 and temp < 0 and elevation < 0:
+        if humidity >= 0 and temp < 0 and elevation >= 0:
             return True
         return False
     
@@ -82,7 +82,7 @@ class Forest(Biome):
     
 class Montane_Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if humidity > 0 and temp < 0 and elevation >= 0:
+        if humidity >= 0 and temp < 0 and elevation < 0:
             return True
         return False
     
