@@ -53,6 +53,7 @@ class Grid_Superstructure:
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.8, scale=0.22, min_depth=25),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.85, scale=0.22, min_depth=35),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.85, scale=0.3, min_depth=65),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.8, scale=0.22, min_depth=12),
         }
 
     def get_grids(self):
@@ -144,7 +145,10 @@ class Grid_Superstructure:
             i = 1
             for y in range(ground_elevation, self.foreground_grid.height):
                 for ore in self.ores:
-                    if self.ores[ore].find(x, y, biome.multiplier[ore] * i): # returns True if this ore should be here
+                    ore_noise = self.ores[ore]
+                    if i < ore_noise.min_depth:
+                        continue
+                    if ore_noise.find(x, y, biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
                 i+=1
 
@@ -152,13 +156,10 @@ class Grid_Superstructure:
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
             biome = self.get_biome(x)
             ground_elevation = self.get_bg_terrain_height(x)
-            # bg_jump = self.get_bg_jump_up(x)
 
             cur_depth_down = ground_elevation
             layer_num = 0
             for layer in biome.layers:
-                # if layer_num == 0:
-                #     cur_depth_down -= bg_jump
                 for y in range(cur_depth_down, layer.depth+cur_depth_down):
                     self.background_grid.set(x, y, layer.block)
                 variation = self.get_layer_increment(x, layer_num, layer)

@@ -16,11 +16,12 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     sub_layer = Rock
 
     multiplier = {
-        Iron_Ore_Block: 0.0011,
-        Coal_Ore_Block: 0.0007,
+        Iron_Ore_Block: 0.00045,
+        Coal_Ore_Block: 0.0002,
         Emerald_Ore_Block: -0.001,
-        Diamond_Ore_Block: 0.0022,
-        Mabelite_Ore_Block: 0.0002
+        Diamond_Ore_Block: 0.0009,
+        Mabelite_Ore_Block: 0.00015,
+        Sulfur_Flakes_Block: -0.001
     }
 
 # elev checks for mountains
