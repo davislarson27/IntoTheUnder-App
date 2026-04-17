@@ -313,3 +313,48 @@ class Snow_Man_Structure:
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
     
+
+class Small_Bush:
+    width = 1
+    start_x_diff = 0 # distance from the origin x that the y elevation should be set to
+    height = 1 # distance above ground
+    depth = 0 # distance below ground
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+    
+    @classmethod
+    def get_x_difference_for_y(cls):
+        """returns the value to add to x to get the corect elevation this object is calcualated for (i.e., for a tree it would be +1)"""
+        return cls.start_x_diff
+
+    @classmethod
+    def get_height(cls):
+        """gets height above the start point"""
+        return cls.height
+
+    @classmethod
+    def get_depth(cls):
+        """gets depth below the start point"""
+        return cls.depth
+
+    @classmethod
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Leaves(grid, grid.screen, ground_x, ground_y-1, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+
+        # return list
+        return structureInstructionsList
+
+    @classmethod
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        return [] # trees don't have backgrounds
+    

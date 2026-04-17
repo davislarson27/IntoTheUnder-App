@@ -28,8 +28,8 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
-        Structure_Identifier(Tree, 0.1)
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Tree, 0.1),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
@@ -80,11 +80,11 @@ class Desert(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
-        Structure_Identifier(Cactus_Structure, 0.06)
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Cactus_Structure, 0.05)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Cactus_Structure, 0.03)
+        Structure_Identifier(Cactus_Structure, 0.015)
     ]
 
 class Tundra(Biome):
@@ -97,7 +97,8 @@ class Tundra(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Small_Bush, 0.05),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -112,7 +113,7 @@ class Glacier(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Snow_Man_Structure, 0.006)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
@@ -129,8 +130,9 @@ class Rain_Forest(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
-        Structure_Identifier(Tree, 0.12)
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Tree, 0.12),
+        Structure_Identifier(Small_Bush, 0.02),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.12)
@@ -146,8 +148,9 @@ class Forest(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
-        Structure_Identifier(Tree, 0.1)
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Tree, 0.1),
+        Structure_Identifier(Small_Bush, 0.01),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
@@ -163,11 +166,12 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
-        Structure_Identifier(Tree, 0.06)
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Tree, 0.03),
+        Structure_Identifier(Small_Bush, 0.025),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Tree, 0.06)
+        Structure_Identifier(Tree, 0.02)
     ]
     
 
@@ -181,8 +185,9 @@ class Plains(Biome):
     sub_layer = Rock
     
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.0005),
-        Structure_Identifier(Tree, 0.02)
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Tree, 0.02),
+        Structure_Identifier(Small_Bush, 0.03),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)
