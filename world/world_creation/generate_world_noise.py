@@ -29,7 +29,7 @@ class Grid_Superstructure:
         self.layer_2_var_seed = make_seed(self.seed, 'layer2')
         self.layer_3_var_seed = make_seed(self.seed, 'layer3')
 
-        self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Lake, Forest, Montane_Forest, Plains]
+        self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
 
         # amplitutdes of different generators
         self.elevation_amp = 15
@@ -48,7 +48,7 @@ class Grid_Superstructure:
         self.bg_ter_var_freq = self.terrain_variation_freq
 
         self.ores = { # higher scale = smaller veins, higher threshold = less common
-            Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=8),
+            Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=10),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, threshold=0.62, scale=0.17, min_depth=15),
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.8, scale=0.22, min_depth=25),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.85, scale=0.22, min_depth=35),
@@ -59,6 +59,15 @@ class Grid_Superstructure:
     def get_grids(self):
         return self.foreground_grid, self.background_grid
         
+    def lake_depth_value(self, x):
+        # mountain = self.get_mountain_elevation(x)
+        mountain = 0
+
+        hill = pnoise1(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
+        hill *= abs(hill) * self.hill_amp
+
+        return int(mountain + hill)
+
     def get_terrain_height(self, x):
         # large = pnoise1( x * freq, base=seed % crunch value) * amp
         base_altitude_level = self.get_base_elevation(x)
@@ -88,7 +97,7 @@ class Grid_Superstructure:
     
     def get_biome(self, x):
         elevation = self.get_base_elevation(x)
-        humidity = pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
+        humidity = self.get_humidity(x)
         temp = pnoise1(x * 0.003,  base=(self.temp_seed) % 256) * 20
 
         for biome in self.biome_priority_order:
@@ -120,6 +129,9 @@ class Grid_Superstructure:
 
         return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
     
+    def get_humidity(self, x):
+        return pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
+            
 
     def generate_world(self):
 
@@ -158,6 +170,34 @@ class Grid_Superstructure:
                     if ore_noise.find(x, y, biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
                 i+=1
+
+
+        # identify water basins pass
+        water_basin_anchors = []
+        for x in range(self.foreground_grid.width):
+            suddenDepthValue = self.lake_depth_value(x)
+            humidity = self.get_humidity(x)
+            if suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
+                if len(water_basin_anchors) == 0 or water_basin_anchors[-1] != x - 1:
+                    water_basin_anchors.append(x)
+
+        # fill water basins pass
+        for x in water_basin_anchors:
+            # check for filling left
+            water_level = self.get_terrain_height(x)
+            start_x = x
+            while start_x > 0 and self.get_terrain_height(start_x - 1) > water_level:
+                start_x-=1
+            end_x = x
+            while end_x + 1 < self.foreground_grid.width and self.get_terrain_height(end_x + 1) > water_level:
+                end_x+=1
+            for fill_x in range(start_x, end_x+1):
+                for y in range(water_level, self.get_terrain_height(fill_x)):
+                    # print(f'  literally generated water at {fill_x, y}')
+                    self.foreground_grid.set(fill_x, y, Water, True)
+            # print(f'generated water from x={start_x} to x={end_x}')
+
+
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x

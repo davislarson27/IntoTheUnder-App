@@ -17,7 +17,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
 
     multiplier = {
         Iron_Ore_Block: 0.00045,
-        Coal_Ore_Block: 0.0002,
+        Coal_Ore_Block: 0.00021,
         Emerald_Ore_Block: -0.001,
         Diamond_Ore_Block: 0.0009,
         Mabelite_Ore_Block: 0.00015,
@@ -73,13 +73,13 @@ class Glacier(Biome):
     sub_layer = Rock
 
 # high humidity
-class Lake(Biome): # set water level, any time humidity gets over a threshold near that point it will iterate around itself filling in water maybe
+class Rain_Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity >= 0 and temp >= 0 and elevation >= 0:
             return True
         return False
     
-    layers = [Layer(Water, 3), Layer(Sand, 3)]
+    layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3)]
     sub_layer = Rock
 
 class Forest(Biome):
