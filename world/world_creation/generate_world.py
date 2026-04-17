@@ -7,7 +7,7 @@ class Grid_Superstructure:
     def __init__(self, screen, worldGenParams):
         self.worldGenParams = worldGenParams
         self.foreground_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen)
-        self.background_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen)        
+        self.background_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen) 
 
     def get_grids(self):
         return self.foreground_grid, self.background_grid
@@ -134,7 +134,7 @@ class Grid_Superstructure:
 
         # ---------------------------------------------------- main ---------------------------------------------------- #
 
-        MIN_LAKE_DEPTH = Biome.start_floor_depth + 2
+        MIN_LAKE_DEPTH = Biome.start_floor_depth + 2 + self.worldGenParams.ground_level
 
         # set first biome at x = 0
         cur_biome = random.choices(self.foreground_grid.biomes, weights=self.foreground_grid.biome_probabilities, k=1)[0]
@@ -146,7 +146,7 @@ class Grid_Superstructure:
         cur_biome_by_x = []
         has_above_ground_object = []
         for x in range(self.foreground_grid.width): has_above_ground_object.append(False) #fill with False
-        cur_floor_level = cur_biome.start_floor_depth
+        cur_floor_level = cur_biome.start_floor_depth + self.worldGenParams.ground_level
 
         # generate biomes, floor, and ground for the world
         for x in range(self.foreground_grid.width):
@@ -160,10 +160,10 @@ class Grid_Superstructure:
 
             #determine new elevation
             elevation_change_chance = random.random()
-            if cur_biome.start_floor_depth + cur_biome.max_deviation_floor_lvl <= cur_floor_level:
+            if cur_biome.start_floor_depth + self.worldGenParams.ground_level + cur_biome.max_deviation_floor_lvl <= cur_floor_level:
                 if elevation_change_chance < cur_biome.change_probability * 2:
                     cur_floor_level -= 1
-            elif cur_biome.start_floor_depth - cur_biome.max_deviation_floor_lvl >= cur_floor_level:
+            elif cur_biome.start_floor_depth + self.worldGenParams.ground_level - cur_biome.max_deviation_floor_lvl >= cur_floor_level:
                 if elevation_change_chance < cur_biome.change_probability * 2:
                     cur_floor_level += 1
             else: #normal procedure
@@ -295,3 +295,73 @@ class Grid_Superstructure:
                                 has_above_ground_object[x] = True
                                 has_above_ground_object[x+1] = True
 
+    def generate_world_revamped(self, world_gen_seed):
+        # ------------------------------------------------- helper functions ------------------------------------------------- #
+        def generate_tree(grid_x, grid_y, height = 2):
+            # stops generation if anything is in the way of the tree
+            for y in range(grid_y, grid_y + height):
+                if self.foreground_grid.get(grid_x, y - height) is not None: return
+            for y in range(3):
+                for x in range(3):
+                    if self.foreground_grid.get(grid_x - 1 + x, grid_y - height - 1 - y) is not  None: return
+
+            for y in range(grid_y, grid_y + height): # generate trunk
+                self.foreground_grid.set(grid_x, y - height, Log, True)
+            for y in range(3): # generate leaves
+                for x in range(3):
+                    self.foreground_grid.set(grid_x - 1 + x, grid_y - height - 1 - y, Leaves, True)
+
+        def generate_cactus(grid_x, grid_y, height = 2):
+            # stops generation if anything is in the way of the cactus
+            for y in range(grid_y, grid_y + height):
+                if self.foreground_grid.get(grid_x, y - height) is not None: return
+
+            for y in range(grid_y, grid_y + height): # generate cactus
+                self.foreground_grid.set(grid_x, y - height, Cactus, False)
+
+        def generate_snow_man(grid_x, grid_y):
+            # stops generation if anything is in the way of the cactus
+            if self.foreground_grid.get(grid_x, grid_y) is not None or self.foreground_grid.get(grid_x, grid_y - 1) is not None:
+                if self.foreground_grid.get(grid_x - 1, grid_y) is not None or self.foreground_grid.get(grid_x + 1, grid_y) is not None:
+                    return
+                return
+
+            self.foreground_grid.set(grid_x, grid_y, Snow_Block, False)
+            self.foreground_grid.set(grid_x, grid_y - 1, Snow_Man_Head, False)
+
+        def generate_small_bush(grid_x, grid_y):
+            # stops generation if anything is in the way of the bush
+            if self.foreground_grid.get(grid_x, grid_y) is not None: return
+
+            self.foreground_grid.set(grid_x, grid_y, Leaves, True)
+
+        def find_block_vein_locations(x, Block_Type, ground_level, vein_chance, vein_min_depth, vein_inc_chances_by_layer, vein_min_size, vein_max_size):
+            "generates a clump of specified blocks underground"
+            for y in range(vein_min_depth, self.foreground_grid.height):
+                if y > ground_level[x]:
+                    if random.random() < vein_chance:
+                        generate_block_vein(Block_Type, x, y, vein_min_size, vein_max_size)
+
+                vein_chance += vein_inc_chances_by_layer
+
+        def generate_block_vein(Block_Type, center_x, center_y, min_size, max_size):
+            absolute_max = 9
+            if min_size > 0:
+                self.foreground_grid.set(center_x, center_y, Block_Type)
+            last_x, last_y = center_x, center_y
+            direction = [-1, 0, 1]
+            direction_chance = [40, 50, 40]
+            inserted_coordinates = [[center_x, center_y]]
+            cur_x, cur_y = center_x, center_y
+            attempts = 0
+
+            blocks_in_vein = min(random.randint(min_size, max_size), absolute_max)
+
+            while len(inserted_coordinates) < blocks_in_vein and attempts < 200:
+                if cur_x > 0 and cur_x < self.foreground_grid.width and cur_y > 0 and cur_y < self.foreground_grid.height:
+                    cur_x, cur_y = random.choices(direction, weights=direction_chance, k=1)[0] + last_x, random.choices(direction, weights=direction_chance, k=1)[0] + last_y
+                    if [cur_x, cur_y] not in inserted_coordinates:
+                        self.foreground_grid.set(cur_x, cur_y, Block_Type)
+                        inserted_coordinates.append([cur_x, cur_y])
+                        last_x, last_y = cur_x, cur_y            
+                attempts += 1

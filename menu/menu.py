@@ -4,7 +4,8 @@ import shutil
 from pathlib import Path
 
 from world.grid import Grid
-from world.world_creation.generate_world import *
+# from world.world_creation.generate_world import *
+from world.world_creation.generate_world_noise import *
 from components.text_box import Text_Box
 from play.play import Play
 from components.blit_letterboxed import blit_letterboxed
