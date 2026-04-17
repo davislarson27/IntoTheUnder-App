@@ -46,6 +46,13 @@ class Mountain(Biome):
     layers = [Layer(Snow_Block, 1, variation_amp=0), Layer(Gravel, 1), Layer(Rock, 7)]
     sub_layer = Rock
 
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.01),
+        Structure_Identifier(Snow_Man_Structure, 0.0001)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
 class Ravine(Biome):
     def claim(elevation, temp, humidity, mountain):
         if mountain > 10:
@@ -54,6 +61,12 @@ class Ravine(Biome):
     
     layers = [Layer(Gravel, 1), Layer(Rock, 7)]
     sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.01)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
 
 
 # low humidity
@@ -66,6 +79,14 @@ class Desert(Biome):
     layers = [Layer(Sand, 6), Layer(Sand_Stone, 3)]
     sub_layer = Rock
 
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Cactus_Structure, 0.06)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Cactus_Structure, 0.03)
+    ]
+
 class Tundra(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity < 0 and temp < 0 and elevation < 0:
@@ -75,6 +96,12 @@ class Tundra(Biome):
     layers = [Layer(Rock, 8)]
     sub_layer = Rock
 
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
 class Glacier(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity < 0 and temp < 0 and elevation >= 0:
@@ -83,6 +110,13 @@ class Glacier(Biome):
     
     layers = [Layer(Snow_Block, 1, variation_amp=0), Layer(Ice, 8), Layer(Frozen_Rock, 6)]
     sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Snow_Man_Structure, 0.006)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
 
 # high humidity
 class Rain_Forest(Biome):
@@ -94,6 +128,14 @@ class Rain_Forest(Biome):
     layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3)]
     sub_layer = Rock
 
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Tree, 0.12)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.12)
+    ]
+
 class Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity >= 0 and temp < 0 and elevation >= 0:
@@ -102,6 +144,14 @@ class Forest(Biome):
     
     layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3)]
     sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Tree, 0.1)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.1)
+    ]
     
 class Montane_Forest(Biome): # at some point get more gravel to appear here near the surface
     def claim(elevation, temp, humidity, mountain):
@@ -111,6 +161,14 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
     
     layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3), Layer(Frozen_Rock, 1)]
     sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Tree, 0.06)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.06)
+    ]
     
 
 class Plains(Biome):
@@ -121,3 +179,11 @@ class Plains(Biome):
     
     layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 4)]
     sub_layer = Rock
+    
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0005),
+        Structure_Identifier(Tree, 0.02)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.02)
+    ]

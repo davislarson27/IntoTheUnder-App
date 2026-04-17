@@ -96,14 +96,25 @@ class Grid_Superstructure:
         return mountain
     
     def get_biome(self, x):
-        elevation = self.get_base_elevation(x)
-        humidity = self.get_humidity(x)
-        temp = pnoise1(x * 0.003,  base=(self.temp_seed) % 256) * 20
 
-        for biome in self.biome_priority_order:
-            if biome.claim(elevation, temp, humidity, self.get_mountain_elevation(x)):
-                return biome
-        return Plains # default fallback
+        def _get_biome(x):
+            elevation = self.get_base_elevation(x)
+            humidity = self.get_humidity(x)
+            temp = pnoise1(x * 0.003,  base=(self.temp_seed) % 256) * 20
+
+            for biome in self.biome_priority_order:
+                if biome.claim(elevation, temp, humidity, self.get_mountain_elevation(x)):
+                    return biome
+
+            return Plains # default fallback
+        
+        biome = _get_biome(x)
+        if x > 0 and x < self.foreground_grid.width: # prevents 1 block wide biomes in the middle of another biome
+            prev_biome = _get_biome(x-1)
+            next_biome = _get_biome(x+1)
+            if prev_biome is next_biome and biome is not prev_biome:
+                biome = prev_biome
+        return biome
         
     def get_layer_increment(self, x, layerNum, layer): # layer num is which layer we are on (not blocks deep)
         """returns a postive number of how many additional blocks of a layer to add on as variation"""
@@ -166,33 +177,33 @@ class Grid_Superstructure:
                 i+=1
 
 
-        # identify water basins pass
-        water_basin_anchors = []
-        for x in range(self.foreground_grid.width):
-            suddenDepthValue = self.lake_depth_value(x)
-            humidity = self.get_humidity(x)
-            # absolute_height = self.get_bg_terrain_height(x)
-            # elevation = self.get_base_elevation(x)
-            # if absolute_height < elevation and suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
-            if suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
-                if len(water_basin_anchors) == 0 or water_basin_anchors[-1] != x - 1:
-                    water_basin_anchors.append(x)
+        # # identify water basins pass
+        # water_basin_anchors = []
+        # for x in range(self.foreground_grid.width):
+        #     suddenDepthValue = self.lake_depth_value(x)
+        #     humidity = self.get_humidity(x)
+        #     # absolute_height = self.get_bg_terrain_height(x)
+        #     # elevation = self.get_base_elevation(x)
+        #     # if absolute_height < elevation and suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
+        #     if suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
+        #         if len(water_basin_anchors) == 0 or water_basin_anchors[-1] != x - 1:
+        #             water_basin_anchors.append(x)
 
-        # fill water basins pass
-        for x in water_basin_anchors:
-            # check for filling left
-            water_level = self.get_terrain_height(x)
-            start_x = x
-            while start_x > 0 and self.get_terrain_height(start_x - 1) > water_level:
-                start_x-=1
-            end_x = x
-            while end_x + 1 < self.foreground_grid.width and self.get_terrain_height(end_x + 1) > water_level:
-                end_x+=1
-            for fill_x in range(start_x, end_x+1):
-                for y in range(water_level, self.get_terrain_height(fill_x)):
-                    # print(f'  literally generated water at {fill_x, y}')
-                    self.foreground_grid.set(fill_x, y, Water, True)
-            # print(f'generated water from x={start_x} to x={end_x}')
+        # # fill water basins pass
+        # for x in water_basin_anchors:
+        #     # check for filling left
+        #     water_level = self.get_terrain_height(x)
+        #     start_x = x
+        #     while start_x > 0 and self.get_terrain_height(start_x - 1) > water_level:
+        #         start_x-=1
+        #     end_x = x
+        #     while end_x + 1 < self.foreground_grid.width and self.get_terrain_height(end_x + 1) > water_level:
+        #         end_x+=1
+        #     for fill_x in range(start_x, end_x+1):
+        #         for y in range(water_level, self.get_terrain_height(fill_x)):
+        #             # print(f'  literally generated water at {fill_x, y}')
+        #             self.foreground_grid.set(fill_x, y, Water, True)
+        #     # print(f'generated water from x={start_x} to x={end_x}')
 
 
 
@@ -215,6 +226,40 @@ class Grid_Superstructure:
             for y in range(cur_depth_down, self.background_grid.height):
                 self.background_grid.set(x, y, biome.sub_layer)
                 
+
+        # generate ground level objects & structures for the background
+        # should this be run with the foreground so foreground & background structures don't overlap?
+        x = 1 # structures don't generate at x=0
+        while x < self.background_grid.width:
+            # get biome
+            biome = self.get_biome(x)
+
+            # get seed based random number (hashed based on x)
+            hash = int(hashlib.sha256(f"{self.seed}_bg_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0  # value 0.0–1.0
+
+            subStructure_hash = int(hashlib.sha256(f"{self.seed}_bg_sub_struct_{x}".encode()).hexdigest(), 16)
+            instruction_variance_chance = (subStructure_hash % 1000) / 1000.0  # value 0.0–1.0
+
+            # get structure to generate based on biome
+            running_odds_total = 0
+            for structureIdentifier in biome.bg_structures:
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    # build structure
+                    structure = structureIdentifier.structure
+                    y = self.get_bg_terrain_height(x + structure.get_x_difference_for_y())
+                    buildInstructions = structure.getStructureInstructions(x, y, self.background_grid, instruction_variance_chance)
+                    for instruction in buildInstructions:
+                        instruction.setBlock(self.background_grid)
+
+                    # jump x past the end of the structure
+                    x += structure.get_width()
+
+                    break
+                running_odds_total += structureIdentifier.odds
+            
+            x += 1
+
 
         # generate ground level objects & structures
         x = 1 # structures don't generate at x=0
@@ -241,38 +286,6 @@ class Grid_Superstructure:
                         instruction.setBlock(self.foreground_grid)
                     bg_build_instructions = structure.getBgStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance)
                     for instruction in bg_build_instructions:
-                        instruction.setBlock(self.background_grid)
-
-                    # jump x past the end of the structure
-                    x += structure.get_width()
-
-                    break
-                running_odds_total += structureIdentifier.odds
-            
-            x += 1
-
-        # generate ground level objects & structures for the background
-        x = 1 # structures don't generate at x=0
-        while x < self.background_grid.width:
-            # get biome
-            biome = self.get_biome(x)
-
-            # get seed based random number (hashed based on x)
-            hash = int(hashlib.sha256(f"{self.seed}_bg_struct_{x}".encode()).hexdigest(), 16)
-            structure_odds = (hash % 1000) / 1000.0  # value 0.0–1.0
-
-            subStructure_hash = int(hashlib.sha256(f"{self.seed}_bg_sub_struct_{x}".encode()).hexdigest(), 16)
-            instruction_variance_chance = (subStructure_hash % 1000) / 1000.0  # value 0.0–1.0
-
-            # get structure to generate based on biome
-            running_odds_total = 0
-            for structureIdentifier in biome.bg_structures:
-                if structureIdentifier.odds + running_odds_total > structure_odds:
-                    # build structure
-                    structure = structureIdentifier.structure
-                    y = self.get_bg_terrain_height(x + structure.get_x_difference_for_y())
-                    buildInstructions = structure.getStructureInstructions(x, y, self.background_grid, instruction_variance_chance)
-                    for instruction in buildInstructions:
                         instruction.setBlock(self.background_grid)
 
                     # jump x past the end of the structure
