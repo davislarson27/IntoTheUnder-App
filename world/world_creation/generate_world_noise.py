@@ -2,7 +2,8 @@ from world.grid import Grid
 from .biomes_noise import *
 import random
 from world.world_creation.structures.structures import *
-from noise import pnoise1 as noise
+from noise import pnoise1, pnoise2
+from .ores_noise import Ore
 import hashlib
 
 class Grid_Superstructure:
@@ -21,6 +22,8 @@ class Grid_Superstructure:
         self.terrain_variation_seed = make_seed(self.seed, 'terVar')
         self.humidity_seed = make_seed(self.seed, 'humidity')
         self.temp_seed = make_seed(self.seed, 'temp')
+        self.bg_hill_seed = make_seed(self.seed, 'bg')
+        self.bg_ter_var_seed = make_seed(self.seed, 'bg')
 
         self.layer_1_var_seed = make_seed(self.seed, 'layer1')
         self.layer_2_var_seed = make_seed(self.seed, 'layer2')
@@ -33,38 +36,50 @@ class Grid_Superstructure:
         self.mountain_amp = 38
         self.hill_amp = 8
         self.terrain_variation_amp = 2
+        self.bg_hill_amp = self.hill_amp
+        self.bg_ter_var_amp = self.terrain_variation_amp
 
         # frequencies
         self.elevation_freq = 300
         self.mountain_freq = 145
         self.hill_freq = 28
         self.terrain_variation_freq = 10
+        self.bg_hill_freq = self.hill_freq
+        self.bg_ter_var_freq = self.terrain_variation_freq
+
+        self.ores = { # higher scale = smaller veins, higher threshold = less common
+            Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=8),
+            Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, threshold=0.62, scale=0.17, min_depth=15),
+            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.8, scale=0.22, min_depth=25),
+            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.85, scale=0.22, min_depth=35),
+            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.85, scale=0.3, min_depth=65),
+        }
 
     def get_grids(self):
         return self.foreground_grid, self.background_grid
         
     def get_terrain_height(self, x):
-        # large = noise( x * freq, base=seed % crunch value) * amp
+        # large = pnoise1( x * freq, base=seed % crunch value) * amp
         base_altitude_level = self.get_base_elevation(x)
 
         mountain = self.get_mountain_elevation(x)
 
-        hill = noise(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
+        hill = pnoise1(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
         hill *= abs(hill) * self.hill_amp
 
-        terVar  = noise(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed) % 256) * self.terrain_variation_amp  # micro variation
+        terVar  = pnoise1(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed) % 256) * self.terrain_variation_amp  # micro variation
 
         return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
     
     def get_base_elevation(self, x): # includes moutains and base elevation
-        elevation  = noise(x * (1 / self.elevation_freq),  base=(self.elev_seed) % 256)
+        elevation  = pnoise1(x * (1 / self.elevation_freq),  base=(self.elev_seed) % 256)
         elevation *= abs(elevation)
         elevation *= self.elevation_amp # amplitutde
 
         return elevation
     
     def get_mountain_elevation(self, x):
-        mountain  = noise(x * (1 / self.mountain_freq),  base=(self.mountain_seed) % 256)
+        mountain  = pnoise1(x * (1 / self.mountain_freq),  base=(self.mountain_seed) % 256)
         mountain *= (abs(mountain) * abs(mountain) * abs(mountain)) * abs(mountain)
         mountain *= self.mountain_amp # amplitutde
 
@@ -72,8 +87,8 @@ class Grid_Superstructure:
     
     def get_biome(self, x):
         elevation = self.get_base_elevation(x)
-        humidity = noise(x * 0.005,  base=(self.humidity_seed) % 256) * 20
-        temp = noise(x * 0.003,  base=(self.temp_seed) % 256) * 20
+        humidity = pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
+        temp = pnoise1(x * 0.003,  base=(self.temp_seed) % 256) * 20
 
         for biome in self.biome_priority_order:
             if biome.claim(elevation, temp, humidity, self.get_mountain_elevation(x)):
@@ -89,8 +104,21 @@ class Grid_Superstructure:
         else:
             seed = self.layer_3_var_seed
 
-        return abs(int(noise(x * (1 / layer.variation_freq), base=(seed) % 256) * layer.variation_amp))
+        return abs(int(pnoise1(x * (1 / layer.variation_freq), base=(seed) % 256) * layer.variation_amp))
 
+    def get_bg_terrain_height(self, x):
+        # large = pnoise1( x * freq, base=seed % crunch value) * amp
+        base_altitude_level = self.get_base_elevation(x)
+
+        mountain = self.get_mountain_elevation(x) // 3 # keeps some of the mountain noise but stops it from following them  all the way up
+
+        hill = pnoise1(x * (1 / self.bg_hill_freq), base=(self.bg_hill_seed) % 256) # more rolling hills
+        hill *= abs(hill) * self.bg_hill_amp
+
+        terVar  = pnoise1(x * (1 / self.bg_ter_var_freq),  base=(self.bg_ter_var_freq) % 256) * self.bg_ter_var_amp  # micro variation
+
+        return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
+    
 
     def generate_world(self):
         # generate the foreground
@@ -112,15 +140,25 @@ class Grid_Superstructure:
             for y in range(cur_depth_down, self.foreground_grid.height):
                 self.foreground_grid.set(x, y, biome.sub_layer)
 
+            # generate ores at this level
+            i = 1
+            for y in range(ground_elevation, self.foreground_grid.height):
+                for ore in self.ores:
+                    if self.ores[ore].find(x, y, biome.multiplier[ore] * i): # returns True if this ore should be here
+                        self.foreground_grid.set(x, y, ore)
+                i+=1
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
             biome = self.get_biome(x)
-            ground_elevation = self.get_terrain_height(x)
+            ground_elevation = self.get_bg_terrain_height(x)
+            # bg_jump = self.get_bg_jump_up(x)
 
             cur_depth_down = ground_elevation
             layer_num = 0
             for layer in biome.layers:
+                # if layer_num == 0:
+                #     cur_depth_down -= bg_jump
                 for y in range(cur_depth_down, layer.depth+cur_depth_down):
                     self.background_grid.set(x, y, layer.block)
                 variation = self.get_layer_increment(x, layer_num, layer)

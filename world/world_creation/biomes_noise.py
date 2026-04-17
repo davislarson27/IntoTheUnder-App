@@ -13,7 +13,15 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         return True
     
     layers  = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 1)]
-    sub_layer = Rock    
+    sub_layer = Rock
+
+    multiplier = {
+        Iron_Ore_Block: 0.0011,
+        Coal_Ore_Block: 0.0007,
+        Emerald_Ore_Block: -0.001,
+        Diamond_Ore_Block: 0.0022,
+        Mabelite_Ore_Block: 0.0002
+    }
 
 # elev checks for mountains
 class Mountain(Biome):
