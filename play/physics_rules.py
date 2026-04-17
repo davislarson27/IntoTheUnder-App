@@ -8,4 +8,4 @@ class Physics_Rules:
         self.BUILD_HOLD_THRESHOLD = 10 # count of frames held before destroyed motion happens
 
         self.true_height = screen.get_height() - inventory_height
-        self.MOVEMENT_ALTITUDE_PX = (self.true_height * 13) // 16
+        self.MOVEMENT_ALTITUDE_PX = (self.true_height * 11.5) // 16
