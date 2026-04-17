@@ -22,6 +22,10 @@ class Grid_Superstructure:
         self.humidity_seed = make_seed(self.seed, 'humidity')
         self.temp_seed = make_seed(self.seed, 'temp')
 
+        self.layer_1_var_seed = make_seed(self.seed, 'layer1')
+        self.layer_2_var_seed = make_seed(self.seed, 'layer2')
+        self.layer_3_var_seed = make_seed(self.seed, 'layer3')
+
         self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Lake, Forest, Plains]
 
         # amplitutdes of different generators
@@ -45,10 +49,10 @@ class Grid_Superstructure:
 
         mountain = self.get_mountain_elevation(x)
 
-        hill = noise(x * (1 / self.hill_freq), base=(self.hill_seed+1) % 256) # more rolling hills
+        hill = noise(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
         hill *= abs(hill) * self.hill_amp
 
-        terVar  = noise(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed+2) % 256) * self.terrain_variation_amp  # micro variation
+        terVar  = noise(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed) % 256) * self.terrain_variation_amp  # micro variation
 
         return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
     
@@ -74,33 +78,57 @@ class Grid_Superstructure:
         for biome in self.biome_priority_order:
             if biome.claim(elevation, temp, humidity, self.get_mountain_elevation(x)):
                 return biome
-        return Biome # default fallback for testing
+        return Plains # default fallback
         
+    def get_layer_increment(self, x, layerNum, layer): # layer num is which layer we are on (not blocks deep)
+        """returns a postive number of how many additional blocks of a layer to add on as variation"""
+        if layerNum == 0:
+            seed = self.layer_1_var_seed
+        elif layerNum == 1:
+            seed = self.layer_2_var_seed
+        else:
+            seed = self.layer_3_var_seed
+
+        return abs(int(noise(x * (1 / layer.variation_freq), base=(seed) % 256) * layer.variation_amp))
+
+
     def generate_world(self):
-        # biome_diagnostics = {Desert: 0, Tundra: 0, Plains: 0, Mountain: 0, Ravine: 0, Glacier: 0, Forest: 0, Montane_Forest: 0, Lake: 0}
-        # max_elev = self.get_terrain_height(0)
-        # min_elev = self.get_terrain_height(0)
-        
+        # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
             biome = self.get_biome(x)
             ground_elevation = self.get_terrain_height(x)
 
-            # self.foreground_grid.set(x, ground_elevation, biome.top_layer)
-            # self.foreground_grid.set(x, ground_elevation+1, biome.layer_2)
-
             cur_depth_down = ground_elevation
+            layer_num = 0
             for layer in biome.layers:
                 for y in range(cur_depth_down, layer.depth+cur_depth_down):
                     self.foreground_grid.set(x, y, layer.block)
+                variation = self.get_layer_increment(x, layer_num, layer)
                 cur_depth_down += layer.depth
+                for y in range(cur_depth_down, cur_depth_down+variation):
+                    self.foreground_grid.set(x, y, layer.block)
+                cur_depth_down += variation
+                layer_num+=1
             for y in range(cur_depth_down, self.foreground_grid.height):
                 self.foreground_grid.set(x, y, biome.sub_layer)
+
+
+        # generate the background
+        for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
+            biome = self.get_biome(x)
+            ground_elevation = self.get_terrain_height(x)
+
+            cur_depth_down = ground_elevation
+            layer_num = 0
+            for layer in biome.layers:
+                for y in range(cur_depth_down, layer.depth+cur_depth_down):
+                    self.background_grid.set(x, y, layer.block)
+                variation = self.get_layer_increment(x, layer_num, layer)
+                cur_depth_down += layer.depth
+                for y in range(cur_depth_down, cur_depth_down+variation):
+                    self.background_grid.set(x, y, layer.block)
+                cur_depth_down += variation
+                layer_num+=1
+            for y in range(cur_depth_down, self.background_grid.height):
+                self.background_grid.set(x, y, biome.sub_layer)
                 
-
-            # biome_diagnostics[biome]+=1
-            # max_elev = max(max_elev, ground_elevation)
-            # min_elev = min(min_elev, ground_elevation)
-
-        # print(biome_diagnostics)
-        # print(f'min: {min_elev}')
-        # print(f'max: {max_elev}')

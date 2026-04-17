@@ -322,16 +322,18 @@ class Frozen_Rock(Block):
             x *= block_width
             y *= block_width
 
+        # new warmer and lighter colors
+        primary_background_color = (95, 100, 102)
+        detail_color = (145, 155, 165)
+
         pygame.draw.rect(
             screen,
-            (70 + added_color, 75 + added_color, 80 + added_color),
+            (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
             (x, y, block_width, block_width)
-            
         )
-        #(145, 155, 165)
         pygame.draw.rect(
             screen,
-            (145 + added_color, 155 + added_color, 165 + added_color),
+            (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
             ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
         )
 

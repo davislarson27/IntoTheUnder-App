@@ -1,16 +1,18 @@
 from world.blocks.block_export import *
 
 class Layer:
-    def __init__(self, block, layer_depth):
+    def __init__(self, block, layer_depth, variation_amp=2, variation_freq=6):
         self.block = block
         self.depth = layer_depth
+        self.variation_amp = variation_amp
+        self.variation_freq = variation_freq
 
 
 class Biome: # generic template, fall back in case nothing is claimed for some reason, should be last
     def claim(elevation, temp, humidity, mountain): # elevation is the difference from sea level
         return True
     
-    layers  = [Layer(Grass, 1), Layer(Dirt, 1)]
+    layers  = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 1)]
     sub_layer = Rock    
 
 # elev checks for mountains
@@ -20,7 +22,7 @@ class Mountain(Biome):
             return True
         return False
     
-    layers = [Layer(Snow_Block, 1), Layer(Gravel, 1), Layer(Rock, 7)]
+    layers = [Layer(Snow_Block, 1, variation_amp=0), Layer(Gravel, 1), Layer(Rock, 7)]
     sub_layer = Rock
 
 class Ravine(Biome):
@@ -58,7 +60,7 @@ class Glacier(Biome):
             return True
         return False
     
-    layers = [Layer(Snow_Block, 1), Layer(Ice, 8), Layer(Frozen_Rock, 6)]
+    layers = [Layer(Snow_Block, 1, variation_amp=0), Layer(Ice, 8), Layer(Frozen_Rock, 6)]
     sub_layer = Rock
 
 # high humidity
@@ -77,7 +79,7 @@ class Forest(Biome):
             return True
         return False
     
-    layers = [Layer(Grass, 1), Layer(Dirt, 3)]
+    layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3)]
     sub_layer = Rock
     
 class Montane_Forest(Biome):
@@ -86,7 +88,7 @@ class Montane_Forest(Biome):
             return True
         return False
     
-    layers = [Layer(Grass, 1), Layer(Packed_Dirt, 3), Layer(Frozen_Rock, 1)]
+    layers = [Layer(Grass, 1, variation_amp=0), Layer(Packed_Dirt, 3), Layer(Frozen_Rock, 1)]
     sub_layer = Rock
     
 
@@ -96,5 +98,5 @@ class Plains(Biome):
             return True
         return False
     
-    layers = [Layer(Grass, 1), Layer(Dirt, 4)]
+    layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 4)]
     sub_layer = Rock
