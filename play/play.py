@@ -349,27 +349,21 @@ class Play:
                         self.active_grid.set(self.affected_x, self.affected_y, None)
 
     def run_main_game(self, input):
-        
-        # step 1: check for if the player wants to quit BEFORE running frame logic
-        # if input.escape_keypress:
-        #     self.prep_menu()
-        #     return self.menu
 
-        # step 2: interact with blocks
+        # step 1: interact with blocks
         self.interact_with_grid(input)
 
-        # step 3: move player
+        # step 2: move player
         self.player.move(input, self.physics_rules)
 
         return self
 
     def prep_menu(self):
-        self.menu.draw_saving_world_screen()
+        self.menu.draw_loading_world_screen(0, 'Closing Active States')
         if self.sub_state is not None: self.sub_state.close()
-        blit_letterboxed(self.screen, self.menu.window, self.menu.loading_world_screen_background_color)
-        pygame.display.flip()
-        pygame.event.pump()
+        self.menu.draw_loading_world_screen(5, 'Saving Game')
         save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.background_grid, self.world_details)
+        self.menu.draw_loading_world_screen(95, 'Opening Menu')
         self.menu.reopen_menu_prep()
 
     def manage_menus(self, input):

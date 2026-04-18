@@ -84,7 +84,7 @@ class Menu:
         # loading and saving world screen (gets pre initalized)
         self.loading_world_screen_background_color = (30, 30, 30)
         # self.loading_world_title_surf = self.loading_world_screen_font.render("loading...", True, (255, 255, 255))
-        self.saving_world_title_surf = self.loading_world_screen_font.render("saving world...", True, (255, 255, 255))
+        self.saving_world_title_surf = self.loading_world_screen_font.render("Saving World...", True, (255, 255, 255))
         loading_world_screen_column_width = 16
         loading_world_margin_x = (self.blocks_width - loading_world_screen_column_width) // 2
         self.loading_world_title_rect = pygame.Rect(self.menu_block_width * loading_world_margin_x, self.menu_block_height * 12, self.menu_block_width * loading_world_screen_column_width, self.menu_block_height * 2)
@@ -666,10 +666,6 @@ class Menu:
         pygame.display.flip()
         pygame.event.pump()
     
-    def draw_saving_world_screen(self, percent_complete=0):
-        self.screen.fill(self.loading_world_screen_background_color)
-        self.screen.blit(self.saving_world_title_surf, self.saving_world_screen_text_rect)
-
     def draw_announce_and_return_screen(self, mx, my, input):
             text_surf = self.button_font.render(self.announce_message, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
