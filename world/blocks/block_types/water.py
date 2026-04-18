@@ -9,6 +9,7 @@ class Water(Block):
     tick_threshold = 20
     water_value = 0
     max_water_value = 4
+    pass_through = True
 
     def convert_water_value(self, water_value):
         return self.max_water_value + water_value

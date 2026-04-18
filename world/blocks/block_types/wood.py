@@ -168,3 +168,38 @@ class Wood_Planks(Block):
 
         # Bottom seam to frame the tile slightly (optional but helps readability)
         pygame.draw.rect(screen, seam, (x, y + block_width - 1, block_width, 1))
+
+class Ladder(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+    
+    str_name = "Ladder"
+    tick_threshold = 30
+
+    pass_through = True
+    
+    @staticmethod
+    def accel_reduction(accel):
+        return 0
+    
+    @staticmethod
+    def velocity_reduction(velocity):
+        return velocity
+
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        pygame.draw.rect( # draw base color
+            screen,
+            (200 + added_color, 200 + added_color, 200 + added_color),           # color
+            (x, y, block_width, block_width)
+        )

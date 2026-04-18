@@ -172,6 +172,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Ladder",
+            [
+                Ingredient(Wood_Planks, 3),
+            ],
+            output=Ingredient(Ladder, 4),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Wood Planks",
             [
                 Ingredient(Log, 1),

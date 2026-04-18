@@ -11,6 +11,8 @@ class Block:
     can_place = True
     can_store_items = False
 
+    pass_through = False
+
     inventory = None
 
     draw_background = False # this informs the grid that it shouldn't draw the background behind this block (set to true for doors, windows, etc)

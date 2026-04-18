@@ -55,11 +55,13 @@ class Grid:
             # raise IndexError
             return None
         
-    def set(self, x, y, block, pass_through=False, stored_inventory_items=None):
+    def set(self, x, y, block, pass_through=None, stored_inventory_items=None):
         if self.in_bounds(x, y):
             if block == None:
                 self.array[y][x] = None
             else:
+                if pass_through is None:
+                    pass_through = block.pass_through
                 self.array[y][x] = block(self, self.screen, x, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
         else:
             return None

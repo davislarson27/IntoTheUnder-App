@@ -58,6 +58,10 @@ class Player:
         if self.is_touching(self.get_block_positions(), Water):
             new_velocity = Water.velocity_reduction(self.player_speed)
             return Water.accel_reduction(default_y_acceleration), new_velocity, new_velocity, False
+        
+        if self.is_touching(self.get_block_positions(), Ladder):
+            return 0, self.player_speed, self.player_speed, False  # no gravity, can move freely
+
         return default_y_acceleration, self.player_speed, 0, True
 
     def is_move_ok_y_helper(self, check_y):
