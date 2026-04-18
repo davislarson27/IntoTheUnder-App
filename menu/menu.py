@@ -617,8 +617,8 @@ class Menu:
     def draw_loading_world_screen(self, percent_complete=0, message='Loading'):
         self.screen.fill(self.loading_world_screen_background_color)
 
-        outline_color = (95, 100, 102)
-        bar_color = (145, 155, 165)
+        outline_color = (105, 110, 112)
+        bar_color = (90, 140, 200)
 
         # --- BAR ---
         outline_width = 2

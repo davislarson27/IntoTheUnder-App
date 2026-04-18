@@ -145,7 +145,7 @@ class Grid_Superstructure:
             
 
     def generate_world(self):
-        for generation_udpate in self._generate_world():
+        for _ in self._generate_world():
             pass
 
 
