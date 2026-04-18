@@ -29,6 +29,9 @@ class Grid_Superstructure:
         self.layer_2_var_seed = make_seed(self.seed, 'layer2')
         self.layer_3_var_seed = make_seed(self.seed, 'layer3')
 
+        self.cave_tunnel_seed = make_seed(self.seed, 'cave_tunnel_seed')
+        self.cave_cavern_seed = make_seed(self.seed, 'cave_cavern_seed')
+
         self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
 
         # amplitutdes of different generators
@@ -46,6 +49,13 @@ class Grid_Superstructure:
         self.terrain_variation_freq = 10
         self.bg_hill_freq = self.hill_freq
         self.bg_ter_var_freq = self.terrain_variation_freq
+        self.cave_tunnel_x_freq = 0.03
+        self.cave_tunnel_y_freq = 0.1
+        self.cave_cavern_x_freq = 0.07
+        self.cave_cavern_y_freq = 0.07
+
+        # thresholds
+        self.cave_threshold = 0.65
 
         self.ores = { # higher scale = smaller veins, higher threshold = less common
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=10),
@@ -140,6 +150,14 @@ class Grid_Superstructure:
 
         return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
     
+    def is_cave(self, x, y):
+        tunnel = pnoise2(x * self.cave_tunnel_x_freq, y * self.cave_tunnel_y_freq, base=self.cave_tunnel_seed & 256)
+        cavern = pnoise2(x * self.cave_cavern_x_freq, y * self.cave_cavern_y_freq, base=self.cave_cavern_seed & 256)
+
+        if tunnel + cavern > self.cave_threshold:
+            return True
+        return False
+    
     def get_humidity(self, x):
         return pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
             
@@ -147,7 +165,6 @@ class Grid_Superstructure:
     def generate_world(self):
         for _ in self._generate_world():
             pass
-
 
     def _generate_world(self):
 
@@ -236,6 +253,10 @@ class Grid_Superstructure:
                 self.background_grid.set(x, y, biome.sub_layer)
                 
         yield 'Generating Structures', 40
+
+        for x in range(self.foreground_grid.width):
+            for y in range(self.get_terrain_height(x), self.foreground_grid.height):
+                if self.is_cave(x, y): self.foreground_grid.set(x, y, None)
 
         # generate ground level objects & structures for the background
         # should this be run with the foreground so foreground & background structures don't overlap?
