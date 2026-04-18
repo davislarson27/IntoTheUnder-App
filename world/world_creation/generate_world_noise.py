@@ -63,15 +63,19 @@ class Grid_Superstructure:
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=10),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, threshold=0.62, scale=0.17, min_depth=15),
             Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, threshold=0.71, scale=0.18, min_depth=30),
-            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.78, scale=0.2, min_depth=25),
-            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.84, scale=0.2, min_depth=35),
-            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.88, scale=0.18, min_depth=65),
-            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.78, scale=0.2, min_depth=12),
+            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.77, scale=0.18, min_depth=25),
+            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.81, scale=0.18, min_depth=35),
+            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.84, scale=0.17, min_depth=65),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.77, scale=0.18, min_depth=12),
         }
 
     def get_grids(self):
         return self.foreground_grid, self.background_grid
-        
+    
+    def get_hash_chance(self, x, y, need):
+        hash = int(hashlib.sha256(f"{self.seed}_{need}_{x}_{y}".encode()).hexdigest(), 16)
+        return (hash % 1000) / 1000.0  # value 0.0–1.0
+
     def lake_depth_value(self, x):
         # mountain = self.get_mountain_elevation(x)
         mountain = 0
@@ -258,8 +262,14 @@ class Grid_Superstructure:
         yield 'Generating Structures', 40
 
         for x in range(self.foreground_grid.width):
-            for y in range(self.get_terrain_height(x), self.foreground_grid.height):
-                if self.is_cave(x, y): self.foreground_grid.set(x, y, None)
+            saltpeter_chance = 0.035
+            for y in range(self.get_terrain_height(x)+1, self.foreground_grid.height):
+                if self.is_cave(x, y):
+                    block_set = None
+                    if self.is_cave(x, y+1) and not self.is_cave(x, y-1): # check if block below is a cave
+                        if self.get_hash_chance(x, y, 'saltpeter') < saltpeter_chance:
+                            block_set = Saltpeter
+                    self.foreground_grid.set(x, y, block_set)
 
         # generate ground level objects & structures for the background
         # should this be run with the foreground so foreground & background structures don't overlap?
