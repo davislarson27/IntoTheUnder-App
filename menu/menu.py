@@ -626,7 +626,7 @@ class Menu:
             self.button2_dimentions.left,
             self.button2_dimentions.top,
             self.button2_dimentions.width,
-            self.button2_dimentions.height - 15
+            self.button2_dimentions.height - 10
         )
         loading_bar_dimentions = pygame.Rect(
             loading_bar_outline_dimentions.left + outline_width,
@@ -656,7 +656,7 @@ class Menu:
         rect = surf.get_rect(
             center=(
                 loading_bar_dimentions.centerx,
-                loading_bar_dimentions.top - 35   # ← easy control
+                loading_bar_dimentions.top - 38   # ← easy control
             )
         )
 
@@ -810,7 +810,6 @@ class Menu:
         # initialize grid and terrain
         self.world_generation_settings.reset_ground_level(50)
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
-        # grid_superstructure.generate_world()
         for GenerationText, percentComplete in grid_superstructure._generate_world():
             self.draw_loading_world_screen(percentComplete, GenerationText)
         grid, background_grid = grid_superstructure.get_grids()
@@ -820,13 +819,13 @@ class Menu:
         player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
 
-        self.draw_loading_world_screen(55, 'Saving World')
-
         new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
         new_directory_path.mkdir()
-        save_game(new_directory_path, player, inventory, grid, background_grid, world_details)
-
-        self.draw_loading_world_screen(98, 'Finishing Up')
+        
+        save_start_percent = 55
+        save_end_percent = 99
+        for percent, save_message in save_game(new_directory_path, player, inventory, grid, background_grid, world_details, save_start_percent, save_end_percent):
+            self.draw_loading_world_screen(percent, save_message)
 
         return grid, background_grid, inventory, player, world_details
     

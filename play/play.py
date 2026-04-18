@@ -360,9 +360,12 @@ class Play:
     def prep_menu(self):
         self.menu.draw_loading_world_screen(0, 'Closing Active States')
         if self.sub_state is not None: self.sub_state.close()
-        self.menu.draw_loading_world_screen(5, 'Saving Game')
-        save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.background_grid, self.world_details)
-        self.menu.draw_loading_world_screen(95, 'Finishing Up')
+        # self.menu.draw_loading_world_screen(5, 'Saving Game')
+        start_save_percent = 5
+        end_save_percent = 95
+        for percent, save_message in save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.background_grid, self.world_details, start_save_percent, end_save_percent):
+            self.menu.draw_loading_world_screen(percent, save_message)
+        # self.menu.draw_loading_world_screen(95, 'Finishing Up')
         self.menu.reopen_menu_prep()
 
     def manage_menus(self, input):
