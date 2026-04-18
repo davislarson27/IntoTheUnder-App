@@ -1,10 +1,15 @@
 import pygame
 from math import floor
 
+from .help_menu import Help_Menu
+
 class Escape_Menu:
     def __init__(self, screen):
         # general variables
         self.screen = screen
+
+        # sub menus
+        self.help_menu = Help_Menu(screen, self)
 
         # click variables
         self.is_clicked = False
@@ -81,6 +86,9 @@ class Escape_Menu:
     def sub_state_full_quit(self):
         return self.quitValue
 
+    def onEsc(self):
+        return None
+
     # ------------------------------------------------------------------ #
     #  run / click                                                       #
     # ------------------------------------------------------------------ #
@@ -102,7 +110,7 @@ class Escape_Menu:
         if self.btn_resume.collidepoint(pos):
             return None
         elif self.btn_help.collidepoint(pos):
-            pass
+            return self.help_menu
         elif self.btn_quit.collidepoint(pos):
             self.quitValue = True
         return self

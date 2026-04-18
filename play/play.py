@@ -376,10 +376,10 @@ class Play:
             self.sub_state.open()
             return
 
-        def operate_menu(menu):
+        def operate_menu(menu, esc=False):
             if self.sub_state is menu:
                 self.sub_state.close()
-                self.sub_state = None
+                self.sub_state = self.sub_state.onEsc() # this lets menus go 'back' to a chosen location
             else:
                 if self.sub_state is not None:
                     self.sub_state.close()
@@ -392,7 +392,7 @@ class Play:
             operate_menu(self.inventory.get_recipe_menu())
         elif input.escape_keypress: # this one works differently
             if self.sub_state is not None:
-                operate_menu(self.sub_state)
+                operate_menu(self.sub_state, esc=True)
             else:
                 operate_menu(self.escape_menu)
 

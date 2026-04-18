@@ -761,6 +761,9 @@ class User_Crafting_Recipes_List:
     def sub_state_full_quit(self):
         return False
 
+    def onEsc(self):
+        return None
+
     # ------------------------------------------------------------------ #
     # run helper functions
     # ------------------------------------------------------------------ #

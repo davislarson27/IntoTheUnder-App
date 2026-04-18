@@ -157,7 +157,7 @@ try:
             run_class.on_quit()
             break
 
-        # execute run function
+        # execute run function, includes drawing
         run_class = run_class.run(input_object)
 
         # update screen
