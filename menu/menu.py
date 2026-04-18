@@ -43,7 +43,7 @@ class Menu:
         self.run_game = False
         self.button_font = pygame.font.Font(None, 25)  # None = default font
         self.small_button_font = pygame.font.Font(None, 20)
-        loading_world_screen_font = pygame.font.Font(None, 30)
+        self.loading_world_screen_font = pygame.font.Font(None, 30)
         self.title_font = pygame.font.Font(None, 65)
         self.small_title_font = pygame.font.Font(None, 50)
         self.subscript_font = pygame.font.Font(None, 16)
@@ -83,12 +83,12 @@ class Menu:
 
         # loading and saving world screen (gets pre initalized)
         self.loading_world_screen_background_color = (30, 30, 30)
-        self.loading_world_title_surf = loading_world_screen_font.render("loading...", True, (255, 255, 255))
-        self.saving_world_title_surf = loading_world_screen_font.render("saving world...", True, (255, 255, 255))
+        # self.loading_world_title_surf = self.loading_world_screen_font.render("loading...", True, (255, 255, 255))
+        self.saving_world_title_surf = self.loading_world_screen_font.render("saving world...", True, (255, 255, 255))
         loading_world_screen_column_width = 16
         loading_world_margin_x = (self.blocks_width - loading_world_screen_column_width) // 2
         self.loading_world_title_rect = pygame.Rect(self.menu_block_width * loading_world_margin_x, self.menu_block_height * 12, self.menu_block_width * loading_world_screen_column_width, self.menu_block_height * 2)
-        self.loading_world_screen_text_rect = self.loading_world_title_surf.get_rect(center=self.loading_world_title_rect.center)
+        # self.loading_world_screen_text_rect = self.loading_world_title_surf.get_rect(center=self.loading_world_title_rect.center)
         self.saving_world_screen_text_rect = self.saving_world_title_surf.get_rect(center=self.loading_world_title_rect.center)
 
         # menu titles
@@ -614,39 +614,36 @@ class Menu:
         text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
         self.screen.blit(text_surf, text_rect)
 
-    def draw_loading_world_screen(self, percent_complete=60, message='loading...'):
+    def draw_loading_world_screen(self, percent_complete=60, message='Loading'):
         self.screen.fill(self.loading_world_screen_background_color)
 
-        bar_outline_color = (200, 200, 200)
-        filled_in_bar_color = (160, 160, 160)
-        pygame.draw.rect(
-            self.screen,
-            bar_outline_color,
-            self.button1_dimentions,
-            width=2
-        )
+        # --- BAR ---
+        pygame.draw.rect(self.screen, (200,200,200), self.button1_dimentions, width=2)
 
-        center_column_width = 12
-        center_column_margin_x = (self.blocks_width - center_column_width)//2
         percent_bar_fill = pygame.Rect(
-            self.menu_block_width * center_column_margin_x,
-            self.menu_block_height * 10,
-            (self.menu_block_width * center_column_width * percent_complete) // 100,
-            self.menu_block_height * 2
+            self.button1_dimentions.left,
+            self.button1_dimentions.top,
+            (self.button1_dimentions.width * percent_complete) // 100,
+            self.button1_dimentions.height
+        )
+        pygame.draw.rect(self.screen, (160,160,160), percent_bar_fill)
+
+        # --- TEXT ---
+        surf = self.loading_world_screen_font.render(f'{message}...', True, (255,255,255))
+
+        rect = surf.get_rect(
+            center=(
+                self.button1_dimentions.centerx,
+                self.button1_dimentions.top - 30   # ← easy control
+            )
         )
 
-        pygame.draw.rect(
-            self.screen,
-            filled_in_bar_color,
-            percent_bar_fill
-        )
-
-        self.screen.blit(self.loading_world_title_surf, self.loading_world_screen_text_rect)
+        self.screen.blit(surf, rect)
 
         blit_letterboxed(self.screen, self.window, self.loading_world_screen_background_color)
         pygame.display.flip()
         pygame.event.pump()
-
+    
     def draw_saving_world_screen(self, percent_complete=0):
         self.screen.fill(self.loading_world_screen_background_color)
         self.screen.blit(self.saving_world_title_surf, self.saving_world_screen_text_rect)
@@ -773,18 +770,14 @@ class Menu:
     # helper functions
     def create_new_world(self):
         # initialize the loading screen
-        # self.draw_loading_world_screen(0, 'loading...')
-
         # initialize grid and terrain
         self.world_generation_settings.reset_ground_level(50)
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
         # grid_superstructure.generate_world()
         for GenerationText, percentComplete in grid_superstructure._generate_world():
-            # self.draw_loading_world_screen(percentComplete, GenerationText)
             pass
         grid, background_grid = grid_superstructure.get_grids()
 
-        # self.draw_loading_world_screen(97, 'finishing up')
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
@@ -794,7 +787,7 @@ class Menu:
     
     def create_new_world_with_loading(self):
         # initialize the loading screen
-        self.draw_loading_world_screen(0, 'loading...')
+        self.draw_loading_world_screen(0, 'Prepping World Generator')
 
         # initialize grid and terrain
         self.world_generation_settings.reset_ground_level(50)
@@ -809,31 +802,37 @@ class Menu:
         player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
 
-        self.draw_loading_world_screen(55, 'saving world')
+        self.draw_loading_world_screen(55, 'Saving World')
+
+        new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
+        new_directory_path.mkdir()
+        save_game(new_directory_path, player, inventory, grid, background_grid, world_details)
+
+        self.draw_loading_world_screen(98, 'Finishing Up')
 
         return grid, background_grid, inventory, player, world_details
     
     def load_world_from_file(self):
-        self.draw_loading_world_screen(0, 'loading...')
+        self.draw_loading_world_screen(0, 'Loading Grid')
 
         worlds_directory = f"{self.game_files_directory}/{self.world_name}"
         with open(f"{worlds_directory}/grid.json", "r") as grid_file:
             grid_dict = json.load(grid_file)
             grid = Grid.fill_from_dict(grid_dict, self.screen, self.block_width)
         
-        self.draw_loading_world_screen(50, 'loading...')
+        self.draw_loading_world_screen(50, 'Loading Background')
 
         with open(f"{worlds_directory}/background_grid.json", "r") as grid_file:
             bg_grid_dict = json.load(grid_file)
             bg_grid = Grid.fill_from_dict(bg_grid_dict, self.screen, self.block_width)
 
-        self.draw_loading_world_screen(90, 'loading...')
+        self.draw_loading_world_screen(90, 'Loading Inventory')
 
         with open(f"{worlds_directory}/inventory.json", "r") as inventory_file:
             inventory_dict = json.load(inventory_file)
             inventory = Inventory.fill_from_dict(inventory_dict, self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
 
-        self.draw_loading_world_screen(95, 'loading...')
+        self.draw_loading_world_screen(95, 'Loading World Details')
 
         with open(f"{worlds_directory}/player_attributes.json", "r") as player_attr_file:
             player_attr_dict = json.load(player_attr_file)
@@ -848,7 +847,7 @@ class Menu:
             world_details_dict = json.load(world_details_file)
             world_details = World_Details.fill_from_dict(world_details_dict)
 
-        self.draw_loading_world_screen(99, 'loading...')
+        self.draw_loading_world_screen(99, 'Finishing Up')
 
         return grid, bg_grid, inventory, player, world_details
         
@@ -884,11 +883,7 @@ class Menu:
             elif self.generate_new_world:
                 self.world_names_list.insert(0, self.world_name)
                 grid, background_grid, inventory, player, world_details = self.create_new_world_with_loading()
-                new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
-                new_directory_path.mkdir()
-                save_game(new_directory_path, player, inventory, grid, background_grid, world_details)
                 play_object = Play(self.screen, self.block_width, grid, background_grid, inventory, player, world_details, self)
-                self.draw_loading_world_screen(98, 'finishing up')
 
             if play_object is None: return self
 

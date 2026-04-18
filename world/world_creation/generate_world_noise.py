@@ -146,12 +146,12 @@ class Grid_Superstructure:
 
     def generate_world(self):
         for generation_udpate in self._generate_world():
-            print(generation_udpate)
+            pass
 
 
     def _generate_world(self):
 
-        yield 'generating grid', 0
+        yield 'Generating Grid', 0
 
         # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
@@ -214,7 +214,7 @@ class Grid_Superstructure:
         #     # print(f'generated water from x={start_x} to x={end_x}')
 
 
-        yield 'generating background grid', 25
+        yield 'Generating Background', 25
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
@@ -235,7 +235,7 @@ class Grid_Superstructure:
             for y in range(cur_depth_down, self.background_grid.height):
                 self.background_grid.set(x, y, biome.sub_layer)
                 
-        yield 'generating structures', 40
+        yield 'Generating Structures', 40
 
         # generate ground level objects & structures for the background
         # should this be run with the foreground so foreground & background structures don't overlap?
@@ -306,4 +306,4 @@ class Grid_Superstructure:
             
             x += 1
 
-        return 'initializing player', 50
+        return 'Initializing Inventory', 50
