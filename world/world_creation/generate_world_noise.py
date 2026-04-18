@@ -129,7 +129,7 @@ class Grid_Superstructure:
         if x > 0 and x < self.foreground_grid.width: # prevents 1 block wide biomes in the middle of another biome
             prev_biome = _get_biome(x-1)
             next_biome = _get_biome(x+1)
-            if prev_biome is next_biome and biome is not prev_biome:
+            if biome is not prev_biome or biome is not next_biome: # prevents one block bimes
                 biome = prev_biome
         return biome
         

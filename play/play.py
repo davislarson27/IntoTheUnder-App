@@ -349,7 +349,6 @@ class Play:
                         self.active_grid.set(self.affected_x, self.affected_y, None)
 
     def run_main_game(self, input):
-
         # step 1: interact with blocks
         self.interact_with_grid(input)
 
@@ -389,7 +388,10 @@ class Play:
         elif input.c_keypress:
             operate_menu(self.inventory.get_recipe_menu())
         elif input.escape_keypress: # this one works differently
-            operate_menu(self.escape_menu)
+            if self.sub_state is not None:
+                operate_menu(self.sub_state)
+            else:
+                operate_menu(self.escape_menu)
 
     # ---------------------------- interacting with main loop ---------------------------- #
 
