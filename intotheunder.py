@@ -48,12 +48,13 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 """
 update notes:
- - added the recipe center
- - added more gems and blocks
- - fixed issues with physics
- - removed the fall speed cap
- - added 15 new blocks & items
- - updated water mechanics
+ - remade the world generation
+ - added a loading progress bar
+ - added a pause menu
+ - added ladders
+ - increased world height
+ - added mountains and ravines
+ - added new biomes
 """
 
 """

@@ -87,7 +87,7 @@ class Water(Block):
     
     @staticmethod
     def velocity_reduction(velocity):
-        return velocity // 3
+        return (velocity * 2) // 3
 
 
     @staticmethod

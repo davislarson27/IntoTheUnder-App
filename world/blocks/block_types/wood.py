@@ -172,34 +172,124 @@ class Wood_Planks(Block):
 class Ladder(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
-    
+
     str_name = "Ladder"
     tick_threshold = 30
-
     pass_through = True
-    
+
+    draw_background = True
+    # ignore_shading_from = {
+    #     (0, 1): False, # coming from the top
+    #     (0, -1): True, # coming from the bottom
+    #     (1, 0): True, # coming from the right
+    #     (-1, 0): True # comin from the left
+    # }
+
     @staticmethod
     def accel_reduction(accel):
         return 0
-    
+
     @staticmethod
     def velocity_reduction(velocity):
         return velocity
 
-
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
-        if being_mined:
-            added_color = 20
-        else:
-            added_color = 0
+        added = 20 if being_mined else 0
 
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
 
-        pygame.draw.rect( # draw base color
-            screen,
-            (200 + added_color, 200 + added_color, 200 + added_color),           # color
-            (x, y, block_width, block_width)
+        # Darker wood rails
+        rail_color = (
+            min(255, 130 + added),
+            min(255, 102 + added),
+            min(255, 78 + added)
         )
+
+        # Grey/silver rungs
+        rung_color = (
+            min(255, 155 + added),
+            min(255, 155 + added),
+            min(255, 155 + added)
+        )
+        rung_dark = (
+            min(255, 120 + added),
+            min(255, 120 + added),
+            min(255, 120 + added)
+        )
+
+        rail_w = max(2, block_width // 7)
+        rung_h = max(2, block_width // 10)
+        padding = max(1, block_width // 12)
+
+        left_x = x + padding
+        right_x = x + block_width - padding - rail_w
+
+        # Rails (full height)
+        pygame.draw.rect(screen, rail_color, (left_x, y, rail_w, block_width))
+        pygame.draw.rect(screen, rail_color, (right_x, y, rail_w, block_width))
+
+        rung_count = 4
+
+        # Even spacing, but shifted slightly downward
+        step = block_width / rung_count
+        vertical_shift = max(1, block_width // 12)   # tweak this
+
+        for i in range(rung_count):
+            rung_y = int(y + i * step + vertical_shift)
+
+            # keep rung inside tile
+            rung_y = min(rung_y, y + block_width - rung_h)
+
+            pygame.draw.rect(
+                screen,
+                rung_color,
+                (left_x + rail_w, rung_y, right_x - (left_x + rail_w), rung_h)
+            )
+
+
+    # @staticmethod
+    # def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+    #     added = 20 if being_mined else 0
+
+    #     if is_grid_coordinates:
+    #         x *= block_width
+    #         y *= block_width
+
+    #     # Slightly darker than planks
+    #     rail_color = (
+    #         min(255, 130 + added),
+    #         min(255, 102 + added),
+    #         min(255, 78 + added)
+    #     )
+    #     rung_color = (
+    #         min(255, 150 + added),
+    #         min(255, 120 + added),
+    #         min(255, 95 + added)
+    #     )
+
+    #     # Geometry (full height, wider)
+    #     rail_w = max(2, block_width // 7)
+    #     rung_h = max(2, block_width // 10)
+
+    #     padding = max(1, block_width // 12)
+
+    #     left_x = x + padding
+    #     right_x = x + block_width - padding - rail_w
+
+    #     # FULL HEIGHT rails (key change)
+    #     pygame.draw.rect(screen, rail_color, (left_x, y, rail_w, block_width))
+    #     pygame.draw.rect(screen, rail_color, (right_x, y, rail_w, block_width))
+
+    #     # Rungs
+    #     rung_count = 4
+    #     for i in range(rung_count):
+    #         rung_y = y + ((i + 1) * block_width) // (rung_count + 1) - rung_h // 2
+
+    #         pygame.draw.rect(
+    #             screen,
+    #             rung_color,
+    #             (left_x + rail_w, rung_y, right_x - (left_x + rail_w), rung_h)
+    #         )
