@@ -614,27 +614,49 @@ class Menu:
         text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
         self.screen.blit(text_surf, text_rect)
 
-    def draw_loading_world_screen(self, percent_complete=60, message='Loading'):
+    def draw_loading_world_screen(self, percent_complete=0, message='Loading'):
         self.screen.fill(self.loading_world_screen_background_color)
 
+        outline_color = (95, 100, 102)
+        bar_color = (145, 155, 165)
+
         # --- BAR ---
-        pygame.draw.rect(self.screen, (200,200,200), self.button1_dimentions, width=2)
+        outline_width = 2
+        loading_bar_outline_dimentions = pygame.Rect(
+            self.button2_dimentions.left,
+            self.button2_dimentions.top,
+            self.button2_dimentions.width,
+            self.button2_dimentions.height - 15
+        )
+        loading_bar_dimentions = pygame.Rect(
+            loading_bar_outline_dimentions.left + outline_width,
+            loading_bar_outline_dimentions.top + outline_width,
+            loading_bar_outline_dimentions.width - (2 * outline_width),
+            loading_bar_outline_dimentions.height - (2 * outline_width)
+        )
+
+        pygame.draw.rect(
+            self.screen,
+            outline_color,
+            loading_bar_outline_dimentions,
+            width=outline_width
+        )
 
         percent_bar_fill = pygame.Rect(
-            self.button1_dimentions.left,
-            self.button1_dimentions.top,
-            (self.button1_dimentions.width * percent_complete) // 100,
-            self.button1_dimentions.height
+            loading_bar_dimentions.left,
+            loading_bar_dimentions.top,
+            (loading_bar_dimentions.width * percent_complete) // 100,
+            loading_bar_dimentions.height
         )
-        pygame.draw.rect(self.screen, (160,160,160), percent_bar_fill)
+        pygame.draw.rect(self.screen, bar_color, percent_bar_fill)
 
         # --- TEXT ---
         surf = self.loading_world_screen_font.render(f'{message}...', True, (255,255,255))
 
         rect = surf.get_rect(
             center=(
-                self.button1_dimentions.centerx,
-                self.button1_dimentions.top - 30   # ← easy control
+                loading_bar_dimentions.centerx,
+                loading_bar_dimentions.top - 35   # ← easy control
             )
         )
 
