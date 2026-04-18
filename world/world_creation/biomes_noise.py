@@ -19,12 +19,15 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     sub_layer = Rock
 
     multiplier = {
+        Dirt: 0.00005,
+        Gravel: -0.00004,
         Iron_Ore_Block: 0.00045,
-        Coal_Ore_Block: 0.00021,
-        Emerald_Ore_Block: -0.001,
-        Diamond_Ore_Block: 0.0009,
-        Mabelite_Ore_Block: 0.00015,
-        Sulfur_Flakes_Block: -0.001
+        Coal_Ore_Block: 0.000211,
+        Gold_Ore_Block: 0.0004,
+        Emerald_Ore_Block: -0.00085,
+        Diamond_Ore_Block: 0.00011,
+        Mabelite_Ore_Block: 0.00010,
+        Sulfur_Flakes_Block: -0.0013
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered

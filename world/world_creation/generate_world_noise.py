@@ -49,21 +49,24 @@ class Grid_Superstructure:
         self.terrain_variation_freq = 10
         self.bg_hill_freq = self.hill_freq
         self.bg_ter_var_freq = self.terrain_variation_freq
-        self.cave_tunnel_x_freq = 0.03
-        self.cave_tunnel_y_freq = 0.1
+        self.cave_tunnel_x_freq = 0.02
+        self.cave_tunnel_y_freq = 0.12
         self.cave_cavern_x_freq = 0.07
         self.cave_cavern_y_freq = 0.07
 
         # thresholds
-        self.cave_threshold = 0.65
+        self.cave_threshold = 0.645
 
         self.ores = { # higher scale = smaller veins, higher threshold = less common
+            Dirt: Ore(self.seed, Dirt, threshold=0.5, scale=0.11, min_depth=10),
+            Gravel: Ore(self.seed, Gravel, threshold=0.5, scale=0.11, min_depth=10),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=10),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, threshold=0.62, scale=0.17, min_depth=15),
-            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.8, scale=0.22, min_depth=25),
-            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.85, scale=0.22, min_depth=35),
-            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.85, scale=0.3, min_depth=65),
-            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.8, scale=0.22, min_depth=12),
+            Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, threshold=0.71, scale=0.18, min_depth=30),
+            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.78, scale=0.2, min_depth=25),
+            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.84, scale=0.2, min_depth=35),
+            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.88, scale=0.18, min_depth=65),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.78, scale=0.2, min_depth=12),
         }
 
     def get_grids(self):
