@@ -9,7 +9,6 @@ def save_game(directory, player, inventory, grid, background_grid, world_details
     yield start_percent, 'Saving Grid'
 
     inSavePercent = (end_percent - start_percent) / 100
-    print(inSavePercent)
 
     grid_dictionary = grid.to_dict()
     with open(f"{directory}/grid.json", "w") as grid_file:
