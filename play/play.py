@@ -363,7 +363,7 @@ class Play:
         if self.sub_state is not None: self.sub_state.close()
         self.menu.draw_loading_world_screen(5, 'Saving Game')
         save_game(f"{self.menu.game_files_directory}/{self.menu.world_name}", self.player, self.inventory, self.grid, self.background_grid, self.world_details)
-        self.menu.draw_loading_world_screen(95, 'Opening Menu')
+        self.menu.draw_loading_world_screen(95, 'Finishing Up')
         self.menu.reopen_menu_prep()
 
     def manage_menus(self, input):
