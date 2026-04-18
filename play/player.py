@@ -59,7 +59,10 @@ class Player:
             new_velocity = Water.velocity_reduction(self.player_speed)
             return Water.accel_reduction(default_y_acceleration), new_velocity, new_velocity, False
         
-        if self.is_touching(self.get_block_positions(), Ladder):
+        elif self.is_touching(self.get_block_positions(), Wood_Ladder):
+            return 0, self.player_speed, self.player_speed, False  # no gravity, can move freely
+
+        elif self.is_touching(self.get_block_positions(), Iron_Ladder):
             return 0, self.player_speed, self.player_speed, False  # no gravity, can move freely
 
         return default_y_acceleration, self.player_speed, 0, True

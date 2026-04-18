@@ -133,25 +133,29 @@ class Grid:
         str_to_block = get_str_to_block()
         block_locations = grid_dict["grid_array"]
         for block in block_locations:
-            block_type_str = block[0]
-            block_type = str_to_block[block_type_str]
-            x = block[1]
-            y = block[2]
-            pass_through = block[3]
-            if len(block) > 4 and block[4] is not None:                
-                stored_inventory_items_compressed = block[4]
-                stored_inventory_items = []
-                for item in stored_inventory_items_compressed:
-                    if item is None:
-                        stored_inventory_items.append(None)
-                    elif len(item) == 2 and item[0] == "Crafting Recipe":
-                        stored_inventory_items.append(User_Crafting_Recipes_List.getRecipeFromString(item[1]))
-                    elif len(item) == 2 and item[0] == "Inventory Item":
-                        stored_inventory_items.append(Inventory_Item.create_from_array(item[1]))
-                        
-            else:
-                stored_inventory_items = None
-            grid.set(x, y, block_type, pass_through, stored_inventory_items)
+            try:
+                block_type_str = block[0]
+                block_type = str_to_block[block_type_str]
+                x = block[1]
+                y = block[2]
+                pass_through = block[3]
+                if len(block) > 4 and block[4] is not None:                
+                    stored_inventory_items_compressed = block[4]
+                    stored_inventory_items = []
+                    for item in stored_inventory_items_compressed:
+                        if item is None:
+                            stored_inventory_items.append(None)
+                        elif len(item) == 2 and item[0] == "Crafting Recipe":
+                            stored_inventory_items.append(User_Crafting_Recipes_List.getRecipeFromString(item[1]))
+                        elif len(item) == 2 and item[0] == "Inventory Item":
+                            stored_inventory_items.append(Inventory_Item.create_from_array(item[1]))
+                            
+                else:
+                    stored_inventory_items = None
+                grid.set(x, y, block_type, pass_through, stored_inventory_items)
+            except (KeyError):
+                print(f'error (probable): {block_type_str} is not a valid block type in this version')
+                
 
         return grid
         
