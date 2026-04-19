@@ -63,11 +63,11 @@ class Grid_Superstructure:
             Gravel: Ore(self.seed, Gravel, threshold=0.5, scale=0.11, min_depth=10),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=10),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, threshold=0.62, scale=0.17, min_depth=15),
-            Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, threshold=0.71, scale=0.18, min_depth=30),
-            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.77, scale=0.18, min_depth=25),
-            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.81, scale=0.18, min_depth=35),
-            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.84, scale=0.17, min_depth=65),
-            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.77, scale=0.18, min_depth=12),
+            Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, threshold=0.70, scale=0.18, min_depth=30),
+            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.75, scale=0.18, min_depth=25),
+            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.79, scale=0.18, min_depth=35),
+            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.82, scale=0.17, min_depth=65),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.70, scale=0.18, min_depth=12),
         }
 
     def get_grids(self):
