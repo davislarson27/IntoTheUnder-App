@@ -63,7 +63,7 @@ class Grid:
         self.chunks[chunk_id].set_manual(x, y, set_block)
         
         self.chunks_modified[chunk_id] = True
-        
+    
     def set_manual(self, global_x, y, block):
         if not self.in_bounds(global_x, y):
             return
@@ -72,10 +72,12 @@ class Grid:
         self.chunks_modified[chunk_id] = True
 
     def in_bounds(self, global_x, y):
-        chunk_id, _ = self.get_chunk_x(global_x)
+        chunk_id, x = self.get_chunk_x(global_x)
         if chunk_id > self.positive_chunks - 1 or chunk_id < -self.negative_chunks:
             return False
-        return True
+        if self.chunks[chunk_id].in_bounds(x,y):
+            return True
+        return False
 
     def is_filled(self, x, y):
         return self.get(x, y) is not None
@@ -105,7 +107,7 @@ class Grid:
 
     def generate_save_files(self):
         Path(f'{self.save_directory}').mkdir()
-    
+
     def physics(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1

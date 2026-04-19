@@ -60,7 +60,8 @@ update notes:
 """
 notes:
  - the health bar is not being drawn: uncomment in player.draw(), but note that play is not accounting for the health bar height when it stops drawing (health bar covers bottom blocks)
-"""
+ - right now the player gets soft locked by falling through the ground at the bottom -> needs to get stopped
+ """
 
 # functions
 def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME):
