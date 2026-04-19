@@ -27,7 +27,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         Emerald_Ore_Block: -0.00085,
         Diamond_Ore_Block: 0.00011,
         Mabelite_Ore_Block: 0.00010,
-        Sulfur_Flakes_Block: -0.0013
+        Sulfur_Flakes_Block: -0.0014
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered

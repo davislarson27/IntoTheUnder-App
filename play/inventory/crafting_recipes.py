@@ -388,7 +388,7 @@ class User_Crafting_Recipes_List:
                 Crafting_Recipe(
             "Sulfur Powder",
             [
-                Ingredient(Sulfur_Flakes_Block, 3),
+                Ingredient(Sulfur_Flakes_Block, 2),
             ],
             output=Ingredient(Sulfur_Powder, 1),
             category=Recipe_Category.Resources

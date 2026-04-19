@@ -1,6 +1,6 @@
 from world.blocks.block_export import *
 
-GRID_HEIGHT = 140
+GRID_HEIGHT = 150
 
 class Biome:
     
