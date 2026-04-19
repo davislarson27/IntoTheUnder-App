@@ -135,6 +135,9 @@ class Grid:
     def set_chunks(self, chunks):
         self.chunks = chunks
 
+    def reset_save_cache(self):
+        self.chunks_modified = {}
+
     @classmethod
     def fill_from_file(cls, directory, screen, block_width):
         max_id = 0

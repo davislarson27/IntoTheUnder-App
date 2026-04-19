@@ -793,10 +793,11 @@ class Menu:
         # initialize grid and terrain
         self.world_generation_settings.reset_ground_level(50)
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
-        # grid_superstructure.generate_world()
         for GenerationText, percentComplete in grid_superstructure._generate_world():
             pass
         grid, background_grid = grid_superstructure.get_grids()
+        grid.reset_save_cache()
+        background_grid.reset_save_cache()
 
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
@@ -828,14 +829,16 @@ class Menu:
         new_directory_path.mkdir()
         grid.generate_save_files()
         background_grid.generate_save_files()
-
-        # create the grid files needed
-        grid, background_grid
         
         save_start_percent = 55
         save_end_percent = 99
         for percent, save_message in save_game(new_directory_path, player, inventory, grid, background_grid, world_details, save_start_percent, save_end_percent):
             self.draw_loading_world_screen(percent, save_message)
+
+        # reset the grid caches to speed up saving
+        grid.reset_save_cache()
+        background_grid.reset_save_cache()
+
 
         return grid, background_grid, inventory, player, world_details
     
