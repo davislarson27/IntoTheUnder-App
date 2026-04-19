@@ -88,7 +88,7 @@ class Chunked_Grid:
             print(f"Chunk {chunk_id}: {count} blocks")
 
     def save(self):
-        for chunk_id in self.chunks:
+        for chunk_id in self.chunks_modified:
             chunk = self.chunks[chunk_id]
             chunk_data = chunk.to_dict()
 
