@@ -1,5 +1,6 @@
 import json
-from world.grid import Grid
+# from world.grid import Grid
+from world.chunked_grid import Chunked_Grid as Grid
 from play.inventory.inventory import Inventory
 from play.player import Player
 from components.world_details import World_Details
@@ -10,15 +11,11 @@ def save_game(directory, player, inventory, grid, background_grid, world_details
 
     inSavePercent = (end_percent - start_percent) / 100
 
-    grid_dictionary = grid.to_dict()
-    with open(f"{directory}/grid.json", "w") as grid_file:
-        json.dump(grid_dictionary, grid_file, indent=3)
+    grid.save()
 
     yield start_percent + int(inSavePercent * 50), 'Saving Background'
 
-    bg_grid_dictionary = background_grid.to_dict()
-    with open(f"{directory}/background_grid.json", "w") as bg_grid_file:
-        json.dump(bg_grid_dictionary, bg_grid_file, indent=3)
+    background_grid.save()
 
     yield start_percent + int(inSavePercent * 97), 'Saving Inventory'
 

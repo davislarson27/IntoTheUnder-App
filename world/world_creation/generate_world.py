@@ -1,4 +1,5 @@
-from world.grid import Grid
+# from world.grid import Grid
+from world.chunked_grid import Chunked_Grid
 from .biomes import *
 import random
 from world.world_creation.structures.structures import *
@@ -6,8 +7,8 @@ from world.world_creation.structures.structures import *
 class Grid_Superstructure:
     def __init__(self, screen, worldGenParams):
         self.worldGenParams = worldGenParams
-        self.foreground_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen)
-        self.background_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen) 
+        self.foreground_grid = Chunked_Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen)
+        self.background_grid = Chunked_Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen) 
 
     def get_grids(self):
         return self.foreground_grid, self.background_grid

@@ -2,15 +2,17 @@ import pygame
 from math import floor, ceil
 import shutil
 from pathlib import Path
+import json
 
-from world.grid import Grid
-# from world.world_creation.generate_world import *
 from world.world_creation.generate_world_noise import *
 from components.text_box import Text_Box
 from play.play import Play
 from components.blit_letterboxed import blit_letterboxed
-from components.game_file_reading import *
+from components.game_file_reading import save_game
 from world.world_creation.world_generation_settings import World_Generation_Settings
+from play.player import Player
+from play.inventory.inventory import Inventory
+from components.world_details import World_Details
 
 """
 
@@ -807,9 +809,12 @@ class Menu:
         # initialize the loading screen
         self.draw_loading_world_screen(0, 'Prepping World Generator')
 
+        # create directory name
+        new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
+
         # initialize grid and terrain
         self.world_generation_settings.reset_ground_level(50)
-        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
+        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path)
         for GenerationText, percentComplete in grid_superstructure._generate_world():
             self.draw_loading_world_screen(percentComplete, GenerationText)
         grid, background_grid = grid_superstructure.get_grids()
@@ -819,8 +824,13 @@ class Menu:
         player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
 
-        new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
+        # create world save directory
         new_directory_path.mkdir()
+        grid.generate_save_files()
+        background_grid.generate_save_files()
+
+        # create the grid files needed
+        grid, background_grid
         
         save_start_percent = 55
         save_end_percent = 99
@@ -833,15 +843,11 @@ class Menu:
         self.draw_loading_world_screen(0, 'Loading Grid')
 
         worlds_directory = f"{self.game_files_directory}/{self.world_name}"
-        with open(f"{worlds_directory}/grid.json", "r") as grid_file:
-            grid_dict = json.load(grid_file)
-            grid = Grid.fill_from_dict(grid_dict, self.screen, self.block_width)
+        grid = Grid.fill_from_file(f"{self.game_files_directory}/{self.world_name}/foreground_grid", self.screen, self.block_width)
         
         self.draw_loading_world_screen(50, 'Loading Background')
 
-        with open(f"{worlds_directory}/background_grid.json", "r") as grid_file:
-            bg_grid_dict = json.load(grid_file)
-            bg_grid = Grid.fill_from_dict(bg_grid_dict, self.screen, self.block_width)
+        bg_grid = Grid.fill_from_file(f"{self.game_files_directory}/{self.world_name}/background_grid", self.screen, self.block_width)
 
         self.draw_loading_world_screen(90, 'Loading Inventory')
 

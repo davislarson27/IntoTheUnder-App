@@ -1,4 +1,5 @@
-from world.grid import Grid
+# from world.grid import Grid
+from world.chunked_grid import Chunked_Grid as Grid
 from .biomes_noise import *
 import random
 from world.world_creation.structures.structures import *
@@ -7,10 +8,10 @@ from .ores_noise import Ore
 import hashlib
 
 class Grid_Superstructure:
-    def __init__(self, screen, worldGenParams):
+    def __init__(self, screen, worldGenParams, directory=''):
         self.worldGenParams = worldGenParams
-        self.foreground_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen)
-        self.background_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen) 
+        self.foreground_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen, f'{directory}/foreground_grid')
+        self.background_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen, f'{directory}/background_grid') 
         
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)

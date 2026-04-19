@@ -76,7 +76,7 @@ def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME):
     # gets the file names for all user worlds and sorts them in order of last opened
     game_files_folder = Path(game_files_directory)
 
-    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.rglob("*") if file.is_dir() and file.name != IMAGES_FILE_NAME]
+    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.iterdir() if file.is_dir() and file.name != IMAGES_FILE_NAME]
     world_details_class_list.sort(key=lambda world:world.last_modified_date, reverse=True)
 
     return [world.world_name for world in world_details_class_list if not world.version > VERSION]
@@ -92,9 +92,6 @@ HEALTH_BAR_HEIGHT = 20 # included in INVENTORY_HEIGHT
 grid_height_px = screen_height_px // 48
 INVENTORY_HEIGHT = HEALTH_BAR_HEIGHT + (grid_height_px * 7) # this is so hard coded. please change this at some point.
 
-
-# cur_seed = 12
-# random.seed(cur_seed)
 
 APP_NAME = "Into The Under"
 APP_DISPLAY_NAME = "Into The Under 1.6.0"
