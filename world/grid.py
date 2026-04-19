@@ -57,7 +57,9 @@ class Grid:
         chunk_id, x = self.get_chunk_x(global_x)
         set_block = None
         if block is not None:
-            set_block = block(self, self.screen, global_x, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
+            if pass_through is None:
+                pass_through = block.pass_through
+            set_block = block(self, self.screen, global_x, y, self.BLOCK_WIDTH, pass_through=pass_through, stored_inventory_items=stored_inventory_items)
         self.chunks[chunk_id].set_manual(x, y, set_block)
         
         self.chunks_modified[chunk_id] = True
