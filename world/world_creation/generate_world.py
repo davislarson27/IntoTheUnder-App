@@ -70,6 +70,8 @@ class Grid_Superstructure:
             Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.70, scale=0.18, min_depth=12),
         }
 
+        self.saltpeter_chance = 0.025
+
     def get_grids(self):
         return self.foreground_grid, self.background_grid
     
@@ -263,12 +265,11 @@ class Grid_Superstructure:
         yield 'Generating Structures', 40
 
         for x in range(self.foreground_grid.width):
-            saltpeter_chance = 0.035
             for y in range(self.get_terrain_height(x)+1, self.foreground_grid.height):
                 if self.is_cave(x, y):
                     block_set = None
                     if self.is_cave(x, y+1) and not self.is_cave(x, y-1): # check if block below is a cave
-                        if self.get_hash_chance(x, y, 'saltpeter') < saltpeter_chance:
+                        if self.get_hash_chance(x, y, 'saltpeter') < self.saltpeter_chance:
                             block_set = Saltpeter
                     self.foreground_grid.set(x, y, block_set)
 
