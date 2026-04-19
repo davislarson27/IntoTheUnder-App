@@ -1,6 +1,6 @@
 import json
 # from world.grid import Grid
-from world.chunked_grid import Chunked_Grid as Grid
+from world.chunked_grid import Grid
 from play.inventory.inventory import Inventory
 from play.player import Player
 from components.world_details import World_Details

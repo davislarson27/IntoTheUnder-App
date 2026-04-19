@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 
-class Chunked_Grid:
+class Grid:
     
     chunk_width = 16
 
@@ -148,7 +148,7 @@ class Chunked_Grid:
         
         world_width = (max_id + 1) * cls.chunk_width # assumes only positive chunks
         world_height = chunks_data[0]['chunk_data']['grid_height']
-        return_grid = Chunked_Grid(world_width, world_height, block_width, screen, directory)
+        return_grid = Grid(world_width, world_height, block_width, screen, directory)
 
         chunks = {}
         for chunk_id in chunks_data:
