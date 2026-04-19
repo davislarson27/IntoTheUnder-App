@@ -8,6 +8,8 @@ class Block:
 
     str_name = "base block class"
 
+    can_break = True
+
     can_place = True
     can_store_items = False
 

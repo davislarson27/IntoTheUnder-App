@@ -71,6 +71,7 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Sand_Bricks,
         Iron_Ladder,
         Wood_Ladder,
+        Border_Block,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

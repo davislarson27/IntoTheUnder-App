@@ -47,7 +47,6 @@ class Play:
         self.build_bg_overlay_cache()
 
 
-
     # ------------------------------ helper functions ------------------------------ #
 
     @staticmethod
@@ -281,6 +280,7 @@ class Play:
             for x in range(x_draw_grid_min, x_draw_grid_max):
                 self.draw_bg_overlay_at(x, y, camera_x, camera_y)
 
+
     # ---------------------------- main actions ---------------------------- #
 
     def interact_with_grid(self, input):
@@ -298,7 +298,7 @@ class Play:
         # set mining sprite grid
         self.mining_sprite.set_grid(self.active_grid)
 
-        if input.mouse.get_pressed()[0] and self.affected_x is not None:
+        if input.mouse.get_pressed()[0] and self.affected_x is not None and self.active_grid.get(self.affected_x, self.affected_y).can_break:
             self.destroy_held_time+=1
             self.mining_sprite.set(self.affected_x, self.affected_y)
         else:

@@ -15,7 +15,6 @@ from play.inventory.inventory import Inventory
 from components.world_details import World_Details
 
 """
-
 explanation:
 
 the menu works by using a self.blocks_width by self.blocks_height grid. 
@@ -199,7 +198,7 @@ class Menu:
         # generate menu background world
         load_screen_block_width = floor(BLOCK_WIDTH * 1.15) #slightly enlarge the blocks
         self.width_blocks = (width_px // load_screen_block_width) * 3
-        self.height_blocks = (height_px // load_screen_block_width) + 1
+        self.height_blocks = (height_px // load_screen_block_width) + 4
         self.background_world_width_px = floor(self.width_blocks * load_screen_block_width)
 
         menu_world_settings = World_Generation_Settings(
@@ -214,9 +213,6 @@ class Menu:
         grid_superstructure = Grid_Superstructure(screen, menu_world_settings)
         grid_superstructure.generate_world()
         self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
-
-        # self.background_grid = Grid(self.width_blocks, self.height_blocks, load_screen_block_width, screen)
-        # self.background_grid.generate_terrain()
 
 
     def get_max_load_screens(self):

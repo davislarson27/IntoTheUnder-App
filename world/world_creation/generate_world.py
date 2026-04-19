@@ -33,6 +33,8 @@ class Grid_Superstructure:
         self.cave_tunnel_seed = make_seed(self.seed, 'cave_tunnel_seed')
         self.cave_cavern_seed = make_seed(self.seed, 'cave_cavern_seed')
 
+        self.border_block_seed = make_seed(self.seed, 'border_block_seed')
+
         self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
 
         # amplitutdes of different generators
@@ -42,6 +44,7 @@ class Grid_Superstructure:
         self.terrain_variation_amp = 2
         self.bg_hill_amp = self.hill_amp
         self.bg_ter_var_amp = self.terrain_variation_amp
+        self.border_block_amp = 2
 
         # frequencies
         self.elevation_freq = 300
@@ -54,6 +57,7 @@ class Grid_Superstructure:
         self.cave_tunnel_y_freq = 0.12
         self.cave_cavern_x_freq = 0.07
         self.cave_cavern_y_freq = 0.07
+        self.border_block_freq = 8
 
         # thresholds
         self.cave_threshold = 0.645
@@ -171,6 +175,9 @@ class Grid_Superstructure:
     def get_humidity(self, x):
         return pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
             
+    def get_border_block_depth(self, x):
+        depth  = pnoise1(x * (1 / self.border_block_freq),  base=(self.border_block_seed) % 256) * self.border_block_amp
+        return abs(int(depth))
 
     def generate_world(self):
         for _ in self._generate_world():
@@ -265,7 +272,7 @@ class Grid_Superstructure:
         yield 'Generating Structures', 40
 
         for x in range(self.foreground_grid.width):
-            for y in range(self.get_terrain_height(x)+1, self.foreground_grid.height):
+            for y in range(self.get_terrain_height(x)+2, self.foreground_grid.height):
                 if self.is_cave(x, y):
                     block_set = None
                     if self.is_cave(x, y+1) and not self.is_cave(x, y-1): # check if block below is a cave
@@ -344,5 +351,19 @@ class Grid_Superstructure:
                 running_odds_total += structureIdentifier.odds
             
             x += 1
+
+        # now generate the border_block layer
+        for x in range(self.foreground_grid.width):
+            base_y = self.foreground_grid.height - 1
+            self.foreground_grid.set(x, base_y, Border_Block) # sets the bottom block to a border block
+            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+                self.foreground_grid.set(x, y, Border_Block) # sets the bottom block to a border block
+
+        for x in range(self.background_grid.width):
+            base_y = self.background_grid.height - 1
+            self.background_grid.set(x, base_y, Border_Block) # sets the bottom block to a border block
+            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+                self.background_grid.set(x, y, Border_Block) # sets the bottom block to a border block
+
 
         return 'Initializing Inventory', 50
