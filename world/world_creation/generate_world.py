@@ -1,5 +1,5 @@
 # from world.grid import Grid
-from world.chunked_grid import Grid
+from world.grid import Grid
 from .biomes_noise import *
 import random
 from world.world_creation.structures.structures import *
