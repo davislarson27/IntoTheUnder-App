@@ -2,7 +2,6 @@ from .block_types._base import *
 
 from .block_types.explosives import *
 from .block_types.ingots import *
-from .block_types.ingots import *
 from .block_types.multiblocks import *
 from .block_types.gems import *
 from .block_types.ores import *
@@ -19,8 +18,8 @@ from .block_types.bricks import *
 make sure ot add each block to the get_str_to_block() function and add any new files to the import list
 """
 
-def get_str_to_block(): # uses blocks_list to generate dictionary that converts str names to their types
-    blocks_list = [
+def get_blocks_list():
+        return [
         Iron_Ingot,
         Gold_Ingot,
         Rock,
@@ -84,6 +83,9 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
             Water_R4,
             Water_L4
     ]
+
+def get_str_to_block(): # uses blocks_list to generate dictionary that converts str names to their types
+    blocks_list = get_blocks_list()
 
     blocks_dict = {}
     for block in blocks_list:
