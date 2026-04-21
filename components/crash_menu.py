@@ -47,19 +47,19 @@ class Crash_Menu:
         center_column_width = 12
         center_column_margin_x = (self.blocks_width - center_column_width) // 2
 
-        self.btn_resume = pygame.Rect(
+        self.btn_1 = pygame.Rect(
             self.menu_block_width * center_column_margin_x,
             self.menu_block_height * 10,
             self.menu_block_width * center_column_width,
             self.menu_block_height * 2
         )
-        self.btn_help = pygame.Rect(
+        self.btn_2 = pygame.Rect(
             self.menu_block_width * center_column_margin_x,
             self.menu_block_height * 13,
             self.menu_block_width * center_column_width,
             self.menu_block_height * 2
         )
-        self.btn_quit = pygame.Rect(
+        self.btn_3 = pygame.Rect(
             self.menu_block_width * center_column_margin_x,
             self.menu_block_height * 16,
             self.menu_block_width * center_column_width,
@@ -67,7 +67,7 @@ class Crash_Menu:
         )
 
         self.buttons = [
-            (self.btn_resume, button_message),
+            (self.btn_1, button_message),
         ]
 
     # ------------------------------------------------------------------ #
@@ -83,7 +83,7 @@ class Crash_Menu:
         return self
 
     def execute_clicked(self, pos):
-        if self.btn_resume.collidepoint(pos):
+        if self.btn_1.collidepoint(pos):
             return self.goToState
         return self
 

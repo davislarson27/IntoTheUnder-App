@@ -24,6 +24,7 @@ from components.input import Input
 from play.play import Play
 from world.world_creation.world_generation_settings import World_Generation_Settings
 from components.blit_letterboxed import blit_letterboxed
+from components.crash_menu import Crash_Menu
 
 # from windows_path_resources import *
 from components.path_resources.mac_path_resources import *
@@ -149,6 +150,9 @@ try:
     while True:
 
         try:
+            # prep reset force quit var
+            force_quit_crash = last_frame_failed and not isinstance(run_class, Crash_Menu)
+
             # get scale stuff
             scale, offx, offy = blit_letterboxed(screen, window, background_color)
 
@@ -169,7 +173,8 @@ try:
             # update clock
             clock.tick(TICKS)
 
-            last_frame_failed = False
+            # reset the quit counter
+            if force_quit_crash: last_frame_failed = False
 
         except Exception as recoverableError:
             print("CRASH DETECTED")
