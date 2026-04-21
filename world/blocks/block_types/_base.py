@@ -86,7 +86,7 @@ class Block:
     def physics(self):
         return
 
-    def onDestruction(self, inventory=None):
+    def onDestroy(self, inventory=None):
         block_type = type(self)
         self.grid.set(self.x, self.y, None)
         return block_type
@@ -101,6 +101,9 @@ class Block:
 
 class Item(Block):
     can_place = False
+
+    def onDestroy(self, inventory=None):
+        return None
 
 class Ingot(Item): # this is just here to help draw other ingots
     @staticmethod
