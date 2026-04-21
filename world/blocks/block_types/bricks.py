@@ -12,9 +12,9 @@ class Stone_Bricks(Block): # used the wrong color and doesn't look good yet
             x *= block_width
             y *= block_width
 
-        base  = (70, 75, 80)
-        dark  = (40, 47, 55)
-        light = (100, 105, 110)
+        base  = (95, 100, 102)
+        dark  = (65, 73, 80)
+        light = (125, 130, 135)
 
         if being_mined:
             addedColor = 20
@@ -80,9 +80,9 @@ class Frozen_Stone_Bricks(Block): # used the wrong color and doesn't look good y
             y *= block_width
 
 
-        base  = (70, 75, 80)     # main frozen stone color
-        dark  = (93, 103, 115)   # cool mortar / cracks
-        light = (100, 105, 110)  # frosty highlight
+        base  = (95, 100, 102)     # main frozen stone color
+        dark  = (110, 120, 132)   # cool mortar / cracks
+        light = (140, 140, 130)  # frosty highlight
 
         if being_mined:
             addedColor = 20
