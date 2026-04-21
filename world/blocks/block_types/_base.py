@@ -25,7 +25,7 @@ class Block:
         (-1, 0): False # comin from the left
     }
 
-    def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None):
+    def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, tick_threshold=None, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None):
         self.grid = grid
         self.screen = screen
         self.x = grid_x
@@ -34,6 +34,7 @@ class Block:
         self.cur_selected = False
         self.pass_through = pass_through
         self.ticks_till_physics = ticks_till_physics
+        if tick_threshold is not None: self.tick_threshold = tick_threshold
         self.special_value = special_value
         if stored_inventory_items is not None:
             self.stored_inventory_items = stored_inventory_items

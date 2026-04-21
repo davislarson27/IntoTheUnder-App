@@ -68,7 +68,7 @@ class Chunk:
             for x in range(self.width):
                 cur_block = self.get(x, y)
                 if cur_block is not None:
-                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through, cur_block.get_stored_inventory_items()])
+                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through, cur_block.get_stored_inventory_items(), cur_block.ticks_till_physics, cur_block.tick_threshold, cur_block.anchor_x, cur_block.anchor_y])
         return { #returns dictionary for grid
             "grid_width": self.width,
             "grid_height": self.height,
@@ -132,8 +132,24 @@ class Chunk:
                             stored_inventory_items.append(Inventory_Item.create_from_array(item[1]))
                 else:
                     stored_inventory_items = None
+                ticks_till_physics = block[5]
+                tick_threshold = block[6]
+                anchor_x = block[7]
+                anchor_y = block[8]
 
-                grid.set_manual(x, y, block_type(return_grid, screen, x + global_x_offset, y, BLOCK_WIDTH, pass_through=pass_through, stored_inventory_items=stored_inventory_items))
+                grid.set_manual(x, y, block_type(
+                    return_grid,
+                    screen,
+                    x + global_x_offset,
+                    y,
+                    BLOCK_WIDTH,
+                    pass_through=pass_through,
+                    stored_inventory_items=stored_inventory_items,
+                    ticks_till_physics=ticks_till_physics,
+                    tick_threshold=tick_threshold,
+                    anchor_x=anchor_x,
+                    anchor_y=anchor_y)
+                )
             
             except (KeyError):
                 print(f'error (probable): {block_type_str} is not a valid block type in this version')

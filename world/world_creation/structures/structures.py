@@ -1,3 +1,6 @@
+from math import floor
+import hashlib
+
 from world.blocks.block_export import *
 from .structure_instruction import Structure_Instruction
 from play.inventory.crafting_recipes import User_Crafting_Recipes_List
@@ -195,11 +198,17 @@ class Tree:
         for y in range(tree_height):
             structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Log(grid, grid.screen, ground_x+1, start_y-y, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
 
-        # leaves
+        # leaves disappearing time thresholds
+        def get_ticks(x, y):
+            value = int(hashlib.sha256(f"{random_factor}_{x}_{y}".encode()).hexdigest(), 16)
+            normalized = value / (2**256)
+            return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+        # add the leaves to the structure instructions
         for y in range(3):
-            structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+0, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y), blockIsInitialized=True))
-            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+1, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y), blockIsInitialized=True))
-            structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+2, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y), blockIsInitialized=True))
+            for x in range(3):
+                ticks = get_ticks(x, y)
+                structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+x, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
         
         # return list
         return structureInstructionsList
@@ -259,15 +268,21 @@ class Snow_Tree:
         for y in range(tree_height):
             structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Log(grid, grid.screen, ground_x+1, start_y-y, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
 
-        # leaves
+        # leaves disappearing time thresholds
+        def get_ticks(x, y):
+            value = int(hashlib.sha256(f"{random_factor}_{x}_{y}".encode()).hexdigest(), 16)
+            normalized = value / (2**256)
+            return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+        # add the leaves to the structure instructions
         for y in range(2):
-            structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-y-tree_height, Snow_Leaves(grid, grid.screen, ground_x+0, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y-tree_height, Snow_Leaves(grid, grid.screen, ground_x+1, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-            structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-y-tree_height, Snow_Leaves(grid, grid.screen, ground_x+2, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-        
-        structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+0, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-        structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+1, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-        structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+2, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+            for x in range(3):
+                ticks = get_ticks(x, y)
+                structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-y-tree_height, Snow_Leaves(grid, grid.screen, ground_x+x, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+        for x in range(3):
+            y = 2
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+x, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
         return structureInstructionsList
