@@ -25,6 +25,10 @@ class Block:
         (-1, 0): False # comin from the left
     }
 
+    DIRTY_ATTRS = {'pass_through', 'special_value', 'stored_inventory_items'} # attributes that need to fire off a chunk save
+
+    is_initialized = False # used to not trigger a mark a chunk change while it is loading blocks into it
+
     surfaces = {} # key = (cls, block_width, being_mined, use_alt_drawing)
 
     def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, tick_threshold=None, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None):
@@ -44,6 +48,8 @@ class Block:
             self.stored_inventory_items = []
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
+
+        self.is_initialized = True
 
     @classmethod
     def draw_to_surface(cls, block_width, being_mined=False, use_alt_drawing=False):
@@ -122,6 +128,11 @@ class Block:
     def block_edge_shade(self, directionOfBgBlock_x, directionofBgBlock_y):
         """returns true or false if the bg block should be shaded on the corner"""
         return self.ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if name in self.DIRTY_ATTRS and self.is_initialized:
+            self.grid.mark_modified(self.x, self.y)
 
     def __str__(self): # used so when the type is initialized the str() method can be used
         return self.str_name

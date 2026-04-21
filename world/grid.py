@@ -51,7 +51,6 @@ class Grid:
         return self.chunks[chunk_id].get(x, y)
     
     def set(self, global_x, y, block, pass_through=None, stored_inventory_items=None):
-        # print('chunked grid in use')
         if not self.in_bounds(global_x, y):
             return
         chunk_id, x = self.get_chunk_x(global_x)
@@ -81,6 +80,13 @@ class Grid:
 
     def is_filled(self, x, y):
         return self.get(x, y) is not None
+
+    def mark_modified(self, global_x, y):
+        """block methods should use this when changing things like block.pass_through to let the chunk know that it needs to be saved"""
+        if not self.in_bounds(global_x, y):
+            return
+        chunk_id, _ = self.get_chunk_x(global_x)
+        self.chunks_modified[chunk_id] = True
 
     def debug_block_counts(self):
         for chunk_id, chunk in self.chunks.items():
