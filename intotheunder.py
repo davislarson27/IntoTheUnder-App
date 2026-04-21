@@ -12,15 +12,12 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import pygame
 from math import floor
-from pathlib import Path
 
 from world.blocks.block_export import *
 from menu.menu import Menu
-from components.world_details import World_Details
 from components.images import Images
 from components.game_file_reading import *
 from components.input import Input
-from play.play import Play
 from world.world_creation.world_generation_settings import World_Generation_Settings
 from components.blit_letterboxed import blit_letterboxed
 from components.crash_menu import Crash_Menu
