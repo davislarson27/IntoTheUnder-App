@@ -12,9 +12,9 @@ class Ore:
         self.scale = scale
         self.min_depth = min_depth
 
-    def find(self, x, y, depth_discount=0):
+    def find(self, x, y, threshold_adjustment=0, depth_discount=0):
         ore_noise = pnoise2(x * self.scale, y * self.scale,  base=(self.seed) % 256)
-        if ore_noise > self.threshold - depth_discount:
+        if ore_noise > self.threshold - depth_discount - threshold_adjustment:
             return True
         return False
     

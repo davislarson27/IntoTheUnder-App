@@ -810,26 +810,27 @@ class Menu:
         # create directory name
         new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
 
-        # initialize grid and terrain
+        # initialize inventory, player, and world
         self.world_generation_settings.reset_ground_level(50)
         world_seed = int(random.random() * 10000000)
-        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed)
-        for GenerationText, percentComplete in grid_superstructure._generate_world():
-            self.draw_loading_world_screen(percentComplete, GenerationText)
-        grid, background_grid = grid_superstructure.get_grids()
-
-        # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
-        player = Player(grid, self.screen, world_spawn_x, world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed)
+
+        # initialize grid and terrain
+        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed, world_spawn_x)
+        for GenerationText, percentComplete in grid_superstructure._generate_world():
+            self.draw_loading_world_screen(percentComplete, GenerationText)
+        grid, background_grid = grid_superstructure.get_grids()
 
         # create world save directory
         new_directory_path.mkdir()
         grid.generate_save_files()
         background_grid.generate_save_files()
         
+        player = Player(grid, self.screen, world_spawn_x, world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height=self.world_generation_settings.health_bar_height, images=self.images)
+
         save_start_percent = 55
         save_end_percent = 99
         for percent, save_message in save_game(new_directory_path, player, inventory, grid, background_grid, world_details, save_start_percent, save_end_percent):

@@ -18,13 +18,11 @@
 
 from copy import deepcopy
 from math import floor
-import random
 
 from .blocks.block_export import *
 from .world_creation.biomes import *
 from play.inventory.inventory_item import Inventory_Item
 from play.inventory.crafting_recipes import *
-from .world_creation.structures.structure_instruction import Structure_Instruction
 from .world_creation.structures.structures import *
 
 
@@ -60,29 +58,38 @@ class Chunk:
             return False
 
     def get(self, x, y):
-        if self.in_bounds(x, y):
-            return self.array[y][x]
-        else:
-            # raise IndexError      
-            return None
+        return self.array[y][x]
+        # if self.in_bounds(x, y):
+        #     return self.array[y][x]
+        # else:
+        #     # raise IndexError      
+        #     return None
 
     def set_manual(self, x, y, value):
-        if self.in_bounds(x, y):
-            self.array[y][x] = value
-        else:
-            # raise IndexError
-            return None
+        self.array[y][x] = value
+        # if self.in_bounds(x, y):
+        #     self.array[y][x] = value
+        # else:
+        #     # raise IndexError
+        #     return None
         
     def set(self, x, y, block, pass_through=None, stored_inventory_items=None):
-        if self.in_bounds(x, y):
             if block == None:
                 self.array[y][x] = None
             else:
                 if pass_through is None:
                     pass_through = block.pass_through
                 self.array[y][x] = block(self, self.screen, x, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
-        else:
-            return None
+
+        # if self.in_bounds(x, y):
+        #     if block == None:
+        #         self.array[y][x] = None
+        #     else:
+        #         if pass_through is None:
+        #             pass_through = block.pass_through
+        #         self.array[y][x] = block(self, self.screen, x, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
+        # else:
+        #     return None
 
     def is_filled(self, x, y):
         return self.array[y, x] != None
@@ -112,33 +119,33 @@ class Chunk:
             "grid_array": blocks_in_grid
         }
     
-    def physics(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
-        x_grid_min = max(0, (camera_x // self.BLOCK_WIDTH) - 5)
-        x_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 6
+    # def physics(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
+    #     x_grid_min = max(0, (camera_x // self.BLOCK_WIDTH) - 5)
+    #     x_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 6
 
-        true_height = self.screen.get_height() - INVENTORY_HEIGHT
-        y_grid_min = max(0, (camera_y // self.BLOCK_WIDTH) - 5)
-        y_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 6
+    #     true_height = self.screen.get_height() - INVENTORY_HEIGHT
+    #     y_grid_min = max(0, (camera_y // self.BLOCK_WIDTH) - 5)
+    #     y_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 6
 
-        for y in range(y_grid_min, y_grid_max):
-            for x in range(x_grid_min, x_grid_max):
-                obj = self.get(x, y)
-                if(obj != None):
-                    obj.physics()
+    #     for y in range(y_grid_min, y_grid_max):
+    #         for x in range(x_grid_min, x_grid_max):
+    #             obj = self.get(x, y)
+    #             if(obj != None):
+    #                 obj.physics()
 
-    def draw(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
-        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
-        x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
+    # def draw(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
+    #     x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+    #     x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
 
-        true_height = self.screen.get_height() - INVENTORY_HEIGHT
-        y_draw_grid_min = max(0, camera_y // self.BLOCK_WIDTH)
-        y_draw_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
+    #     true_height = self.screen.get_height() - INVENTORY_HEIGHT
+    #     y_draw_grid_min = max(0, camera_y // self.BLOCK_WIDTH)
+    #     y_draw_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
 
-        for y in range(y_draw_grid_min, y_draw_grid_max):
-            for x in range(x_draw_grid_min, x_draw_grid_max):
-                obj = self.get(x, y)
-                if(obj != None):
-                    obj.draw(camera_x = camera_x, camera_y = camera_y)
+    #     for y in range(y_draw_grid_min, y_draw_grid_max):
+    #         for x in range(x_draw_grid_min, x_draw_grid_max):
+    #             obj = self.get(x, y)
+    #             if(obj != None):
+    #                 obj.draw(camera_x=camera_x, camera_y=camera_y)
 
     @staticmethod
     def fill_from_dict(grid_dict, screen, BLOCK_WIDTH, global_x_offset, return_grid):

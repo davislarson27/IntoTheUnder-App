@@ -8,7 +8,7 @@ from .ores_noise import Ore
 import hashlib
 
 class Grid_Superstructure:
-    def __init__(self, screen, world_generation_settings, directory='', world_seed=0):
+    def __init__(self, screen, world_generation_settings, directory='', world_seed=0, spawn_x=0):
         self.world_generation_settings = world_generation_settings
         self.foreground_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/foreground_grid')
         self.background_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/background_grid') 
@@ -36,7 +36,7 @@ class Grid_Superstructure:
 
         self.border_block_seed = make_seed(self.seed, 'border_block_seed')
 
-        self.biome_priority_order = [Mountain, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
+        self.biome_priority_order = [Volcano, Mountain, Lake, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
 
         # amplitutdes of different generators
         self.elevation_amp = 15
@@ -72,7 +72,7 @@ class Grid_Superstructure:
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.75, scale=0.18, min_depth=25),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.79, scale=0.18, min_depth=35),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.82, scale=0.17, min_depth=65),
-            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.68, scale=0.18, min_depth=12),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.64, scale=0.18, min_depth=12),
         }
 
         self.saltpeter_chance = 0.025
@@ -214,7 +214,7 @@ class Grid_Superstructure:
                     ore_noise = self.ores[ore]
                     if i < ore_noise.min_depth:
                         continue
-                    if ore_noise.find(x, y, biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
+                    if ore_noise.find(x, y, biome.ore_threshold_adjustment[ore], biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
                 i+=1
         

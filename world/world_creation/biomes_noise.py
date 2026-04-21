@@ -18,7 +18,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     layers  = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 1)]
     sub_layer = Rock
 
-    multiplier = {
+    multiplier = { # this is the increase in the noise per block beneath when the block can begin generating
         Dirt: 0.00005,
         Gravel: -0.00004,
         Iron_Ore_Block: 0.00045,
@@ -27,7 +27,19 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         Emerald_Ore_Block: -0.00085,
         Diamond_Ore_Block: 0.00011,
         Mabelite_Ore_Block: 0.00010,
-        Sulfur_Flakes_Block: -0.0014
+        Sulfur_Flakes_Block: -0.002
+    }
+
+    ore_threshold_adjustment = { # a postitive numbrer here is the amount that the threshold is dropped in this specific biome
+        Dirt: 0,
+        Gravel: 0,
+        Iron_Ore_Block: 0,
+        Coal_Ore_Block: 0,
+        Gold_Ore_Block: 0,
+        Emerald_Ore_Block: 0,
+        Diamond_Ore_Block: 0,
+        Mabelite_Ore_Block: 0,
+        Sulfur_Flakes_Block: 0
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
@@ -39,10 +51,10 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     ]
 
 
-# elev checks for mountains
-class Mountain(Biome):
+# elev checks for ultra high/low areas
+class Volcano(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if mountain < -10:
+        if mountain < -10 and temp > 9:
             return True
         return False
     
@@ -56,13 +68,56 @@ class Mountain(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
+    multiplier = {**Biome.multiplier}
+    multiplier[Sulfur_Flakes_Block] *= 1.5
+
+    ore_threshold_adjustment = {**Biome.ore_threshold_adjustment}
+    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.5
+
+class Mountain(Biome):
+    def claim(elevation, temp, humidity, mountain):
+        if mountain < -10:
+            return True
+        return False
+    
+    layers = [Layer(Snow_Block, 1, variation_amp=1), Layer(Gravel, 1), Layer(Rock, 7)]
+    sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.01),
+        Structure_Identifier(Snow_Man_Structure, 0.0001)
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
+    multiplier = {**Biome.multiplier}
+    multiplier[Sulfur_Flakes_Block] *= 3
+
+    ore_threshold_adjustment = {**Biome.ore_threshold_adjustment}
+    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.4
+
+class Lake(Biome):
+    def claim(elevation, temp, humidity, mountain):
+        if mountain > 12 and humidity > 5:
+            return True
+        return False
+    
+    layers = [Layer(Sand, 2, variation_amp=3), Layer(Sand_Stone, 3)]
+    sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
+
 class Ravine(Biome):
     def claim(elevation, temp, humidity, mountain):
         if mountain > 10:
             return True
         return False
     
-    layers = [Layer(Gravel, 1), Layer(Rock, 7)]
+    layers = [Layer(Gravel, 1, variation_amp=1), Layer(Rock, 7)]
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
