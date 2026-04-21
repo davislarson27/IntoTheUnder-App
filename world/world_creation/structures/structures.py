@@ -197,9 +197,9 @@ class Tree:
 
         # leaves
         for y in range(3):
-            structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+0, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+1, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-            structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+2, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+0, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+1, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+2, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y), blockIsInitialized=True))
         
         # return list
         return structureInstructionsList

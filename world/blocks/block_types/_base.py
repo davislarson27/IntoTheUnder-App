@@ -25,7 +25,7 @@ class Block:
         (-1, 0): False # comin from the left
     }
 
-    def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through = False, ticks_till_physics = 0, stored_inventory_items=None, special_value=True):
+    def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None):
         self.grid = grid
         self.screen = screen
         self.x = grid_x
@@ -39,6 +39,8 @@ class Block:
             self.stored_inventory_items = stored_inventory_items
         else:
             self.stored_inventory_items = []
+        self.anchor_x = anchor_x
+        self.anchor_y = anchor_y
 
     def interaction(self, inventory):
         return False
