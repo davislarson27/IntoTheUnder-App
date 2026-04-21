@@ -14,6 +14,7 @@ from world.world_creation.world_generation_settings import World_Generation_Sett
 from play.player import Player
 from play.inventory.inventory import Inventory
 from components.world_details import World_Details
+from components.crash_menu import Crash_Menu
 
 """
 explanation:
@@ -886,7 +887,11 @@ class Menu:
     # ------------------------ functions interacting with the main loop ------------------------ #
 
     def catch_exception(self): # reboots the menu
-        return Menu(self.screen, self.window, self.images, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings)
+        new_menu = Menu(self.screen, self.window, self.images, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings)
+        return Crash_Menu(self.screen, new_menu, self, "Sorry... The Menu Crashed", "Attempt to Reload")
+
+    def finalExceptionHandle(self):
+        pass
 
     def run(self, input):
         """runs the menu and returns function of class that will run next (normally itself)"""

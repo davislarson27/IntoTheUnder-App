@@ -1,14 +1,15 @@
 import pygame
 
-from .help_menu import Help_Menu
-
-class Escape_Menu:
-    def __init__(self, screen):
+class Crash_Menu:
+    def __init__(self, screen, goToState, comeFromState, message="Sorry... Your Game Crashed", button_message="Return to Menu"):
         # general variables
         self.screen = screen
 
-        # sub menus
-        self.help_menu = Help_Menu(screen, self)
+        # return menu
+        self.goToState = goToState
+
+        # coming from menu
+        self.comeFromState = comeFromState
 
         # click variables
         self.is_clicked = False
@@ -29,7 +30,7 @@ class Escape_Menu:
 
         # fonts
         self.button_font = pygame.font.Font(None, 25)
-        self.title_font = pygame.font.Font(None, 65)
+        self.title_font = pygame.font.Font(None, 45)
 
         # title
         title_column_width = 16
@@ -40,7 +41,7 @@ class Escape_Menu:
             self.menu_block_width * title_column_width,
             self.menu_block_height * 4
         )
-        self.title_surf = self.title_font.render("Paused", True, self.title_text_color)
+        self.title_surf = self.title_font.render(message, True, self.title_text_color)
 
         # base buttons 1–3
         center_column_width = 12
@@ -66,36 +67,12 @@ class Escape_Menu:
         )
 
         self.buttons = [
-            (self.btn_resume, "Resume Game"),
-            (self.btn_help, "Help"),
-            (self.btn_quit, "Save and Quit")
+            (self.btn_resume, button_message),
         ]
 
     # ------------------------------------------------------------------ #
-    #  open / close                                                      #
+    #  click check                                                       #
     # ------------------------------------------------------------------ #
-
-    def open(self, side_pannel_use=None):
-        pass
-
-    def close(self):
-        self.is_clicked = False
-        self.quitValue = False
-
-    def sub_state_full_quit(self):
-        return self.quitValue
-
-    def onEsc(self):
-        return None
-
-    # ------------------------------------------------------------------ #
-    #  run / click                                                       #
-    # ------------------------------------------------------------------ #
-
-    def run(self, input):
-        returnClass = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
-        self.draw(input.virtual_mouse_x, input.virtual_mouse_y)
-        return returnClass
 
     def check_click(self, mouse, mx, my):
         if not self.is_clicked and mouse.get_pressed()[0]:
@@ -107,12 +84,9 @@ class Escape_Menu:
 
     def execute_clicked(self, pos):
         if self.btn_resume.collidepoint(pos):
-            return None
-        elif self.btn_help.collidepoint(pos):
-            return self.help_menu
-        elif self.btn_quit.collidepoint(pos):
-            self.quitValue = True
+            return self.goToState
         return self
+
 
     # ------------------------------------------------------------------ #
     #  drawing                                                           #
@@ -134,4 +108,23 @@ class Escape_Menu:
             text_surf = self.button_font.render(label, True, self.button_text_color)
             text_rect = text_surf.get_rect(center=rect.center)
             self.screen.blit(text_surf, text_rect)
+
+
+    # ------------------------------------------------------------------ #
+    # interacting with the main loop
+    # ------------------------------------------------------------------ #
+
+
+    def catch_exception(self): # this is like bad if this breaks lol
+        return self.goToState
+
+    def run(self, input):
+        returnClass = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
+        self.draw(input.virtual_mouse_x, input.virtual_mouse_y)
+        if returnClass is not self:
+            self.comeFromState.finalExceptionHandle()
+        return returnClass
+
+    def on_quit(self):
+        pass
     

@@ -140,6 +140,8 @@ menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WID
 # running class
 run_class = menu
 input_object = Input()
+
+# crash handling
 last_frame_failed = False
 
 # ----------------------------------------------- run loop ------------------------------------------------ #

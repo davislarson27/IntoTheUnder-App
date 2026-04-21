@@ -7,6 +7,7 @@ from components.blit_letterboxed import blit_letterboxed
 from components.game_file_reading import save_game
 from .physics_rules import Physics_Rules
 from .in_play_menus.escape_menu import Escape_Menu
+from components.crash_menu import Crash_Menu
 
 
 class Play:
@@ -18,6 +19,9 @@ class Play:
         self.menu = menu
         self.screen = screen
         self.BLOCK_WIDTH = BLOCK_WIDTH
+
+        # set up crash menu
+        self.crash_menu = Crash_Menu(screen, self.menu, self, button_message="Save and Return to Menu")
 
         # generate in play menus
         self.escape_menu = Escape_Menu(screen)
@@ -393,15 +397,16 @@ class Play:
     # ---------------------------- interacting with main loop ---------------------------- #
 
     def catch_exception(self):
-        # step 1: attempt to save
+        return self.crash_menu
+
+    def finalExceptionHandle(self):
+        # attempt to save the game
         try:
             self.prep_menu()
         except Exception as e:
             self.menu.reopen_menu_prep() # minimum required to prep menu
             print('CRASH WHILE ATTEMPTING SAVE')
 
-        # step 2: return the menu
-        return self.menu
 
     def run(self, input):
         # initialize return_class
