@@ -39,6 +39,8 @@ def get_str_to_block(): # uses blocks_list to generate dictionary that converts 
         Grass,
         Log,
         Leaves,
+        Snow_Leaves,
+        Snow_Leaves_Top,
         Sand,
         Sand_Stone,
         Gravel,

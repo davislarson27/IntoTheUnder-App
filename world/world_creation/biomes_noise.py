@@ -62,8 +62,7 @@ class Volcano(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Tree, 0.01),
-        Structure_Identifier(Snow_Man_Structure, 0.0001)
+        Structure_Identifier(Tree, 0.007),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]

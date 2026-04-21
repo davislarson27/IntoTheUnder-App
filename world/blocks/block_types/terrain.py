@@ -366,9 +366,11 @@ class Snow_Block(Block):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
+
+        color = (225, 235, 245)
         
         pygame.draw.rect( # draw base color
             screen,
-            (225 + added_color, 235 + added_color, 245 + added_color),
+            (color[0] + added_color, color[1] + added_color, color[2] + added_color),
             (x, y, block_width, block_width)
         )

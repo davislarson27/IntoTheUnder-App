@@ -244,7 +244,6 @@ class Iron_Ladder(Block):
                 (left_x + rail_w, rung_y, right_x - (left_x + rail_w), rung_h)
             )
 
-
 class Wood_Ladder(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
@@ -307,3 +306,98 @@ class Wood_Ladder(Block):
                 (left_x + rail_w, rung_y, right_x - (left_x + rail_w), rung_h)
             )
 
+class Snow_Leaves(Leaves):
+    str_name = "Snow Leaves"
+    ticks_to_mine = 19
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added_color = 20 if being_mined else 0
+
+        # IMPORTANT:
+        # If is_grid_coordinates=True, x/y must be WORLD TILE coords (not screen coords).
+        if is_grid_coordinates:
+            px = x * block_width
+            py = y * block_width
+        else:
+            px = x
+            py = y
+
+        base = (120 + added_color, 155 + added_color, 110 + added_color)
+        pygame.draw.rect(screen, base, (px, py, block_width, block_width))
+
+        base_snow_color = (225 + added_color, 245 + added_color, 215 + added_color)
+        snow_color = (min(base_snow_color[0], 255), min(base_snow_color[1], 255), min(base_snow_color[2], 255))
+
+        # Keep dots away from edges so tiles blend
+        pad = max(1, block_width // 8)
+
+        # Scale radii gently with tile size, clamp small
+        def scale_r(r_frac: float) -> int:
+            return max(1, min(block_width // 10, int(block_width * r_frac)))
+
+        # Use fewer specks on small tiles (optional)
+        specks = Leaves._SPECK_PATTERN
+        if block_width < 24:
+            specks = specks[:4]
+
+        for (u, v, r_frac, is_light) in specks:
+            r = scale_r(r_frac)
+            cx = int(px + pad + u * (block_width - 2 * pad))
+            cy = int(py + pad + v * (block_width - 2 * pad))
+            pygame.draw.circle(screen, snow_color, (cx, cy), r)
+
+        # Optional tiny “cluster dot” that is ALWAYS in the same place (still not random)
+        # (This mimics your occasional extra dot without RNG.)
+        cx = int(px + pad + 0.48 * (block_width - 2 * pad))
+        cy = int(py + pad + 0.46 * (block_width - 2 * pad))
+        pygame.draw.circle(screen, snow_color, (cx, cy), 1)
+
+class Snow_Leaves_Top(Leaves):
+    str_name = "Snow Leaves Top"
+    ticks_to_mine = 19
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added_color = 20 if being_mined else 0
+
+        # IMPORTANT:
+        # If is_grid_coordinates=True, x/y must be WORLD TILE coords (not screen coords).
+        if is_grid_coordinates:
+            px = x * block_width
+            py = y * block_width
+        else:
+            px = x
+            py = y
+
+        base = (120 + added_color, 155 + added_color, 110 + added_color)
+        pygame.draw.rect(screen, base, (px, py, block_width, block_width))
+
+        base_snow_color = (225 + added_color, 245 + added_color, 215 + added_color)
+        snow_color = (min(base_snow_color[0], 255), min(base_snow_color[1], 255), min(base_snow_color[2], 255))
+
+        pygame.draw.rect(screen, snow_color, (px, py, block_width, int(block_width * 0.15)))
+
+        # Keep dots away from edges so tiles blend
+        pad = max(1, block_width // 8)
+
+        # Scale radii gently with tile size, clamp small
+        def scale_r(r_frac: float) -> int:
+            return max(1, min(block_width // 10, int(block_width * r_frac)))
+
+        # Use fewer specks on small tiles (optional)
+        specks = Leaves._SPECK_PATTERN
+        if block_width < 24:
+            specks = specks[:4]
+
+        for (u, v, r_frac, is_light) in specks:
+            r = scale_r(r_frac)
+            cx = int(px + pad + u * (block_width - 2 * pad))
+            cy = int(py + pad + v * (block_width - 2 * pad))
+            pygame.draw.circle(screen, snow_color, (cx, cy), r)
+
+        # Optional tiny “cluster dot” that is ALWAYS in the same place (still not random)
+        # (This mimics your occasional extra dot without RNG.)
+        cx = int(px + pad + 0.48 * (block_width - 2 * pad))
+        cy = int(py + pad + 0.46 * (block_width - 2 * pad))
+        pygame.draw.circle(screen, snow_color, (cx, cy), 1)

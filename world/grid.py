@@ -110,10 +110,7 @@ class Grid:
 
     def physics(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
-        x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
-
-        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
-        x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
+        x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
         max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
@@ -124,7 +121,7 @@ class Grid:
 
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
-        x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
+        x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
         max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
