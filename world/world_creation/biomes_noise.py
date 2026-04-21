@@ -54,7 +54,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
 # elev checks for ultra high/low areas
 class Volcano(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if mountain < -10 and temp > 9:
+        if mountain < -10 and temp > 6:
             return True
         return False
     
