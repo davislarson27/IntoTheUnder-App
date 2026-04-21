@@ -131,7 +131,7 @@ class Block:
 
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
-        if name in self.DIRTY_ATTRS and self.is_initialized:
+        if self.is_initialized and name in self.DIRTY_ATTRS:
             self.grid.mark_modified(self.x, self.y)
 
     def __str__(self): # used so when the type is initialized the str() method can be used
