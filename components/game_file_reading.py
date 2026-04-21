@@ -1,4 +1,7 @@
 import json
+from pathlib import Path
+
+from .world_details import World_Details
 
 def save_game(directory, player, inventory, grid, background_grid, world_details, start_percent=0, end_percent=100):
 
@@ -27,3 +30,22 @@ def save_game(directory, player, inventory, grid, background_grid, world_details
         json.dump(world_details_dict, world_details_file, indent=3)
 
     return start_percent + int(inSavePercent * 100), 'Finishing Up'
+
+
+def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME, VERSION):
+    def convert_file_to_class(wd_file_path): #converts file to class
+        try:
+            with open(wd_file_path, "r") as world_details_file:
+                return World_Details.fill_from_dict(json.load(world_details_file))
+        except: # prevents crash on launch with a bad details file by adding dummy file
+            cur_timestamp = World_Details.get_corrupted_timestamp()
+            file_name = Path(wd_file_path).parent.name
+            return World_Details(f"{file_name} (CORRUPTED)", VERSION, cur_timestamp, cur_timestamp, True)
+
+    # gets the file names for all user worlds and sorts them in order of last opened
+    game_files_folder = Path(game_files_directory)
+
+    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.iterdir() if file.is_dir() and file.name != IMAGES_FILE_NAME]
+    world_details_class_list.sort(key=lambda world:world.last_modified_date, reverse=True)
+
+    return [world.world_name for world in world_details_class_list if not world.version > VERSION]

@@ -12,7 +12,6 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import pygame
 from math import floor
-import json
 from pathlib import Path
 
 from world.blocks.block_export import *
@@ -25,6 +24,7 @@ from play.play import Play
 from world.world_creation.world_generation_settings import World_Generation_Settings
 from components.blit_letterboxed import blit_letterboxed
 from components.crash_menu import Crash_Menu
+from components.game_file_reading import get_user_worlds_list
 
 # from windows_path_resources import *
 from components.path_resources.mac_path_resources import *
@@ -56,6 +56,8 @@ update notes:
  - increased world height
  - added mountains and ravines
  - added new biomes
+ - added a screen to return to the main menu when the game crashes
+ - improved performance
 """
 
 """
@@ -63,26 +65,6 @@ notes:
  - the health bar is not being drawn: uncomment in player.draw(), but note that play is not accounting for the health bar height when it stops drawing (health bar covers bottom blocks)
  - right now the player gets soft locked by falling through the ground at the bottom -> needs to get stopped
  """
-
-# functions
-def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME):
-    def convert_file_to_class(wd_file_path): #converts file to class
-        try:
-            with open(wd_file_path, "r") as world_details_file:
-                return World_Details.fill_from_dict(json.load(world_details_file))
-        except: # prevents crash on launch with a bad details file by adding dummy file
-            cur_timestamp = World_Details.get_corrupted_timestamp()
-            file_name = Path(wd_file_path).parent.name
-            return World_Details(f"{file_name} (CORRUPTED)", VERSION, cur_timestamp, cur_timestamp, True)
-
-    # gets the file names for all user worlds and sorts them in order of last opened
-    game_files_folder = Path(game_files_directory)
-
-    world_details_class_list = [convert_file_to_class(f"{file}/world_details.json") for file in game_files_folder.iterdir() if file.is_dir() and file.name != IMAGES_FILE_NAME]
-    world_details_class_list.sort(key=lambda world:world.last_modified_date, reverse=True)
-
-    return [world.world_name for world in world_details_class_list if not world.version > VERSION]
-
 
 # implementation details
 BLOCK_WIDTH = 25
@@ -136,7 +118,7 @@ TICKS = 60
 grid_width = 5000
 grid_height = 150
 world_generation_settings = World_Generation_Settings(VERSION, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, grid_width, grid_height, BLOCK_WIDTH)
-menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME), directory, world_generation_settings)
+menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME, VERSION), directory, world_generation_settings)
 
 # running class
 run_class = menu
@@ -144,6 +126,8 @@ input_object = Input()
 
 # crash handling
 last_frame_failed = False
+
+# code for getting fps: fps = clock.get_fps()
 
 # ----------------------------------------------- run loop ------------------------------------------------ #
 try:
