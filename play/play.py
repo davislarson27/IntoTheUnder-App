@@ -338,10 +338,9 @@ class Play:
                 if self.active_grid.get(self.affected_x, self.affected_y) is not None and self.destroy_held_time > self.active_grid.get(self.affected_x, self.affected_y).ticks_to_mine:
                     self.destroy_held_time = 0
                     selected_block = self.active_grid.get(self.affected_x, self.affected_y)
-                    if selected_block.can_move_to_inventory():
-                        inventory_block_type = selected_block.onDestroy()
-                        if inventory_block_type is not None:
-                            self.inventory.add_item(inventory_block_type)
+                    inventory_block_type = selected_block.onDestroy()
+                    if inventory_block_type is not None:
+                        self.inventory.add_item(inventory_block_type)
 
     def run_main_game(self, input):
         # step 1: interact with blocks
