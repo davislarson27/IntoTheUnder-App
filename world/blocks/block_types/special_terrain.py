@@ -215,3 +215,77 @@ class Saltpeter(Block):
                 secondary_triangle_tip
             ]
         )
+
+class Border_Block(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Border Block"
+    ticks_to_mine = 100
+
+    can_break = False
+
+    def onDestroy(self, inventory=None):
+        return None
+
+    @staticmethod # alt brick version
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        base  = (70, 75, 80)
+        dark  = (40, 47, 55)
+        light = (100, 105, 110)
+
+        if being_mined:
+            addedColor = 20
+            base = (base[0]+addedColor, base[1]+addedColor, base[2]+addedColor)
+            dark = (dark[0]+addedColor, dark[1]+addedColor, dark[2]+addedColor)
+            light = (light[0]+addedColor, light[1]+addedColor, light[2]+addedColor)
+
+        # background fill
+        pygame.draw.rect(screen, dark, (x, y, block_width, block_width))
+
+        # chunk 1 — top left
+        c1 = [
+            (x + int(block_width * 0.05), y + int(block_width * 0.05)),
+            (x + int(block_width * 0.55), y + int(block_width * 0.05)),
+            (x + int(block_width * 0.55), y + int(block_width * 0.48)),
+            (x + int(block_width * 0.05), y + int(block_width * 0.48)),
+        ]
+
+        # chunk 2 — top right
+        c2 = [
+            (x + int(block_width * 0.60), y + int(block_width * 0.05)),
+            (x + int(block_width * 0.95), y + int(block_width * 0.05)),
+            (x + int(block_width * 0.95), y + int(block_width * 0.48)),
+            (x + int(block_width * 0.60), y + int(block_width * 0.48)),
+        ]
+
+        # chunk 3 — bottom left
+        c3 = [
+            (x + int(block_width * 0.05), y + int(block_width * 0.53)),
+            (x + int(block_width * 0.38), y + int(block_width * 0.53)),
+            (x + int(block_width * 0.38), y + int(block_width * 0.95)),
+            (x + int(block_width * 0.05), y + int(block_width * 0.95)),
+        ]
+
+        # chunk 4 — bottom right
+        c4 = [
+            (x + int(block_width * 0.43), y + int(block_width * 0.53)),
+            (x + int(block_width * 0.95), y + int(block_width * 0.53)),
+            (x + int(block_width * 0.95), y + int(block_width * 0.95)),
+            (x + int(block_width * 0.43), y + int(block_width * 0.95)),
+        ]
+
+        for chunk in [c1, c2, c3, c4]:
+            pygame.draw.polygon(screen, base, chunk)
+
+        # light edge along top of each chunk
+        for chunk in [c1, c2, c3, c4]:
+            pygame.draw.line(screen, light, chunk[0], chunk[1], max(1, int(block_width * 0.04)))
+
+        # dark outline on each chunk
+        for chunk in [c1, c2, c3, c4]:
+            pygame.draw.polygon(screen, dark, chunk, max(1, int(block_width * 0.04)))
