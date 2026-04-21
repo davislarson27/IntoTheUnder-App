@@ -112,29 +112,26 @@ class Grid:
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
 
-        true_height = self.screen.get_height() - INVENTORY_HEIGHT
-        y_draw_grid_min = max(0, camera_y // self.BLOCK_WIDTH)
-        y_draw_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
+        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
 
-        for y in range(y_draw_grid_min, y_draw_grid_max):
-            for global_x in range(x_draw_grid_min, x_draw_grid_max):
-                obj = self.get(global_x, y)
-                if(obj != None):
-                    obj.physics()
+        min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
+        max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
+        
+        for chunk_id in range(min_chunk_id, max_chunk_id+1):
+            global_x_offset = chunk_id * self.chunk_width
+            self.chunks[chunk_id].physics(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
 
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
 
-        true_height = self.screen.get_height() - INVENTORY_HEIGHT
-        y_draw_grid_min = max(0, camera_y // self.BLOCK_WIDTH)
-        y_draw_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
-
-        for y in range(y_draw_grid_min, y_draw_grid_max):
-            for global_x in range(x_draw_grid_min, x_draw_grid_max):
-                obj = self.get(global_x, y)
-                if(obj != None):
-                    obj.draw(camera_x = camera_x, camera_y = camera_y)
+        min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
+        max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
+        
+        for chunk_id in range(min_chunk_id, max_chunk_id+1):
+            global_x_offset = chunk_id * self.chunk_width
+            self.chunks[chunk_id].draw(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
 
     def set_chunks(self, chunks):
         self.chunks = chunks
