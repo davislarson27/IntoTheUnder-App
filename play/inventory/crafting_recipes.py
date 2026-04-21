@@ -446,7 +446,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Gun Powder",
             [
-                Ingredient(Saltpeter_Powder, 7),
+                Ingredient(Saltpeter_Powder, 5),
                 Ingredient(Coal, 2),
                 Ingredient(Sulfur_Powder, 1),
             ],

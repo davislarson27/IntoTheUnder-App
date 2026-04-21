@@ -382,31 +382,8 @@ class Border_Block(Block):
 
     can_break = False
 
-    # @staticmethod
-    # def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
-    #     if being_mined:
-    #         added_color = 20
-    #     else:
-    #         added_color = 0
-
-    #     if is_grid_coordinates:
-    #         x *= block_width
-    #         y *= block_width
-
-    #     # new warmer and lighter colors
-    #     primary_background_color = (75, 80, 82)
-    #     detail_color = (95, 100, 102)
-
-    #     pygame.draw.rect(
-    #         screen,
-    #         (primary_background_color[0] + added_color, primary_background_color[1] + added_color, primary_background_color[2] + added_color),
-    #         (x, y, block_width, block_width)
-    #     )
-    #     pygame.draw.rect(
-    #         screen,
-    #         (detail_color[0] + added_color, detail_color[1] + added_color, detail_color[2] + added_color),
-    #         ((x) + (block_width // 10) , (y) + (block_width // 10), block_width // 4, block_width // 4)
-    #     )
+    def onDestroy(self, inventory=None):
+        return None
 
     @staticmethod # alt brick version
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

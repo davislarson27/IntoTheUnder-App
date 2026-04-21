@@ -84,7 +84,7 @@ class Chunk:
         y_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 6
 
         for y in range(y_grid_min, y_grid_max):
-            for x in range(x_grid_min, ):
+            for x in range(x_grid_min, x_grid_max):
                 obj = self.get(x, y)
                 if(obj != None):
                     obj.physics()

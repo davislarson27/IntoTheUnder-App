@@ -58,9 +58,6 @@ class Block:
         else:
             return None
 
-    def can_move_to_inventory(self):
-        return True
-    
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         return
     
@@ -341,7 +338,7 @@ class Explosives(Block): # this is a container for all blocks that explode (help
                             selected_block.interaction(self.inventory) # triggers explosives in the blast radius
                             selected_block.ticks_till_physics = selected_block.tick_threshold - 5
                         else:
-                            destroyed_block = selected_block.onDestruction(self.inventory)
+                            destroyed_block = selected_block.onDestroy(self.inventory)
                             if destroyed_block is not None:
                                 self.inventory.add_item(destroyed_block)
     
