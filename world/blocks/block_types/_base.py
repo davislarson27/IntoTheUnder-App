@@ -25,6 +25,8 @@ class Block:
         (-1, 0): False # comin from the left
     }
 
+    surfaces = {} # key = (cls, block_width, being_mined, use_alt_drawing)
+
     def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, tick_threshold=None, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None):
         self.grid = grid
         self.screen = screen
@@ -42,6 +44,13 @@ class Block:
             self.stored_inventory_items = []
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
+
+    @classmethod
+    def draw_to_surface(cls, block_width, being_mined=False, use_alt_drawing=False):
+        surface = pygame.Surface((block_width, block_width), pygame.SRCALPHA).convert_alpha()
+        cls.draw_manual(surface, 0, 0, block_width, is_grid_coordinates=False, being_mined=being_mined, use_alt_drawing=use_alt_drawing)
+        
+        cls.surfaces[(cls, block_width, being_mined, use_alt_drawing)] = surface
 
     def interaction(self, inventory):
         return False
@@ -72,16 +81,35 @@ class Block:
         """responsible for drawing animations"""
         pass
 
-    def draw(self, being_mined = False, camera_x = 0, camera_y = 0):
+    def use_alt_drawing(self):
+        return False
+
+    def draw(self, being_mined=False, camera_x=0, camera_y=0):
         pixel_self_x = self.x * self.block_width
         pixel_self_y = self.y * self.block_width
 
         draw_x = pixel_self_x - camera_x
         draw_y = pixel_self_y - camera_y
 
-        self.draw_manual(self.screen, draw_x, draw_y, self.block_width, being_mined, False, self.pass_through)
+        use_alt_drawing = self.use_alt_drawing()
 
-        self.drawDependentDetails(self.screen, draw_x, draw_y, self.block_width, being_mined, False, self.pass_through)
+        key = (type(self), self.block_width, being_mined, use_alt_drawing)
+        if key in self.surfaces:
+            self.screen.blit(self.surfaces[key], (draw_x, draw_y))
+
+        else:
+            self.draw_to_surface(self.block_width, being_mined=being_mined, use_alt_drawing=use_alt_drawing)
+            self.screen.blit(self.surfaces[key], (draw_x, draw_y))
+
+        self.drawDependentDetails(
+            self.screen,
+            draw_x,
+            draw_y,
+            self.block_width,
+            being_mined=being_mined,
+            is_grid_coordinates=False,
+            use_alt_drawing=use_alt_drawing
+        )
 
     def physics(self):
         return
@@ -345,7 +373,7 @@ class Explosives(Block): # this is a container for all blocks that explode (help
                             if destroyed_block is not None:
                                 self.inventory.add_item(destroyed_block)
     
-    def draw(self, being_mined = False, camera_x = 0, camera_y = 0): # resets the draw function so that it can flash while about to explode
+    def draw(self, being_mined=False, camera_x=0, camera_y=0): # resets the draw function so that it can flash while about to explode
         pixel_self_x = self.x * self.block_width
         pixel_self_y = self.y * self.block_width
 

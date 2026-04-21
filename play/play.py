@@ -50,8 +50,17 @@ class Play:
         self.bg_overlay_cache = {}
         self.build_bg_overlay_cache()
 
+        self.build_block_surfaces()
+
 
     # ------------------------------ helper functions ------------------------------ #
+
+    def build_block_surfaces(self):
+        for block in get_blocks_list():
+            block.draw_to_surface(self.BLOCK_WIDTH, being_mined=True, use_alt_drawing=False)
+            block.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=False)
+            block.draw_to_surface(self.BLOCK_WIDTH, being_mined=True, use_alt_drawing=True)
+            block.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=True)
 
     @staticmethod
     def pixel_to_grid(pixel_coordinates, BLOCK_WIDTH):

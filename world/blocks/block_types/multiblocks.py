@@ -135,6 +135,9 @@ class Door_Top(SubMultiBlock):
         pygame.draw.rect(screen, metal, (hx, y + int(block_width * 0.20), hinge_dot, hinge_dot))
         pygame.draw.rect(screen, metal, (hx, y + int(block_width * 0.65), hinge_dot, hinge_dot))
 
+    def use_alt_drawing(self):
+        return self.pass_through
+
     def onDestroy(self, inventory=None):
         # get both self and the top and set to none, return a door object
         self.grid.set(self.x, self.y, None)
@@ -253,6 +256,9 @@ class Door_Bottom(SubMultiBlock):
         knob_y = max(y + t, min(knob_y, y + block_width - t - knob_sz))
 
         pygame.draw.rect(screen, knobc, (knob_x, knob_y, knob_sz, knob_sz))
+
+    def use_alt_drawing(self):
+        return self.pass_through
 
     def onDestroy(self, inventory=None):
         # get both self and the top and set to none, return a door object
