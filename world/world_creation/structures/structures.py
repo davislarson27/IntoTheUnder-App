@@ -265,9 +265,9 @@ class Snow_Tree:
             structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y-tree_height, Snow_Leaves(grid, grid.screen, ground_x+1, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
             structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-y-tree_height, Snow_Leaves(grid, grid.screen, ground_x+2, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
         
-        structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+0, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-        structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+1, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
-        structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+2, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+        structureInstructionsList.append(Structure_Instruction(ground_x+0, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+0, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+        structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+1, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+        structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+2, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
 
         # return list
         return structureInstructionsList

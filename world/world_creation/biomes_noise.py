@@ -83,7 +83,7 @@ class Mountain(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Tree, 0.01),
+        Structure_Identifier(Snow_Tree, 0.01),
         Structure_Identifier(Snow_Man_Structure, 0.0001)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
@@ -224,7 +224,8 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Recipe_Burrow, 0.0002),
-        Structure_Identifier(Tree, 0.03),
+        Structure_Identifier(Tree, 0.028),
+        Structure_Identifier(Snow_Tree, 0.002),
         Structure_Identifier(Small_Bush, 0.025),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
