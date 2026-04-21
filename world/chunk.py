@@ -40,7 +40,7 @@ class Chunk:
         self.array[y][x] = value
         
     def set(self, x, y, block, pass_through=None, stored_inventory_items=None):
-            if block == None:
+            if block is None:
                 self.array[y][x] = None
             else:
                 if pass_through is None:
