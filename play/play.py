@@ -393,7 +393,15 @@ class Play:
     # ---------------------------- interacting with main loop ---------------------------- #
 
     def catch_exception(self):
-        pass
+        # step 1: attempt to save
+        try:
+            self.prep_menu()
+        except Exception as e:
+            self.menu.reopen_menu_prep() # minimum required to prep menu
+            print('CRASH WHILE ATTEMPTING SAVE')
+
+        # step 2: return the menu
+        return self.menu
 
     def run(self, input):
         # initialize return_class

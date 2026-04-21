@@ -885,8 +885,8 @@ class Menu:
 
     # ------------------------ functions interacting with the main loop ------------------------ #
 
-    def catch_exception(self):
-        pass
+    def catch_exception(self): # reboots the menu
+        return Menu(self.screen, self.window, self.images, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings)
 
     def run(self, input):
         """runs the menu and returns function of class that will run next (normally itself)"""

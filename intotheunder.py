@@ -140,34 +140,47 @@ menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WID
 # running class
 run_class = menu
 input_object = Input()
+last_frame_failed = False
 
 # ----------------------------------------------- run loop ------------------------------------------------ #
 try:
     while True:
-        # get scale stuff
-        scale, offx, offy = blit_letterboxed(screen, window, background_color)
 
-        # get inputs
-        input_object.take_input(scale, offx, offy)
+        try:
+            # get scale stuff
+            scale, offx, offy = blit_letterboxed(screen, window, background_color)
 
-        # quit if requested
-        if input_object.check_quit(): 
-            run_class.on_quit()
-            break
+            # get inputs
+            input_object.take_input(scale, offx, offy)
 
-        # execute run function, includes drawing
-        run_class = run_class.run(input_object)
+            # quit if requested
+            if input_object.check_quit(): 
+                run_class.on_quit()
+                break
 
-        # update screen
-        pygame.display.flip()
+            # execute run function, includes drawing
+            run_class = run_class.run(input_object)
 
-        # update clock
-        clock.tick(TICKS)
+            # update screen
+            pygame.display.flip()
 
-except Exception as e:
-    print("CRASH DETECTED")
+            # update clock
+            clock.tick(TICKS)
+
+            last_frame_failed = False
+
+        except Exception as recoverableError:
+            print("CRASH DETECTED")
+            traceback.print_exc()
+
+            if last_frame_failed: break # kills the game loop on two consecutive failures
+
+            run_class = run_class.catch_exception()
+            last_frame_failed = True
+
+
+except Exception as e: # this means the whole game crashed including on reboot
+    print("FATAL CRASH DETECTED")
     traceback.print_exc()
-
-    run_class.catch_exception()
 
 pygame.quit()
