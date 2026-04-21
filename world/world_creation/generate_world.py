@@ -8,15 +8,16 @@ from .ores_noise import Ore
 import hashlib
 
 class Grid_Superstructure:
-    def __init__(self, screen, worldGenParams, directory=''):
-        self.worldGenParams = worldGenParams
-        self.foreground_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen, f'{directory}/foreground_grid')
-        self.background_grid = Grid(worldGenParams.grid_width, worldGenParams.grid_depth, worldGenParams.block_width, screen, f'{directory}/background_grid') 
+    def __init__(self, screen, world_generation_settings, directory='', world_seed=0):
+        self.world_generation_settings = world_generation_settings
+        self.foreground_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/foreground_grid')
+        self.background_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/background_grid') 
         
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)
 
-        self.seed = int(random.random() * 10000)
+        # self.seed = int(random.random() * 10000)
+        self.seed = world_seed
         self.elev_seed = make_seed(self.seed, 'elevation')
         self.mountain_seed = make_seed(self.seed, 'moutain')
         self.hill_seed = make_seed(self.seed, 'hill')
@@ -103,7 +104,7 @@ class Grid_Superstructure:
 
         terVar  = pnoise1(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed) % 256) * self.terrain_variation_amp  # micro variation
 
-        return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
+        return int(self.world_generation_settings.ground_level + base_altitude_level + mountain + hill + terVar)
     
     def get_base_elevation(self, x): # includes moutains and base elevation
         elevation  = pnoise1(x * (1 / self.elevation_freq),  base=(self.elev_seed) % 256)
@@ -162,7 +163,7 @@ class Grid_Superstructure:
 
         terVar  = pnoise1(x * (1 / self.bg_ter_var_freq),  base=(self.bg_ter_var_freq) % 256) * self.bg_ter_var_amp  # micro variation
 
-        return int(self.worldGenParams.ground_level + base_altitude_level + mountain + hill + terVar)
+        return int(self.world_generation_settings.ground_level + base_altitude_level + mountain + hill + terVar)
     
     def is_cave(self, x, y):
         tunnel = pnoise2(x * self.cave_tunnel_x_freq, y * self.cave_tunnel_y_freq, base=self.cave_tunnel_seed & 256)

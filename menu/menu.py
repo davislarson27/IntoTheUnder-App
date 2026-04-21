@@ -3,6 +3,7 @@ from math import floor, ceil
 import shutil
 from pathlib import Path
 import json
+import random
 
 from world.world_creation.generate_world import *
 from components.text_box import Text_Box
@@ -811,15 +812,18 @@ class Menu:
 
         # initialize grid and terrain
         self.world_generation_settings.reset_ground_level(50)
-        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path)
+        world_seed = int(random.random() * 10000000)
+        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed)
         for GenerationText, percentComplete in grid_superstructure._generate_world():
             self.draw_loading_world_screen(percentComplete, GenerationText)
         grid, background_grid = grid_superstructure.get_grids()
 
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
-        player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
-        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
+        world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
+        world_spawn_y = 0
+        player = Player(grid, self.screen, world_spawn_x, world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
+        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed)
 
         # create world save directory
         new_directory_path.mkdir()
@@ -834,7 +838,6 @@ class Menu:
         # reset the grid caches to speed up saving
         grid.reset_save_cache()
         background_grid.reset_save_cache()
-
 
         return grid, background_grid, inventory, player, world_details
     
