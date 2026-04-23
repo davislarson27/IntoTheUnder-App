@@ -61,7 +61,7 @@ class Grid_Superstructure:
         self.border_block_freq = 8
 
         # thresholds
-        self.cave_threshold = 0.645
+        self.cave_threshold = 0.66
 
         self.ores = { # higher scale = smaller veins, higher threshold = less common
             Dirt: Ore(self.seed, Dirt, threshold=0.5, scale=0.11, min_depth=10),
