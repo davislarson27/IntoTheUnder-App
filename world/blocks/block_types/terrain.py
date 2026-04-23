@@ -39,6 +39,17 @@ class Dirt(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Dirt"
+    tick_threshold = 1200
+
+    def physics(self):
+        if self.grid.get(self.x, self.y - 1) is None: # this means that nothing is above the dirt
+            if self.ticks_till_physics < self.tick_threshold:
+                self.ticks_till_physics += 1
+            else: #tick count has reached go time :)
+                self.grid.set(self.x, self.y, Grass)
+                self.ticks_till_physics = 0
+        else:
+            self.ticks_till_physics = 0
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -102,6 +113,18 @@ class Grass(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Grass"
+    tick_threshold = 4800
+
+    def physics(self):
+        block_above = self.grid.get(self.x, self.y - 1)
+        if block_above is not None and (type(block_above) is Grass or type(block_above) is Dirt): # this means that a block is above the grass
+            if self.ticks_till_physics < self.tick_threshold:
+                self.ticks_till_physics += 1
+            else: #tick count has reached go time :)
+                self.grid.set(self.x, self.y, Dirt)
+                self.ticks_till_physics = 0
+        else:
+            self.ticks_till_physics = 0
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -346,7 +369,7 @@ class Snow_Block(Block):
     tick_threshold = 2
 
     def physics(self):
-        if self.grid.in_bounds(self.x, self.y + 1): #checks for block directly under the water
+        if self.grid.in_bounds(self.x, self.y + 1):
             if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
                 if self.ticks_till_physics < self.tick_threshold:
                     self.ticks_till_physics += 1

@@ -5,6 +5,7 @@ class Block:
 
     ticks_to_mine = 30
     tick_threshold = 0
+    ticks_till_physics = 0
 
     str_name = "base block class"
 
