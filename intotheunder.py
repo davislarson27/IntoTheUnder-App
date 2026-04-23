@@ -22,6 +22,7 @@ from world.world_creation.world_generation_settings import World_Generation_Sett
 from components.blit_letterboxed import blit_letterboxed
 from components.crash_menu import Crash_Menu
 from components.game_file_reading import get_user_worlds_list
+from components.launch_load_screen import Launch_Load_Screen
 
 # from windows_path_resources import *
 from components.path_resources.mac_path_resources import *
@@ -92,17 +93,22 @@ os.makedirs(directory, exist_ok=True)
 pygame.init()
 pygame.font.init()
 
-icon_surface = pygame.image.load(resource_path(f"game_files/{IMAGES_FILE_NAME}/{pygame_icon_file}"))
-pygame.display.set_icon(icon_surface)
-
 # create the screen
 background_color = (30,30,30)
 window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RESIZABLE)
 screen = pygame.Surface((screen_width_px, screen_height_px))
 pygame.display.set_caption(APP_DISPLAY_NAME)
 
+launch_load_screen = Launch_Load_Screen(screen, window, screen_width_px, screen_height_px)
+launch_load_screen.draw(0, 'Loading Game Files')
+
+icon_surface = pygame.image.load(resource_path(f"game_files/{IMAGES_FILE_NAME}/{pygame_icon_file}"))
+pygame.display.set_icon(icon_surface)
+
 # load in images
 images = Images(resource_path(f"game_files/{IMAGES_FILE_NAME}"), BLOCK_WIDTH)
+
+launch_load_screen.draw(15, 'Launching Menu')
 
 true_height = screen_height_px - INVENTORY_HEIGHT
 MOVEMENT_ALTITUDE_PX = (true_height * 13) // 16
@@ -123,6 +129,8 @@ input_object = Input()
 
 # crash handling
 last_frame_failed = False
+
+launch_load_screen.draw(99, 'Finishing Up Menu')
 
 # code for getting fps: fps = clock.get_fps()
 
