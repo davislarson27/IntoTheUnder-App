@@ -815,12 +815,16 @@ class Menu:
             self.screen.blit(text_surf, text_surf.get_rect(center=rect.center))
 
         # --- bottom buttons: Return (left) and Create World (right) ---
-        btn_top = card_bottom + self.menu_block_height * 1
-        btn_width = (card_rect.width - self.menu_block_width) // 2
+        btn_width = (card_rect.width - self.menu_block_width) // 2 - card_padding
         btn_height = self.menu_block_height * 2
+        btn_top = card_bottom - self.menu_block_height * 1 - btn_height
 
-        self.options_return_btn = pygame.Rect(card_rect.left, btn_top, btn_width, btn_height)
-        self.options_create_btn = pygame.Rect(card_rect.right - btn_width, btn_top, btn_width, btn_height)
+        gap_below = card_bottom - (btn_top + btn_height)
+        line_y = btn_top - gap_below
+        pygame.draw.line(self.screen, (80, 80, 80), (card_rect.left + card_padding, line_y), (card_rect.right - card_padding, line_y), 1)
+
+        self.options_return_btn = pygame.Rect(card_rect.left + card_padding, btn_top, btn_width, btn_height)
+        self.options_create_btn = pygame.Rect(card_rect.right - btn_width - card_padding, btn_top, btn_width, btn_height)
 
         if self.options_return_btn.collidepoint((mx, my)): cur_button_color = self.button_select_color
         else: cur_button_color = self.button_color
