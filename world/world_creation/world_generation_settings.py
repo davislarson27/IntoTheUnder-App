@@ -15,7 +15,7 @@ class World_Generation_Settings:
 
         self.block_width = block_width
 
-        self.biomes = [Forest, Plains, Tundra, Desert, Lake, Glacier]
+        self.biomes = [Volcano, Mountain, Lake, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
         self.biome_probabilities = [25, 25, 35, 8, 12, 5, 3]
         self.biome_size_variability = 15
 
