@@ -56,6 +56,7 @@ update notes:
  - added new biomes
  - added a screen to return to the main menu when the game crashes
  - improved performance
+ - added world creation settings
 """
 
 """
