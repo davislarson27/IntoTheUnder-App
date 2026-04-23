@@ -216,6 +216,48 @@ class Menu:
         grid_superstructure.generate_world()
         self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
 
+        # world creation options
+        self.world_size_options = ["Small", "Medium", "Large"]
+        self.selected_world_size = 1  # default to Medium
+        self.world_seed_text_box = Text_Box()
+        self.seed_length = 100000000000000000
+        self.custom_seed = self.getRandomSeed()
+
+        # options screen - seed input and size selector
+        self.seed_label_dimentions = pygame.Rect(
+            self.menu_block_width * center_column_margin_x,
+            self.menu_block_height * 9,
+            self.menu_block_width * center_column_width,
+            self.menu_block_height
+        )
+        self.seed_box_dimentions = pygame.Rect(
+            self.menu_block_width * center_column_margin_x,
+            self.menu_block_height * 10,
+            self.menu_block_width * center_column_width,
+            self.menu_block_height * 2
+        )
+
+        size_button_width = 3.5
+        size_button_gap = (center_column_width - (size_button_width * 3)) / 2
+        self.size_button_dimentions = []
+        for i in range(3):
+            x_offset = center_column_margin_x + (i * (size_button_width + size_button_gap))
+            self.size_button_dimentions.append(pygame.Rect(
+                floor(self.menu_block_width * x_offset),
+                self.menu_block_height * 14,
+                floor(self.menu_block_width * size_button_width),
+                self.menu_block_height * 2
+            ))
+
+        self.size_label_dimentions = pygame.Rect(
+            self.menu_block_width * center_column_margin_x,
+            self.menu_block_height * 13,
+            self.menu_block_width * center_column_width,
+            self.menu_block_height
+        )
+
+    def getRandomSeed(self):
+        return str(int(random.random() * self.seed_length))
 
     def get_max_load_screens(self):
         return ceil(len(self.world_names_list) / self.WORLDS_PER_LOAD_SCREEN) 
@@ -361,16 +403,35 @@ class Menu:
                 self.new_world_name_text_box.is_typing = True
             elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
                 # this will be an options box - needs more logic built in
-                self.create_announce_screen("Options Are Not Yet Available")
+                # self.create_announce_screen("Options Are Not Yet Available")
+                self.world_seed_text_box.open_text_box(self.custom_seed)
+                self.draw_function = self.draw_world_options_menu
             elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
                 if self.world_name in self.world_names_list or f"{self.world_name}{self.string_end_if_corrupted}" in self.world_names_list:
                     self.create_announce_screen(f"World Name \"{self.world_name}\" is Already in Use")
                 else:
                     self.execute_create_new_world()
-
             # now deactivate the text box if something else if clicked
             if not self.button1_dimentions.collidepoint(self.position_on_click) and not self.button1_dimentions.collidepoint(position_on_release):
                 self.new_world_name_text_box.is_typing = False
+
+        # draw the world options
+        elif self.draw_function.__func__ is self.draw_world_options_menu.__func__:
+            # back to create world screen
+            if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
+                self.world_seed_text_box.is_typing = False
+                self.draw_function = self.draw_create_world_menu
+
+            # size selector buttons
+            for i, rect in enumerate(self.size_button_dimentions):
+                if rect.collidepoint(self.position_on_click) and rect.collidepoint(position_on_release):
+                    self.selected_world_size = i
+
+            # seed text box focus
+            if self.seed_box_dimentions.collidepoint(self.position_on_click):
+                self.world_seed_text_box.is_typing = True
+            else:
+                self.world_seed_text_box.is_typing = False
 
     def create_announce_screen(self, message):
         self.announce_message = message
@@ -778,6 +839,79 @@ class Menu:
         text_rect = text_surf.get_rect(center=self.button3_dimentions.center)
         self.screen.blit(text_surf, text_rect)
 
+    def draw_world_options_menu(self, mx, my, input):
+        # handle seed text input
+        self.world_seed_text_box.take_input(input, 20)  # seeds don't need to be long
+        self.custom_seed = self.world_seed_text_box.get_cur_string()
+
+        # title
+        title_surf = self.small_title_font.render("World Options", True, (255, 255, 255))
+        text_rect = title_surf.get_rect(center=self.title_space.center)
+        self.screen.blit(title_surf, text_rect)
+
+        # back button
+        if self.button0_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
+        else: cur_button_color = self.button_color
+        pygame.draw.rect(self.screen, cur_button_color, self.button0_dimentions)
+        text_surf = self.small_button_font.render("Back", True, (255, 255, 255))
+        self.screen.blit(text_surf, text_surf.get_rect(center=self.button0_dimentions.center))
+
+        # --- seed label ---
+        label_surf = self.subscript_font.render("world seed (leave blank for random)", True, (160, 165, 170))
+        self.screen.blit(label_surf, label_surf.get_rect(midleft=(
+            self.seed_label_dimentions.left,
+            self.seed_label_dimentions.centery
+        )))
+
+        # --- seed text box ---
+        if self.world_seed_text_box.is_typing:
+            fill_color = self.world_seed_text_box.text_box_color_active
+            outline_color = self.world_seed_text_box.text_box_outline_color_active
+            outline_width = 3
+        else:
+            fill_color = self.world_seed_text_box.text_box_color
+            outline_color = self.world_seed_text_box.text_box_outline_color_active if self.seed_box_dimentions.collidepoint((mx, my)) else self.world_seed_text_box.text_box_outline_color
+            outline_width = 3 if self.seed_box_dimentions.collidepoint((mx, my)) else 1
+
+        pygame.draw.rect(self.screen, fill_color, self.seed_box_dimentions)
+        pygame.draw.rect(self.screen, outline_color, self.seed_box_dimentions, width=outline_width)
+
+        display_string = self.world_seed_text_box.get_cur_string() + self.world_seed_text_box.get_text_cursor()
+        text_surf = self.button_font.render(display_string, True, self.world_seed_text_box.text_box_text_color)
+        self.screen.blit(text_surf, text_surf.get_rect(midleft=(
+            self.seed_box_dimentions.left + self.padding,
+            self.seed_box_dimentions.centery
+        )))
+
+        # --- size label ---
+        label_surf = self.subscript_font.render("world size", True, (160, 165, 170))
+        self.screen.blit(label_surf, label_surf.get_rect(midleft=(
+            self.size_label_dimentions.left,
+            self.size_label_dimentions.centery
+        )))
+
+        # --- size selector buttons ---
+        selected_color = (90, 140, 200)      # highlighted blue for selected
+        unselected_color = self.button_color
+        hover_color = self.button_select_color
+
+        for i, (rect, label) in enumerate(zip(self.size_button_dimentions, self.world_size_options)):
+            if i == self.selected_world_size:
+                color = selected_color
+            elif rect.collidepoint((mx, my)):
+                color = hover_color
+            else:
+                color = unselected_color
+
+            pygame.draw.rect(self.screen, color, rect)
+
+            # draw a border on the selected one to make it extra obvious
+            if i == self.selected_world_size:
+                pygame.draw.rect(self.screen, (140, 190, 255), rect, width=2)
+
+            text_surf = self.button_font.render(label, True, (255, 255, 255))
+            self.screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+
     def draw(self, mx, my, input):
         # draw background before menus
         self.screen.fill((30,30,30))
@@ -808,12 +942,23 @@ class Menu:
         # initialize the loading screen
         self.draw_loading_world_screen(0, 'Prepping World Generator')
 
+        def resolve_seed():
+            seed_string = self.custom_seed.strip()
+            try:
+                seedValue = int(seed_string)
+                return seedValue
+            except ValueError:
+                value = 0
+                for char in seed_string:
+                    value = value * 31 + ord(char)
+                return value % self.seed_length
+
         # create directory name
         new_directory_path = Path(f"{self.game_files_directory}/{self.world_name}")
 
         # initialize inventory, player, and world
         self.world_generation_settings.reset_ground_level(50)
-        world_seed = int(random.random() * 10000000)
+        world_seed = resolve_seed()
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
@@ -840,6 +985,8 @@ class Menu:
         # reset the grid caches to speed up saving
         grid.reset_save_cache()
         background_grid.reset_save_cache()
+
+        self.custom_seed = self.getRandomSeed()
 
         return grid, background_grid, inventory, player, world_details
     
