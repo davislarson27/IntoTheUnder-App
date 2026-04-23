@@ -244,8 +244,8 @@ class Menu:
             self.menu_block_height * 2
         )
 
-        size_button_width = 3.5
-        size_button_gap = (center_column_width - (size_button_width * 3)) / 2
+        size_button_width = center_column_width / 3  
+        size_button_gap = 0
         self.size_button_dimentions = []
         for i in range(3):
             x_offset = center_column_margin_x + (i * (size_button_width + size_button_gap))
