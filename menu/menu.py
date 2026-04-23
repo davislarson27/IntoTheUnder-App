@@ -717,29 +717,41 @@ class Menu:
 
     def draw_world_options_menu(self, mx, my, input):
         # handle seed text input
-        self.world_seed_text_box.take_input(input, 20)  # seeds don't need to be long
+        self.world_seed_text_box.take_input(input, 20)
         self.custom_seed = self.world_seed_text_box.get_cur_string()
 
-        # title
-        title_surf = self.small_title_font.render("World Options", True, (255, 255, 255))
-        text_rect = title_surf.get_rect(center=self.title_space.center)
+        # --- card background ---
+        card_margin_x = self.menu_block_width * 6
+        card_top = self.menu_block_height * 5
+        card_bottom = self.menu_block_height * 22
+        card_rect = pygame.Rect(card_margin_x, card_top, self.width - (card_margin_x * 2), card_bottom - card_top)
+        pygame.draw.rect(self.screen, (50, 50, 50), card_rect, border_radius=8)
+        pygame.draw.rect(self.screen, (80, 80, 80), card_rect, width=1, border_radius=8)
+
+        card_padding = self.menu_block_width * 1
+
+        # --- small subtitle at top ---
+        title_surf = self.button_font.render("World Options", True, (180, 180, 180))
+        title_rect = title_surf.get_rect(center=(card_rect.centerx, card_top - self.menu_block_height))
+        text_rect = title_surf.get_rect(center=title_rect.center)
         self.screen.blit(title_surf, text_rect)
 
-        # back button
-        if self.button0_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
-        else: cur_button_color = self.button_color
-        pygame.draw.rect(self.screen, cur_button_color, self.button0_dimentions)
-        text_surf = self.small_button_font.render("Back", True, (255, 255, 255))
-        self.screen.blit(text_surf, text_surf.get_rect(center=self.button0_dimentions.center))
+        # --- seed section ---
+        seed_section_top = card_top + self.menu_block_height * 1
 
-        # --- seed label ---
-        label_surf = self.subscript_font.render("world seed", True, (160, 165, 170))
+        label_surf = self.button_font.render("World Seed", True, (220, 220, 220))
         self.screen.blit(label_surf, label_surf.get_rect(midleft=(
-            self.seed_label_dimentions.left,
-            self.seed_label_dimentions.centery
+            card_rect.left + card_padding,
+            seed_section_top + self.menu_block_height // 2
         )))
 
-        # --- seed text box ---
+        self.seed_box_dimentions = pygame.Rect(
+            card_rect.left + card_padding,
+            seed_section_top + self.menu_block_height * 1,
+            card_rect.width - (card_padding * 2),
+            self.menu_block_height * 2
+        )
+
         if self.world_seed_text_box.is_typing:
             fill_color = self.world_seed_text_box.text_box_color_active
             outline_color = self.world_seed_text_box.text_box_outline_color_active
@@ -749,8 +761,8 @@ class Menu:
             outline_color = self.world_seed_text_box.text_box_outline_color_active if self.seed_box_dimentions.collidepoint((mx, my)) else self.world_seed_text_box.text_box_outline_color
             outline_width = 3 if self.seed_box_dimentions.collidepoint((mx, my)) else 1
 
-        pygame.draw.rect(self.screen, fill_color, self.seed_box_dimentions)
-        pygame.draw.rect(self.screen, outline_color, self.seed_box_dimentions, width=outline_width)
+        pygame.draw.rect(self.screen, fill_color, self.seed_box_dimentions, border_radius=4)
+        pygame.draw.rect(self.screen, outline_color, self.seed_box_dimentions, width=outline_width, border_radius=4)
 
         display_string = self.world_seed_text_box.get_cur_string() + self.world_seed_text_box.get_text_cursor()
         text_surf = self.button_font.render(display_string, True, self.world_seed_text_box.text_box_text_color)
@@ -759,19 +771,34 @@ class Menu:
             self.seed_box_dimentions.centery
         )))
 
-        # --- size label ---
-        label_surf = self.subscript_font.render("world size", True, (160, 165, 170))
+        # --- size section ---
+        size_section_top = seed_section_top + self.menu_block_height * 4
+
+        label_surf = self.button_font.render("World Size", True, (220, 220, 220))
         self.screen.blit(label_surf, label_surf.get_rect(midleft=(
-            self.size_label_dimentions.left,
-            self.size_label_dimentions.centery
+            card_rect.left + card_padding,
+            size_section_top + self.menu_block_height // 2
         )))
 
-        # --- size selector buttons ---
-        selected_color = (90, 140, 200)      # highlighted blue for selected
+        size_button_width = (card_rect.width - (card_padding * 2)) // 3
+        size_button_top = size_section_top + self.menu_block_height * 1
+        size_button_height = self.menu_block_height * 2
+
+        selected_color = (90, 140, 200)
         unselected_color = self.button_color
         hover_color = self.button_select_color
 
-        for i, (rect, label) in enumerate(zip(self.size_button_dimentions, self.world_size_options)):
+        # rebuild size rects inline so they fit the card
+        self.size_button_dimentions = []
+        for i, label in enumerate(self.world_size_options):
+            rect = pygame.Rect(
+                card_rect.left + card_padding + (i * size_button_width),
+                size_button_top,
+                size_button_width,
+                size_button_height
+            )
+            self.size_button_dimentions.append(rect)
+
             if i == self.selected_world_size:
                 color = selected_color
             elif rect.collidepoint((mx, my)):
@@ -780,13 +807,31 @@ class Menu:
                 color = unselected_color
 
             pygame.draw.rect(self.screen, color, rect)
-
-            # draw a border on the selected one to make it extra obvious
             if i == self.selected_world_size:
                 pygame.draw.rect(self.screen, (140, 190, 255), rect, width=2)
 
             text_surf = self.button_font.render(label, True, (255, 255, 255))
             self.screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+
+        # --- bottom buttons: Return (left) and Create World (right) ---
+        btn_top = card_bottom + self.menu_block_height * 1
+        btn_width = (card_rect.width - self.menu_block_width) // 2
+        btn_height = self.menu_block_height * 2
+
+        self.options_return_btn = pygame.Rect(card_rect.left, btn_top, btn_width, btn_height)
+        self.options_create_btn = pygame.Rect(card_rect.right - btn_width, btn_top, btn_width, btn_height)
+
+        if self.options_return_btn.collidepoint((mx, my)): cur_button_color = self.button_select_color
+        else: cur_button_color = self.button_color
+        pygame.draw.rect(self.screen, cur_button_color, self.options_return_btn, border_radius=4)
+        text_surf = self.button_font.render("Return", True, (255, 255, 255))
+        self.screen.blit(text_surf, text_surf.get_rect(center=self.options_return_btn.center))
+
+        if self.options_create_btn.collidepoint((mx, my)): cur_button_color = self.button_select_color
+        else: cur_button_color = self.button_color
+        pygame.draw.rect(self.screen, cur_button_color, self.options_create_btn, border_radius=4)
+        text_surf = self.button_font.render("Create World", True, (255, 255, 255))
+        self.screen.blit(text_surf, text_surf.get_rect(center=self.options_create_btn.center))
 
     def returnToLast(self):
         if self.return_to is None:
@@ -910,9 +955,14 @@ class Menu:
         # draw the world options
         elif self.draw_function.__func__ is self.draw_world_options_menu.__func__:
             # back to create world screen
-            if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
+            if self.options_return_btn.collidepoint(self.position_on_click) and self.options_return_btn.collidepoint(position_on_release):
                 self.world_seed_text_box.is_typing = False
                 self.returnToLast()
+            elif self.options_create_btn.collidepoint(self.position_on_click) and self.options_create_btn.collidepoint(position_on_release):
+                if self.world_name in self.world_names_list or f"{self.world_name}{self.string_end_if_corrupted}" in self.world_names_list:
+                    self.create_announce_screen(f"World Name \"{self.world_name}\" is Already in Use")
+                else:
+                    self.execute_create_new_world()
 
             # size selector buttons
             for i, rect in enumerate(self.size_button_dimentions):
