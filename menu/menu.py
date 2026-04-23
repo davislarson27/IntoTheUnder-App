@@ -219,6 +219,11 @@ class Menu:
         # world creation options
         self.world_size_options = ["Small", "Medium", "Large"]
         self.selected_world_size = 1  # default to Medium
+        self.size_to_width_dict = {
+            "Small": 1000,
+            "Medium": 5000,
+            "Large": 20000
+        }
         self.world_seed_text_box = Text_Box()
         self.seed_length = 100000000000000000
         self.custom_seed = self.getRandomSeed()
@@ -726,7 +731,7 @@ class Menu:
         blit_letterboxed(self.screen, self.window, self.loading_world_screen_background_color)
         pygame.display.flip()
         pygame.event.pump()
-    
+
     def draw_announce_and_return_screen(self, mx, my, input):
             text_surf = self.button_font.render(self.announce_message, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
@@ -959,6 +964,9 @@ class Menu:
         # initialize inventory, player, and world
         self.world_generation_settings.reset_ground_level(50)
         world_seed = resolve_seed()
+
+        self.world_generation_settings.set_grid_width(self.size_to_width_dict[self.world_size_options[self.selected_world_size]])
+
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
@@ -1024,7 +1032,7 @@ class Menu:
         self.draw_loading_world_screen(99, 'Finishing Up')
 
         return grid, bg_grid, inventory, player, world_details
-        
+    
     def reopen_menu_prep(self):
         self.world_names_list.remove(self.world_name)
         self.world_names_list.insert(0, self.world_name)

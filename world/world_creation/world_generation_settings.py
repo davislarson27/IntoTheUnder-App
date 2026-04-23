@@ -36,6 +36,8 @@ class World_Generation_Settings:
         self.biomes = [Biome]
         self.biome_probabilities = [1]
 
+    def set_grid_width(self, newWidth):
+        self.grid_width = newWidth
 
     def reset_defaults(self):
         self.inventory_height = self.default_inventory_height
