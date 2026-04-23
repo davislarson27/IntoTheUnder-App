@@ -36,6 +36,8 @@ class Menu:
         # self.draw_function = self.draw_load_menu
         self.draw_function = self.draw_main
 
+        self.return_to = None
+
         # most attributes
         self.screen = screen
         self.window = window
@@ -316,128 +318,6 @@ class Menu:
         
         return new_world_name
 
-    def execute_clicked(self, position_on_release): # may need to add in self.
-
-        # main menu
-        if self.draw_function.__func__ is self.draw_main.__func__:
-            if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
-                self.draw_function = self.draw_load_menu
-            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
-                self.world_name = self.create_world_name()
-                self.new_world_name_text_box.open_text_box(self.world_name)
-                self.draw_function = self.draw_create_world_menu
-            elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
-                pygame.event.post(pygame.event.Event(pygame.QUIT))
-                
-        # if load world menu is active
-        elif self.draw_function.__func__ is self.draw_load_menu.__func__:
-            if len(self.world_names_list) > 0:
-                # check the return button
-                if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
-                    self.draw_function = self.draw_main
-                
-                # now check the launch world buttons
-                elif self.button1_longL_dimentions.collidepoint(self.position_on_click) and self.button1_longL_dimentions.collidepoint(position_on_release):
-                    if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
-                        self.execute_load_world(0)
-                elif self.button2_longL_dimentions.collidepoint(self.position_on_click) and self.button2_longL_dimentions.collidepoint(position_on_release):                    
-                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
-                        self.execute_load_world(1)
-                elif self.button3_longL_dimentions.collidepoint(self.position_on_click) and self.button3_longL_dimentions.collidepoint(position_on_release):                    
-                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
-                        self.execute_load_world(2)
-                
-                # check the delete world buttons
-                elif self.button1_shortR_dimentions.collidepoint(self.position_on_click) and self.button1_shortR_dimentions.collidepoint(position_on_release):
-                    if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
-                        self.execute_delete_world_confirmation(0)
-                elif self.button2_shortR_dimentions.collidepoint(self.position_on_click) and self.button2_shortR_dimentions.collidepoint(position_on_release):
-                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
-                        self.execute_delete_world_confirmation(1)
-                elif self.button3_shortR_dimentions.collidepoint(self.position_on_click) and self.button3_shortR_dimentions.collidepoint(position_on_release):
-                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
-                        self.execute_delete_world_confirmation(2)
-
-                # check the load menu navigation buttons
-                elif self.button4L_dimentions.collidepoint(self.position_on_click) and self.button4L_dimentions.collidepoint(position_on_release):
-                    # prev button
-                    self.load_screen_factor -= 1
-                    if self.load_screen_factor < 0:
-                        self.load_screen_factor = self.get_max_load_screens() - 1
-                elif self.button4R_dimentions.collidepoint(self.position_on_click) and self.button4R_dimentions.collidepoint(position_on_release):
-                    # next button
-                    self.load_screen_factor += 1
-                    if self.load_screen_factor > self.get_max_load_screens() - 1:
-                        self.load_screen_factor = 0
-            
-            else: # allows alt return button to work
-                if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
-                    self.draw_function = self.draw_main
-
-        # confirm world deletion menu
-        elif self.draw_function.__func__ is self.draw_confirm_delete_screen.__func__:
-            # selected yes
-            if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
-                # self.announce_message = "successfully deleted f{}"  
-                if self.delete_world_files(self.world_names_list[self.special_world_reference_index]):
-                    self.announce_message = f"Successfully Deleted \"{self.world_name}\""
-                else:
-                    self.announce_message = f"Failed to Delete \"{self.world_name}\""
-                self.draw_function = self.draw_announce_and_return_screen
-                self.special_world_reference_index = None
-                self.world_name = None
-                self.load_screen_factor = 0 # ensures that when the user clicks back in it doesn't throw an index error
-                self.prev_draw_func = self.draw_load_menu
-            # selected no
-            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
-                self.draw_function = self.draw_load_menu
-                self.special_world_reference_index = None
-                self.world_name = None
-
-        # print alert system and return to last
-        elif self.draw_function.__func__ is self.draw_announce_and_return_screen.__func__:
-            if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
-                self.draw_function = self.prev_draw_func
-
-        # create new world menu
-        elif self.draw_function.__func__ is self.draw_create_world_menu.__func__:
-            # check the return button
-            if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
-                self.draw_function = self.draw_main
-            elif self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
-                self.new_world_name_text_box.is_typing = True
-            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
-                # this will be an options box - needs more logic built in
-                # self.create_announce_screen("Options Are Not Yet Available")
-                self.world_seed_text_box.open_text_box(self.custom_seed)
-                self.draw_function = self.draw_world_options_menu
-            elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
-                if self.world_name in self.world_names_list or f"{self.world_name}{self.string_end_if_corrupted}" in self.world_names_list:
-                    self.create_announce_screen(f"World Name \"{self.world_name}\" is Already in Use")
-                else:
-                    self.execute_create_new_world()
-            # now deactivate the text box if something else if clicked
-            if not self.button1_dimentions.collidepoint(self.position_on_click) and not self.button1_dimentions.collidepoint(position_on_release):
-                self.new_world_name_text_box.is_typing = False
-
-        # draw the world options
-        elif self.draw_function.__func__ is self.draw_world_options_menu.__func__:
-            # back to create world screen
-            if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
-                self.world_seed_text_box.is_typing = False
-                self.draw_function = self.draw_create_world_menu
-
-            # size selector buttons
-            for i, rect in enumerate(self.size_button_dimentions):
-                if rect.collidepoint(self.position_on_click) and rect.collidepoint(position_on_release):
-                    self.selected_world_size = i
-
-            # seed text box focus
-            if self.seed_box_dimentions.collidepoint(self.position_on_click):
-                self.world_seed_text_box.is_typing = True
-            else:
-                self.world_seed_text_box.is_typing = False
-
     def create_announce_screen(self, message):
         self.announce_message = message
         self.prev_draw_func = self.draw_create_world_menu
@@ -450,15 +330,6 @@ class Menu:
         self.menu_running = True
         self.generate_new_world = False
         self.world_name = None
-
-    def check_click(self, mouse, mx, my):
-        if not self.is_clicked and mouse.get_pressed()[0]: # detect click
-            self.is_clicked = True
-            self.position_on_click = (mx, my)
-
-        elif self.is_clicked and not mouse.get_pressed()[0]: # detect release
-            self.execute_clicked((mx, my))
-            self.is_clicked = False
 
     def move_background(self):
         if self.camera_x + self.width < self.background_world_width_px: self.camera_x += self.background_move_speed
@@ -862,7 +733,7 @@ class Menu:
         self.screen.blit(text_surf, text_surf.get_rect(center=self.button0_dimentions.center))
 
         # --- seed label ---
-        label_surf = self.subscript_font.render("world seed (leave blank for random)", True, (160, 165, 170))
+        label_surf = self.subscript_font.render("world seed", True, (160, 165, 170))
         self.screen.blit(label_surf, label_surf.get_rect(midleft=(
             self.seed_label_dimentions.left,
             self.seed_label_dimentions.centery
@@ -917,6 +788,15 @@ class Menu:
             text_surf = self.button_font.render(label, True, (255, 255, 255))
             self.screen.blit(text_surf, text_surf.get_rect(center=rect.center))
 
+    def returnToLast(self):
+        if self.return_to is None:
+            self.return_to_main()
+        else:
+            self.draw_function = self.return_to
+            self.return_to = None
+
+    # main functions
+
     def draw(self, mx, my, input):
         # draw background before menus
         self.screen.fill((30,30,30))
@@ -924,6 +804,136 @@ class Menu:
 
         self.draw_function(mx, my, input)
     
+    def execute_clicked(self, position_on_release): # may need to add in self.
+
+        # main menu
+        if self.draw_function.__func__ is self.draw_main.__func__:
+            if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
+                self.draw_function = self.draw_load_menu
+            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.world_name = self.create_world_name()
+                self.new_world_name_text_box.open_text_box(self.world_name)
+                self.draw_function = self.draw_create_world_menu
+            elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
+                
+        # if load world menu is active
+        elif self.draw_function.__func__ is self.draw_load_menu.__func__:
+            if len(self.world_names_list) > 0:
+                # check the return button
+                if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
+                    self.returnToLast()
+                
+                # now check the launch world buttons
+                elif self.button1_longL_dimentions.collidepoint(self.position_on_click) and self.button1_longL_dimentions.collidepoint(position_on_release):
+                    if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
+                        self.execute_load_world(0)
+                elif self.button2_longL_dimentions.collidepoint(self.position_on_click) and self.button2_longL_dimentions.collidepoint(position_on_release):                    
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
+                        self.execute_load_world(1)
+                elif self.button3_longL_dimentions.collidepoint(self.position_on_click) and self.button3_longL_dimentions.collidepoint(position_on_release):                    
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
+                        self.execute_load_world(2)
+                
+                # check the delete world buttons
+                elif self.button1_shortR_dimentions.collidepoint(self.position_on_click) and self.button1_shortR_dimentions.collidepoint(position_on_release):
+                    if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
+                        self.execute_delete_world_confirmation(0)
+                elif self.button2_shortR_dimentions.collidepoint(self.position_on_click) and self.button2_shortR_dimentions.collidepoint(position_on_release):
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
+                        self.execute_delete_world_confirmation(1)
+                elif self.button3_shortR_dimentions.collidepoint(self.position_on_click) and self.button3_shortR_dimentions.collidepoint(position_on_release):
+                    if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
+                        self.execute_delete_world_confirmation(2)
+
+                # check the load menu navigation buttons
+                elif self.button4L_dimentions.collidepoint(self.position_on_click) and self.button4L_dimentions.collidepoint(position_on_release):
+                    # prev button
+                    self.load_screen_factor -= 1
+                    if self.load_screen_factor < 0:
+                        self.load_screen_factor = self.get_max_load_screens() - 1
+                elif self.button4R_dimentions.collidepoint(self.position_on_click) and self.button4R_dimentions.collidepoint(position_on_release):
+                    # next button
+                    self.load_screen_factor += 1
+                    if self.load_screen_factor > self.get_max_load_screens() - 1:
+                        self.load_screen_factor = 0
+            
+            else: # allows alt return button to work
+                if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                    self.draw_function = self.draw_main
+
+        # confirm world deletion menu
+        elif self.draw_function.__func__ is self.draw_confirm_delete_screen.__func__:
+            # selected yes
+            if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
+                # self.announce_message = "successfully deleted f{}"  
+                if self.delete_world_files(self.world_names_list[self.special_world_reference_index]):
+                    self.announce_message = f"Successfully Deleted \"{self.world_name}\""
+                else:
+                    self.announce_message = f"Failed to Delete \"{self.world_name}\""
+                self.draw_function = self.draw_announce_and_return_screen
+                self.special_world_reference_index = None
+                self.world_name = None
+                self.load_screen_factor = 0 # ensures that when the user clicks back in it doesn't throw an index error
+                self.prev_draw_func = self.draw_load_menu
+            # selected no
+            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.draw_function = self.draw_load_menu
+                self.special_world_reference_index = None
+                self.world_name = None
+
+        # print alert system and return to last
+        elif self.draw_function.__func__ is self.draw_announce_and_return_screen.__func__:
+            if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.draw_function = self.prev_draw_func
+
+        # create new world menu
+        elif self.draw_function.__func__ is self.draw_create_world_menu.__func__:
+            # check the return button
+            if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
+                self.returnToLast()
+            elif self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
+                self.new_world_name_text_box.is_typing = True
+            elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.world_seed_text_box.open_text_box(self.custom_seed)
+                self.draw_function = self.draw_world_options_menu
+                self.return_to = self.draw_create_world_menu
+            elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
+                if self.world_name in self.world_names_list or f"{self.world_name}{self.string_end_if_corrupted}" in self.world_names_list:
+                    self.create_announce_screen(f"World Name \"{self.world_name}\" is Already in Use")
+                else:
+                    self.execute_create_new_world()
+            # now deactivate the text box if something else if clicked
+            if not self.button1_dimentions.collidepoint(self.position_on_click) and not self.button1_dimentions.collidepoint(position_on_release):
+                self.new_world_name_text_box.is_typing = False
+
+        # draw the world options
+        elif self.draw_function.__func__ is self.draw_world_options_menu.__func__:
+            # back to create world screen
+            if self.button0_dimentions.collidepoint(self.position_on_click) and self.button0_dimentions.collidepoint(position_on_release):
+                self.world_seed_text_box.is_typing = False
+                self.returnToLast()
+
+            # size selector buttons
+            for i, rect in enumerate(self.size_button_dimentions):
+                if rect.collidepoint(self.position_on_click) and rect.collidepoint(position_on_release):
+                    self.selected_world_size = i
+
+            # seed text box focus
+            if self.seed_box_dimentions.collidepoint(self.position_on_click):
+                self.world_seed_text_box.is_typing = True
+            else:
+                self.world_seed_text_box.is_typing = False
+
+    def check_click(self, mouse, mx, my):
+        if not self.is_clicked and mouse.get_pressed()[0]: # detect click
+            self.is_clicked = True
+            self.position_on_click = (mx, my)
+
+        elif self.is_clicked and not mouse.get_pressed()[0]: # detect release
+            self.execute_clicked((mx, my))
+            self.is_clicked = False
+
     # helper functions
     def create_new_world(self):
         # initialize the loading screen
@@ -1056,7 +1066,8 @@ class Menu:
         self.draw(input.virtual_mouse_x, input.virtual_mouse_y, input)
 
         # register keyboard inputs
-        if input.escape_keypress: self.return_to_main()
+        if input.escape_keypress:
+            self.returnToLast()
 
         if self.run_game: # creates the play object that will be returned
             
