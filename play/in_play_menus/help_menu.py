@@ -7,6 +7,8 @@ class Help_Menu:
         self.screen = screen
         self.esc_menu = esc_menu
 
+        self.is_clicked = False
+
         # ------------------------------------------------------------------ #
         #  colors                                                            #
         # ------------------------------------------------------------------ #
@@ -21,6 +23,10 @@ class Help_Menu:
         self.key_chip_border  = (120, 120, 140)
         self.kb_desc_color    = (200, 200, 210)
         self.hint_text_color  = (104, 104, 120)
+        self.back_btn_bg      = (74,  74,  88)
+        self.back_btn_border  = (120, 120, 140)
+        self.back_btn_hover   = (100, 100, 118)
+
 
         # ------------------------------------------------------------------ #
         #  grid                                                              #
@@ -144,6 +150,20 @@ class Help_Menu:
             section_gap = section_gap,
         )
 
+        # --- Back button ---
+        self.back_font = pygame.font.Font(None, max(11, floor(self.gh * 1.6)))
+        back_label     = self.back_font.render("Back", True, self.key_chip_text)
+        btn_pad_x      = self.gw * 2
+        btn_pad_y      = self.gh
+        btn_w          = back_label.get_width()  + btn_pad_x * 2
+        btn_h          = back_label.get_height() + btn_pad_y * 2 - 1
+        btn_x          = self.gw * 2
+        btn_y          = (title_bar_h - btn_h) // 2 + 1
+        self.back_btn_rect  = pygame.Rect(btn_x, btn_y, btn_w, btn_h)
+        self.back_label_surf = back_label
+        self.back_label_rect = back_label.get_rect(center=self.back_btn_rect.center)
+        self._back_hovered   = False
+
     # ====================================================================== #
     #  layout helpers                                                        #
     # ====================================================================== #
@@ -216,15 +236,21 @@ class Help_Menu:
     # ====================================================================== #
 
     def run(self, input):
+        self._back_hovered = self.back_btn_rect.collidepoint(input.virtual_mouse_x, input.virtual_mouse_y)
         self.draw()
-        self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
-        return self
+        return self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
 
     def check_click(self, mouse, mx, my):
-        pass
+        if not self.is_clicked and mouse.get_pressed()[0]:
+            self.is_clicked = True
+        elif self.is_clicked and not mouse.get_pressed()[0]:
+            self.is_clicked = False
+            return self.execute_clicked((mx, my))
+        return self
 
     def execute_clicked(self, pos):
-        pass
+        if self.back_btn_rect.collidepoint(pos):
+            return self.onEsc()
 
     # ====================================================================== #
     #  drawing                                                               #
@@ -239,8 +265,8 @@ class Help_Menu:
 
         # bottom bar
         pygame.draw.rect(self.screen, self.bottom_bar_color, self.bottom_bar_rect)
-        for surf, rect in self.bottom_hints:
-            self.screen.blit(surf, rect)
+        # for surf, rect in self.bottom_hints:
+        #     self.screen.blit(surf, rect)
 
         # vertical divider between columns
         for (x, y, h) in self.dividers:
@@ -250,6 +276,12 @@ class Help_Menu:
 
         self._draw_keybind_col(self.col0_items)
         self._draw_keybind_col(self.col1_items)
+
+        btn_color = self.back_btn_hover if self._back_hovered else self.back_btn_bg
+        pygame.draw.rect(self.screen, btn_color, self.back_btn_rect, border_radius=4)
+        pygame.draw.rect(self.screen, self.back_btn_border, self.back_btn_rect, width=1, border_radius=4)
+        self.screen.blit(self.back_label_surf, self.back_label_rect)
+
 
     # ------------------------------------------------------------------ #
     #  draw helpers                                                       #
@@ -281,3 +313,4 @@ class Help_Menu:
                 div = pygame.Surface((x1 - x0, 1), pygame.SRCALPHA)
                 div.fill((255, 255, 255, 12))
                 self.screen.blit(div, (x0, y))
+    

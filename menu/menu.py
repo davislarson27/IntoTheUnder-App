@@ -33,7 +33,6 @@ it then checks the mouse coordinates on click and compares them against the expe
 class Menu:
     def __init__(self, screen, window, images, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory, world_generation_settings):
         # draw_function_call
-        # self.draw_function = self.draw_load_menu
         self.draw_function = self.draw_main
 
         self.return_to = None
@@ -88,12 +87,10 @@ class Menu:
 
         # loading and saving world screen (gets pre initalized)
         self.loading_world_screen_background_color = (30, 30, 30)
-        # self.loading_world_title_surf = self.loading_world_screen_font.render("loading...", True, (255, 255, 255))
         self.saving_world_title_surf = self.loading_world_screen_font.render("Saving World...", True, (255, 255, 255))
         loading_world_screen_column_width = 16
         loading_world_margin_x = (self.blocks_width - loading_world_screen_column_width) // 2
         self.loading_world_title_rect = pygame.Rect(self.menu_block_width * loading_world_margin_x, self.menu_block_height * 12, self.menu_block_width * loading_world_screen_column_width, self.menu_block_height * 2)
-        # self.loading_world_screen_text_rect = self.loading_world_title_surf.get_rect(center=self.loading_world_title_rect.center)
         self.saving_world_screen_text_rect = self.saving_world_title_surf.get_rect(center=self.loading_world_title_rect.center)
 
         # menu titles
@@ -201,7 +198,7 @@ class Menu:
 
 
         # ------------------------------- world creation options ------------------------------- #
-        
+
         self.world_size_options = ["Small", "Medium", "Large"]
         self.default_selected_world_size = 1 # default to Medium
         self.selected_world_size = self.default_selected_world_size
