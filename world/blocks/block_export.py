@@ -13,6 +13,7 @@ from .block_types.water import *
 from .block_types.wood import *
 from .block_types.resource_blocks import *
 from .block_types.bricks import *
+from .block_types.glass import *
 
 """
 make sure ot add each block to the get_str_to_block() function and add any new files to the import list
@@ -73,6 +74,7 @@ def get_blocks_list():
         Iron_Ladder,
         Wood_Ladder,
         Border_Block,
+        Glass,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

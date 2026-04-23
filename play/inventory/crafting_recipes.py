@@ -197,6 +197,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Glass",
+            [
+                Ingredient(Sand, 1),
+            ],
+            output=Ingredient(Glass, 1),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Stone Bricks",
             [
                 Ingredient(Rock, 2),
