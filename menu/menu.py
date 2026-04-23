@@ -220,7 +220,8 @@ class Menu:
 
         # world creation options
         self.world_size_options = ["Small", "Medium", "Large"]
-        self.selected_world_size = 1  # default to Medium
+        self.default_selected_world_size = 1 # default to Medium
+        self.selected_world_size = self.default_selected_world_size
         self.size_to_width_dict = {
             "Small": 1000,
             "Medium": 5000,
@@ -1098,6 +1099,8 @@ class Menu:
         self.world_names_list.insert(0, self.world_name)
         self.run_game = False
         self.return_to_main()
+        self.custom_seed = self.getRandomSeed()
+        self.selected_world_size = self.default_selected_world_size
 
     # ------------------------ functions interacting with the main loop ------------------------ #
 
