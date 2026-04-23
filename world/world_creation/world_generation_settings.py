@@ -1,4 +1,4 @@
-from .biomes_noise import *
+from .biomes import *
 
 class World_Generation_Settings:
     def __init__(self, version, inventory_height, health_bar_height, grid_width, grid_height, block_width):

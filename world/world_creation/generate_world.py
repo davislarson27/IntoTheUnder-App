@@ -1,10 +1,10 @@
 # from world.grid import Grid
 from world.grid import Grid
-from .biomes_noise import *
+from .biomes import *
 import random
 from world.world_creation.structures.structures import *
 from noise import pnoise1, pnoise2
-from .ores_noise import Ore
+from .ore import Ore
 import hashlib
 
 class Grid_Superstructure:
