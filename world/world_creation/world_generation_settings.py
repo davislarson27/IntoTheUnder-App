@@ -1,4 +1,4 @@
-from .biomes import *
+from .biomes_noise import *
 
 class World_Generation_Settings:
     def __init__(self, version, inventory_height, health_bar_height, grid_width, grid_height, block_width):
@@ -15,7 +15,7 @@ class World_Generation_Settings:
 
         self.block_width = block_width
 
-        self.biomes = [Forest, Thin_Forest, Plains, Tundra, Desert, Lake, Glacier]
+        self.biomes = [Forest, Plains, Tundra, Desert, Lake, Glacier]
         self.biome_probabilities = [25, 25, 35, 8, 12, 5, 3]
         self.biome_size_variability = 15
 
