@@ -3,7 +3,6 @@ from math import floor, sqrt
 
 from world.blocks.block_export import *
 from play.mining_sprite import Mining_Sprite
-from components.blit_letterboxed import blit_letterboxed
 from components.game_file_reading import save_game
 from .physics_rules import Physics_Rules
 from .in_play_menus.escape_menu import Escape_Menu
