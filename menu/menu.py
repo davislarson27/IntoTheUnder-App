@@ -199,26 +199,9 @@ class Menu:
             self.menu_block_height
         )
 
-        # generate menu background world
-        load_screen_block_width = floor(BLOCK_WIDTH * 1.15) #slightly enlarge the blocks
-        self.width_blocks = (width_px // load_screen_block_width) * 3
-        self.height_blocks = (height_px // load_screen_block_width) + 4
-        self.background_world_width_px = floor(self.width_blocks * load_screen_block_width)
 
-        menu_world_settings = World_Generation_Settings(
-            world_generation_settings.version, 
-            0, 
-            0, 
-            self.width_blocks, 
-            self.height_blocks, 
-            load_screen_block_width
-        )
-        menu_world_settings.reset_ground_level(13)
-        grid_superstructure = Grid_Superstructure(screen, menu_world_settings)
-        grid_superstructure.generate_world()
-        self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
-
-        # world creation options
+        # ------------------------------- world creation options ------------------------------- #
+        
         self.world_size_options = ["Small", "Medium", "Large"]
         self.default_selected_world_size = 1 # default to Medium
         self.selected_world_size = self.default_selected_world_size
@@ -263,6 +246,29 @@ class Menu:
             self.menu_block_width * center_column_width,
             self.menu_block_height
         )
+
+
+        # ----------------------------------------- generate menu background world ----------------------------------------- #
+
+        load_screen_block_width = floor(BLOCK_WIDTH * 1.15) #slightly enlarge the blocks
+        self.width_blocks = (width_px // load_screen_block_width) * 3
+        self.height_blocks = (height_px // load_screen_block_width) + 4
+        self.background_world_width_px = floor(self.width_blocks * load_screen_block_width)
+
+        menu_world_settings = World_Generation_Settings(
+            world_generation_settings.version, 
+            0, 
+            0, 
+            self.width_blocks, 
+            self.height_blocks, 
+            load_screen_block_width
+        )
+
+        menu_world_seed = self.getRandomSeed()
+        menu_world_settings.reset_ground_level(13)
+        grid_superstructure = Grid_Superstructure(screen, menu_world_settings, world_seed=menu_world_seed)
+        grid_superstructure.generate_world()
+        self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
 
     def getRandomSeed(self):
         return str(int(random.random() * self.seed_length))
