@@ -205,7 +205,7 @@ class Menu:
         self.size_to_width_dict = {
             "Small": 1000,
             "Medium": 5000,
-            "Large": 20000
+            "Large": 15000
         }
         self.world_seed_text_box = Text_Box()
         self.seed_length = 100000000000000000

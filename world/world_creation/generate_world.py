@@ -1,7 +1,6 @@
 # from world.grid import Grid
 from world.grid import Grid
 from .biomes import *
-import random
 from world.world_creation.structures.structures import *
 from noise import pnoise1, pnoise2
 from .ore import Ore
@@ -84,15 +83,6 @@ class Grid_Superstructure:
         hash = int(hashlib.sha256(f"{self.seed}_{need}_{x}_{y}".encode()).hexdigest(), 16)
         return (hash % 1000) / 1000.0  # value 0.0–1.0
 
-    def lake_depth_value(self, x):
-        # mountain = self.get_mountain_elevation(x)
-        mountain = 0
-
-        hill = pnoise1(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
-        hill *= abs(hill) * self.hill_amp
-
-        return int(mountain + hill)
-
     def get_terrain_height(self, x):
         # large = pnoise1( x * freq, base=seed % crunch value) * amp
         base_altitude_level = self.get_base_elevation(x)
@@ -106,6 +96,28 @@ class Grid_Superstructure:
 
         return int(self.world_generation_settings.ground_level + base_altitude_level + mountain + hill + terVar)
     
+    def get_bg_terrain_height(self, x):
+        # large = pnoise1( x * freq, base=seed % crunch value) * amp
+        base_altitude_level = self.get_base_elevation(x)
+
+        mountain = self.get_mountain_elevation(x) // 3 # keeps some of the mountain noise but stops it from following them  all the way up
+
+        hill = pnoise1(x * (1 / self.bg_hill_freq), base=(self.bg_hill_seed) % 256) # more rolling hills
+        hill *= abs(hill) * self.bg_hill_amp
+
+        terVar  = pnoise1(x * (1 / self.bg_ter_var_freq),  base=(self.bg_ter_var_freq) % 256) * self.bg_ter_var_amp  # micro variation
+
+        return int(self.world_generation_settings.ground_level + base_altitude_level + mountain + hill + terVar)
+    
+    def lake_depth_value(self, x):
+        # mountain = self.get_mountain_elevation(x)
+        mountain = 0
+
+        hill = pnoise1(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
+        hill *= abs(hill) * self.hill_amp
+
+        return int(mountain + hill)
+
     def get_base_elevation(self, x): # includes moutains and base elevation
         elevation  = pnoise1(x * (1 / self.elevation_freq),  base=(self.elev_seed) % 256)
         elevation *= abs(elevation)
@@ -152,19 +164,6 @@ class Grid_Superstructure:
 
         return abs(int(pnoise1(x * (1 / layer.variation_freq), base=(seed) % 256) * layer.variation_amp))
 
-    def get_bg_terrain_height(self, x):
-        # large = pnoise1( x * freq, base=seed % crunch value) * amp
-        base_altitude_level = self.get_base_elevation(x)
-
-        mountain = self.get_mountain_elevation(x) // 3 # keeps some of the mountain noise but stops it from following them  all the way up
-
-        hill = pnoise1(x * (1 / self.bg_hill_freq), base=(self.bg_hill_seed) % 256) # more rolling hills
-        hill *= abs(hill) * self.bg_hill_amp
-
-        terVar  = pnoise1(x * (1 / self.bg_ter_var_freq),  base=(self.bg_ter_var_freq) % 256) * self.bg_ter_var_amp  # micro variation
-
-        return int(self.world_generation_settings.ground_level + base_altitude_level + mountain + hill + terVar)
-    
     def is_cave(self, x, y):
         tunnel = pnoise2(x * self.cave_tunnel_x_freq, y * self.cave_tunnel_y_freq, base=self.cave_tunnel_seed & 256)
         cavern = pnoise2(x * self.cave_cavern_x_freq, y * self.cave_cavern_y_freq, base=self.cave_cavern_seed & 256)
@@ -175,7 +174,7 @@ class Grid_Superstructure:
     
     def get_humidity(self, x):
         return pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
-            
+    
     def get_border_block_depth(self, x):
         depth  = pnoise1(x * (1 / self.border_block_freq),  base=(self.border_block_seed) % 256) * self.border_block_amp
         return abs(int(depth))
@@ -185,6 +184,23 @@ class Grid_Superstructure:
             pass
 
     def _generate_world(self):
+
+        # # identify lakes and create lake objects
+        # lakes = []
+        # open_lake_obj = None
+        # for x in range(self.foreground_grid.width):
+        #     if open_lake_obj is not None and self.get_biome(x) is Lake:
+        #         open_lake_obj.extend_x(x, self.get_terrain_height(x))
+        #     elif open_lake_obj is None and self.get_biome(x) is Lake:
+        #         open_lake_obj = LakePreFill(x, self.get_terrain_height(x))
+        #     elif open_lake_obj is not None:
+        #         open_lake_obj.close_object()
+        #         lakes.append(open_lake_obj)
+        #         open_lake_obj = None
+        # if open_lake_obj is not None:
+        #     open_lake_obj.close_object()
+        #     lakes.append(open_lake_obj)
+        #     open_lake_obj = None
 
         yield 'Generating Grid', 0
 
@@ -218,36 +234,35 @@ class Grid_Superstructure:
                         self.foreground_grid.set(x, y, ore)
                 i+=1
         
-        # yield 'generating lakes'
-
-        # # identify water basins pass
-        # water_basin_anchors = []
+        # yield 'Generating Lakes', 20
+        
         # for x in range(self.foreground_grid.width):
         #     suddenDepthValue = self.lake_depth_value(x)
-        #     humidity = self.get_humidity(x)
-        #     # absolute_height = self.get_bg_terrain_height(x)
-        #     # elevation = self.get_base_elevation(x)
-        #     # if absolute_height < elevation and suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
-        #     if suddenDepthValue < -(self.hill_amp * 3 / 5) and humidity > 6: # this means conditions are met for water for form
-        #         if len(water_basin_anchors) == 0 or water_basin_anchors[-1] != x - 1:
-        #             water_basin_anchors.append(x)
+        #     if suddenDepthValue < - self.hill_amp / 2:
+        #         humidity = self.get_humidity(x)
+        #         if humidity > 10:
+        #             # this spot possibly has water in it
+        #             cur_elevation = self.get_terrain_height(x)
 
-        # # fill water basins pass
-        # for x in water_basin_anchors:
-        #     # check for filling left
-        #     water_level = self.get_terrain_height(x)
-        #     start_x = x
-        #     while start_x > 0 and self.get_terrain_height(start_x - 1) > water_level:
-        #         start_x-=1
-        #     end_x = x
-        #     while end_x + 1 < self.foreground_grid.width and self.get_terrain_height(end_x + 1) > water_level:
-        #         end_x+=1
-        #     for fill_x in range(start_x, end_x+1):
-        #         for y in range(water_level, self.get_terrain_height(fill_x)):
-        #             # print(f'  literally generated water at {fill_x, y}')
-        #             self.foreground_grid.set(fill_x, y, Water, True)
-        #     # print(f'generated water from x={start_x} to x={end_x}')
+        #             right_max = self.get_terrain_height(x)
+        #             right_max_location = x
+        #             for right in range(x, x+10):
+        #                 cur_right = self.get_terrain_height(right)
+        #                 if cur_right > right_max:
+        #                     right_max = cur_right
+        #                     right_max_location = right
 
+        #             left_max = self.get_terrain_height(x)
+        #             left_max_location = x
+        #             for left in range(x-10, x):
+        #                 cur_left = self.get_terrain_height(left)
+        #                 if cur_left > left_max:
+        #                     left_max = cur_left
+        #                     left_max_location = left
+
+        #             water_level = min(right_max, left_max)
+        #             if cur_elevation + 1 < right_max and cur_elevation + 1 < left_max:
+                    
 
         yield 'Generating Background', 25
 
@@ -368,3 +383,4 @@ class Grid_Superstructure:
 
 
         return 'Initializing Inventory', 50
+    

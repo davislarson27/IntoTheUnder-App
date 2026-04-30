@@ -415,7 +415,6 @@ class Play:
             self.menu.reopen_menu_prep() # minimum required to prep menu
             print('CRASH WHILE ATTEMPTING SAVE')
 
-
     def run(self, input):
         # initialize return_class
         return_class = self
