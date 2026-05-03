@@ -1,10 +1,11 @@
-# from world.grid import Grid
+import hashlib
+from noise import pnoise1, pnoise2
+
 from world.grid import Grid
 from .biomes import *
 from world.world_creation.structures.structures import *
-from noise import pnoise1, pnoise2
 from .ore import Ore
-import hashlib
+from .lake_pre_fill import LakePreFill
 
 class Grid_Superstructure:
     def __init__(self, screen, world_generation_settings, directory='', world_seed=0, spawn_x=0):
@@ -185,29 +186,44 @@ class Grid_Superstructure:
 
     def _generate_world(self):
 
-        # # identify lakes and create lake objects
-        # lakes = []
-        # open_lake_obj = None
-        # for x in range(self.foreground_grid.width):
-        #     if open_lake_obj is not None and self.get_biome(x) is Lake:
-        #         open_lake_obj.extend_x(x, self.get_terrain_height(x))
-        #     elif open_lake_obj is None and self.get_biome(x) is Lake:
-        #         open_lake_obj = LakePreFill(x, self.get_terrain_height(x))
-        #     elif open_lake_obj is not None:
-        #         open_lake_obj.close_object()
-        #         lakes.append(open_lake_obj)
-        #         open_lake_obj = None
-        # if open_lake_obj is not None:
-        #     open_lake_obj.close_object()
-        #     lakes.append(open_lake_obj)
-        #     open_lake_obj = None
+        yield 'Pre-Scanning Grid', 0
 
-        yield 'Generating Grid', 0
+        # identify lakes and create lake objects
+        lakes = [] 
+        open_lake_obj = None
+        for x in range(self.foreground_grid.width):
+            if open_lake_obj is not None and self.get_biome(x) is Lake:
+                open_lake_obj.extend_x(x, self.get_terrain_height(x))
+            elif open_lake_obj is None and self.get_biome(x) is Lake:
+                open_lake_obj = LakePreFill(x, self.get_terrain_height(x))
+            elif open_lake_obj is not None:
+                open_lake_obj.calculate_lake()
+                if open_lake_obj.is_valid_lake(): lakes.append(open_lake_obj)
+                open_lake_obj = None
+        if open_lake_obj is not None:
+            open_lake_obj.calculate_lake()
+            if open_lake_obj.is_valid_lake(): lakes.append(open_lake_obj)
+            open_lake_obj = None
+
+        yield 'Generating Grid', 3
 
         # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
-            biome = self.get_biome(x)
-            ground_elevation = self.get_terrain_height(x)
+            if len(lakes) > 0 and lakes[0] is not None and lakes[0].is_lake(x): # checks for if this is a lake
+                lake = lakes[0]
+                biome = Lake
+                ground_elevation = lake.get_floor_height(x)
+                water_level = lake.get_water_level()
+                if lake.is_end_of_lake(x):
+                    lakes.pop(0)
+            else:
+                biome = self.get_biome(x)
+                ground_elevation = self.get_terrain_height(x)
+                water_level = None
+
+            if water_level is not None:
+                for y in range(water_level, ground_elevation):
+                    self.foreground_grid.set(x, y, Water)
 
             cur_depth_down = ground_elevation
             layer_num = 0
@@ -233,36 +249,6 @@ class Grid_Superstructure:
                     if ore_noise.find(x, y, biome.ore_threshold_adjustment[ore], biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
                 i+=1
-        
-        # yield 'Generating Lakes', 20
-        
-        # for x in range(self.foreground_grid.width):
-        #     suddenDepthValue = self.lake_depth_value(x)
-        #     if suddenDepthValue < - self.hill_amp / 2:
-        #         humidity = self.get_humidity(x)
-        #         if humidity > 10:
-        #             # this spot possibly has water in it
-        #             cur_elevation = self.get_terrain_height(x)
-
-        #             right_max = self.get_terrain_height(x)
-        #             right_max_location = x
-        #             for right in range(x, x+10):
-        #                 cur_right = self.get_terrain_height(right)
-        #                 if cur_right > right_max:
-        #                     right_max = cur_right
-        #                     right_max_location = right
-
-        #             left_max = self.get_terrain_height(x)
-        #             left_max_location = x
-        #             for left in range(x-10, x):
-        #                 cur_left = self.get_terrain_height(left)
-        #                 if cur_left > left_max:
-        #                     left_max = cur_left
-        #                     left_max_location = left
-
-        #             water_level = min(right_max, left_max)
-        #             if cur_elevation + 1 < right_max and cur_elevation + 1 < left_max:
-                    
 
         yield 'Generating Background', 25
 
@@ -289,6 +275,8 @@ class Grid_Superstructure:
 
         for x in range(self.foreground_grid.width):
             for y in range(self.get_terrain_height(x)+2, self.foreground_grid.height):
+                if type(self.foreground_grid.get(x, y)) is Water:
+                    continue
                 if self.is_cave(x, y):
                     block_set = None
                     if self.is_cave(x, y+1) and not self.is_cave(x, y-1): # check if block below is a cave

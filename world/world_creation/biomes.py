@@ -97,7 +97,7 @@ class Mountain(Biome):
 
 class Lake(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if mountain > 12 and humidity > 5:
+        if temp > 5 and humidity > 5:
             return True
         return False
         
@@ -250,43 +250,3 @@ class Plains(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)
     ]
-
-
-
-
-
-
-class LakePreFill:
-    def __init__(self, start_x, start_y):
-        self.start_x = start_x
-        self.start_y = start_y
-        self.end_x = start_x
-        self.end_y = start_y
-
-        self.water_level = None
-        self.max_depth = None
-        self.ground_level_equation = None
-
-    def extend_x(self, next_x, next_y):
-        self.end_x = next_x
-        self.end_y = next_y
-    
-    def close_object(self):
-        self.calculate_lake()
-    
-    def calculate_lake(self): # this will determine where fading will happen, how it will happen, 
-        width = self.end_x - self.start_x
-        self.water_level = min(self.start_y, self.end_y)
-        self.max_depth = min(width * 0.3, 40)
-
-    def floor_height(self, x):
-        t = (x - self.start_x) / (self.end_x - self.start_x)
-        bowl = 4 * t * (1 - t)
-        baseline = self.start_y + (self.end_y - self.start_y) * t  # lerp between shores
-        return int(baseline + bowl * self.max_depth)  # + because y increases downward
-
-    def contains(self, x):
-        return self.start_x <= x <= self.end_x
-    
-    def __str__(self):
-        return f'range = ({self.start_x},{self.end_x})'
