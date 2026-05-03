@@ -11,6 +11,14 @@ class Water(Block):
     max_water_value = 4
     pass_through = True
 
+    draw_background = True
+    ignore_shading_from = {
+        (0, 1): True, # coming from the top
+        (0, -1): True, # coming from the bottom
+        (1, 0): True, # coming from the right
+        (-1, 0): True # comin from the left
+    }
+
     def convert_water_value(self, water_value):
         return self.max_water_value + water_value
 
