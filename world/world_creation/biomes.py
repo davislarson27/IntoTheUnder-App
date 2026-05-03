@@ -71,7 +71,7 @@ class Volcano(Biome):
     multiplier[Sulfur_Flakes_Block] *= 1.5
 
     ore_threshold_adjustment = {**Biome.ore_threshold_adjustment}
-    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.6
+    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.64
 
 class Mountain(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -93,7 +93,7 @@ class Mountain(Biome):
     multiplier[Sulfur_Flakes_Block] *= 3
 
     ore_threshold_adjustment = {**Biome.ore_threshold_adjustment}
-    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.62
+    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.65
 
 class Lake(Biome):
     def claim(elevation, temp, humidity, mountain):

@@ -72,7 +72,7 @@ class Grid_Superstructure:
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.75, scale=0.18, min_depth=25),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.79, scale=0.18, min_depth=35),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.82, scale=0.17, min_depth=65),
-            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.66, scale=0.18, min_depth=12),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.67, scale=0.18, min_depth=12),
         }
 
         self.saltpeter_chance = 0.025
