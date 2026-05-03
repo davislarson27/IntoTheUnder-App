@@ -101,11 +101,11 @@ class Water(Block):
             x *= block_width
             y *= block_width
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
 
         pygame.draw.rect( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             (x, y, block_width, block_width)
         )
 
@@ -137,7 +137,8 @@ class Water_R1(Water):
             x *= block_width
             y *= block_width
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
+
         drop_off_px = block_width // 4
         points = [
             (x, y),             # top-left high
@@ -148,7 +149,7 @@ class Water_R1(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -179,6 +180,8 @@ class Water_L1(Water):
             x *= block_width
             y *= block_width
 
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
+
         drop_off_px = block_width // 4
         points = [
             (x, y + drop_off_px),                         # top-left of box
@@ -190,7 +193,7 @@ class Water_L1(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -221,7 +224,6 @@ class Water_R2(Water):
             x *= block_width
             y *= block_width
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
         drop_off_px = block_width // 4
         points = [
             (x, y + drop_off_px),
@@ -230,9 +232,11 @@ class Water_R2(Water):
             (x, y + block_width)
         ]
 
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
+
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -263,7 +267,8 @@ class Water_L2(Water):
             x *= block_width
             y *= block_width
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
+
         drop_off_px = block_width // 4
         points = [
             (x, y + drop_off_px * 2),                         # top-left of box
@@ -274,7 +279,7 @@ class Water_L2(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -304,8 +309,9 @@ class Water_R3(Water):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
+        
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
         drop_off_px = block_width // 4
         points = [
             (x, y + 2 * drop_off_px),
@@ -316,7 +322,7 @@ class Water_R3(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -346,8 +352,9 @@ class Water_L3(Water):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
+        
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
         drop_off_px = block_width // 4
         points = [
             (x, y + drop_off_px * 3),                         # top-left of box
@@ -358,7 +365,7 @@ class Water_L3(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -389,7 +396,8 @@ class Water_R4(Water):
             x *= block_width
             y *= block_width
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
+
         drop_off_px = block_width // 4
         points = [
             (x, y + 3 * drop_off_px),
@@ -400,7 +408,7 @@ class Water_R4(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
@@ -432,7 +440,8 @@ class Water_L4(Water):
             x *= block_width
             y *= block_width
 
-        # (40, 110, 170) (80, 160, 200) (25, 80, 130)
+        color = (40+added_color, 110+added_color, 170+added_color, 200)
+
         drop_off_px = block_width // 4
         points = [
             (x, y + drop_off_px * 4),                         # top-left of box
@@ -443,7 +452,7 @@ class Water_L4(Water):
 
         pygame.draw.polygon( # draw base color
             screen,
-            (40 + added_color, 110 + added_color, 170 + added_color),           # color
+            (color[0], color[1], color[2], color[3]),
             points
         )
 
