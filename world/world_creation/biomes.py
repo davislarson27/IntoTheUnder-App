@@ -97,7 +97,7 @@ class Mountain(Biome):
 
 class Lake(Biome):
     def claim(elevation, temp, humidity, mountain):
-        if temp > 5 and humidity > 5:
+        if temp > 6 and humidity > 6:
             return True
         return False
         

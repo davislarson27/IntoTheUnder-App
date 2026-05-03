@@ -84,6 +84,9 @@ class Grid_Superstructure:
         hash = int(hashlib.sha256(f"{self.seed}_{need}_{x}_{y}".encode()).hexdigest(), 16)
         return (hash % 1000) / 1000.0  # value 0.0–1.0
 
+    def get_micro_terrain_height_variation(self, x):
+        return pnoise1(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed) % 256) * self.terrain_variation_amp
+
     def get_terrain_height(self, x):
         # large = pnoise1( x * freq, base=seed % crunch value) * amp
         base_altitude_level = self.get_base_elevation(x)
@@ -93,7 +96,7 @@ class Grid_Superstructure:
         hill = pnoise1(x * (1 / self.hill_freq), base=(self.hill_seed) % 256) # more rolling hills
         hill *= abs(hill) * self.hill_amp
 
-        terVar  = pnoise1(x * (1 / self.terrain_variation_freq),  base=(self.terrain_variation_seed) % 256) * self.terrain_variation_amp  # micro variation
+        terVar  = self.get_micro_terrain_height_variation(x)
 
         return int(self.world_generation_settings.ground_level + base_altitude_level + mountain + hill + terVar)
     
@@ -212,7 +215,7 @@ class Grid_Superstructure:
             if len(lakes) > 0 and lakes[0] is not None and lakes[0].is_lake(x): # checks for if this is a lake
                 lake = lakes[0]
                 biome = Lake
-                ground_elevation = lake.get_floor_height(x)
+                ground_elevation = lake.get_floor_height(x) - abs(int(self.get_micro_terrain_height_variation(x)))
                 water_level = lake.get_water_level()
                 if lake.is_end_of_lake(x):
                     lakes.pop(0)

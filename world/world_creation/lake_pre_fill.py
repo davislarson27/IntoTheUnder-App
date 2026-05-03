@@ -36,14 +36,7 @@ class LakePreFill:
     def get_water_level(self):
         return self.water_level
     
-    # def is_valid_lake(self):
-    #     return self.start_y >= self.water_level and self.end_y >= self.water_level and self.end_x - self.start_x > 1
-
     def is_valid_lake(self):
-        width = self.end_x - self.start_x
-        mid_x = self.start_x + width // 2
-        mid_floor = self.get_floor_height(mid_x)
-        print(f"width={width} water_level={self.water_level} mid_floor={mid_floor} start_y={self.start_y} end_y={self.end_y}")
         return self.start_y <= self.water_level and self.end_y <= self.water_level and self.end_x - self.start_x > 1
 
     def __str__(self):
