@@ -54,7 +54,7 @@ class Play:
         
         # gemerate the bg_mining_active icon
         bg_mining_icon_margin = 30
-        bg_mining_icon_width = 40
+        bg_mining_icon_width = 60
         self.bg_mining_icon = Bg_Mining_Icon(screen, screen.get_width() - bg_mining_icon_width - bg_mining_icon_margin, bg_mining_icon_margin, bg_mining_icon_width, bg_mining_icon_width)
 
     # ------------------------------ helper functions ------------------------------ #
