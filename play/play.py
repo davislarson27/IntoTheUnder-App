@@ -7,8 +7,8 @@ from components.game_file_reading import save_game
 from .physics_rules import Physics_Rules
 from .in_play_menus.escape_menu import Escape_Menu
 from components.crash_menu import Crash_Menu
-
 from .bg_overlay import BG_Overlay
+from.bg_mining_icon import Bg_Mining_Icon
 
 
 class Play:
@@ -51,7 +51,11 @@ class Play:
         self.bg_overlay = BG_Overlay(screen, BLOCK_WIDTH, grid, background_grid)
 
         self.build_block_surfaces()
-
+        
+        # gemerate the bg_mining_active icon
+        bg_mining_icon_margin = 30
+        bg_mining_icon_width = 40
+        self.bg_mining_icon = Bg_Mining_Icon(screen, screen.get_width() - bg_mining_icon_width - bg_mining_icon_margin, bg_mining_icon_margin, bg_mining_icon_width, bg_mining_icon_width)
 
     # ------------------------------ helper functions ------------------------------ #
 
@@ -363,6 +367,9 @@ class Play:
             self.background_grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
             # draw background overlay
             self.bg_overlay.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
+
+            self.player.draw(self.camera_x, self.cur_camera_y)
+
             # draw main grid
             self.grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
 
@@ -378,7 +385,9 @@ class Play:
             if self.active_grid is self.background_grid and self.affected_x is not None:
                 self.bg_overlay.draw_at(self.affected_x, self.affected_y, self.camera_x, self.cur_camera_y)
 
-            self.player.draw(self.camera_x, self.cur_camera_y)
+            # self.player.draw(self.camera_x, self.cur_camera_y)
+
+            self.bg_mining_icon.draw(input)
 
 
             # ------------- run passive inventory ------------- #
