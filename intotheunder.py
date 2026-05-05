@@ -57,6 +57,7 @@ update notes:
  - added a screen to return to the main menu when the game crashes
  - improved performance
  - added world creation settings
+ - switched to pygame-ce
 """
 
 """
