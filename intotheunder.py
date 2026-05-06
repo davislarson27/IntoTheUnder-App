@@ -97,7 +97,7 @@ pygame.font.init()
 
 # create the screen
 background_color = (30,30,30)
-window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RESIZABLE)
+window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RESIZABLE, vsync=1)
 screen = pygame.Surface((screen_width_px, screen_height_px))
 pygame.display.set_caption(APP_DISPLAY_NAME)
 
