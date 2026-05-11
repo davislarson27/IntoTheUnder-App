@@ -4,6 +4,7 @@ from .blocks.block_export import *
 from play.inventory.inventory_item import Inventory_Item
 from play.inventory.crafting_recipes import *
 from .world_creation.structures.structures import *
+from components.block_queue import Block_Queue
 
 
 class Chunk:
@@ -96,11 +97,18 @@ class Chunk:
         y_draw_grid_min = max(0, camera_y // self.BLOCK_WIDTH)
         y_draw_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
 
+        block_queue = Block_Queue()
+
         for y in range(y_draw_grid_min, y_draw_grid_max):
             for x in range(x_draw_grid_min, x_draw_grid_max):
                 obj = self.get(x, y)
                 if(obj != None):
-                    obj.draw(camera_x=camera_x, camera_y=camera_y)
+                    if obj.queue_block == False:
+                        obj.draw(camera_x=camera_x, camera_y=camera_y)
+                    else:
+                        block_queue.append(obj)
+        
+        return block_queue
 
     @staticmethod
     def fill_from_dict(grid_dict, screen, BLOCK_WIDTH, global_x_offset, return_grid):

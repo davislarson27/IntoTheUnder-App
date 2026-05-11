@@ -368,10 +368,8 @@ class Play:
             # draw background overlay
             self.bg_overlay.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
 
-            self.player.draw(self.camera_x, self.cur_camera_y)
-
             # draw main grid
-            self.grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
+            main_grid_queue = self.grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
 
             # draw selected block
             if self.affected_x != None and not self.build_mode and self.active_grid.get(self.affected_x, self.affected_y) != None:
@@ -385,7 +383,10 @@ class Play:
             if self.active_grid is self.background_grid and self.affected_x is not None:
                 self.bg_overlay.draw_at(self.affected_x, self.affected_y, self.camera_x, self.cur_camera_y)
 
-            # self.player.draw(self.camera_x, self.cur_camera_y)
+            self.player.draw(self.camera_x, self.cur_camera_y)
+
+            # now draw the rest of the queue
+            main_grid_queue.draw(self.camera_x, self.cur_camera_y)
 
             self.bg_mining_icon.draw(input)
 
@@ -398,6 +399,7 @@ class Play:
             # ------------- draw inventory ------------- #
 
             self.inventory.draw_passive()
+
 
         # check for changing menus in game
         self.manage_menus(input)

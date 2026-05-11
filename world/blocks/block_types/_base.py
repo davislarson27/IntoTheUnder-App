@@ -25,9 +25,9 @@ class Block:
         (1, 0): False, # coming from the right
         (-1, 0): False # comin from the left
     }
+    queue_block = False
 
     DIRTY_ATTRS = {'pass_through', 'special_value', 'stored_inventory_items'} # attributes that need to fire off a chunk save
-
     is_initialized = False # used to not trigger a mark a chunk change while it is loading blocks into it
 
     surfaces = {} # key = (cls, block_width, being_mined, use_alt_drawing)

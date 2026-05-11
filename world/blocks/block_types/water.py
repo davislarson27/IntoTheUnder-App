@@ -18,6 +18,7 @@ class Water(Block):
         (1, 0): True, # coming from the right
         (-1, 0): True # comin from the left
     }
+    queue_block = True
 
     def convert_water_value(self, water_value):
         return self.max_water_value + water_value

@@ -2,6 +2,8 @@ from .chunk import Chunk
 import json
 from pathlib import Path
 
+from components.block_queue import Block_Queue
+
 
 class Grid:
     
@@ -126,15 +128,21 @@ class Grid:
             self.chunks[chunk_id].physics(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
 
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
+        """draws the grid on the screen and returns blocks that need to get drawn later"""
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
         max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
+
+        block_queue = Block_Queue()
         
         for chunk_id in range(min_chunk_id, max_chunk_id+1):
             global_x_offset = chunk_id * self.chunk_width
-            self.chunks[chunk_id].draw(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
+            chunk_block_queue = self.chunks[chunk_id].draw(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
+            block_queue = block_queue + chunk_block_queue
+
+        return block_queue
 
     def set_chunks(self, chunks):
         self.chunks = chunks
