@@ -27,12 +27,18 @@ class Bg_Mining_Icon:
         # endregion
 
         # region bg overlays
-        exposures = [ # not drawing correctly at the moment
-            (0, 0, False, True, False, True),  # top-left corner of bg: shadow on bottom + right (where fg overlaps)
-        ]
-        bg_overlay = BG_Overlay(screen, block_width, None, None)
+        half = block_width // 2
+        bg_overlay = BG_Overlay(screen, half, None, None)
 
-        for draw_x, draw_y, top, bottom, left, right in exposures:
+        quadrants = [
+            # (draw_x, draw_y, exposed_top, exposed_bottom, exposed_left, exposed_right)
+            (0,    0,    False, False, False, False),  # top-left:     no shadow
+            (half, 0,    False, True,  False, False),  # top-right:    bottom shadow
+            (0,    half, False, False, False, True),   # bottom-left:  right shadow
+            (half, half, False, False, False, False),  # bottom-right: no shadow
+        ]
+
+        for draw_x, draw_y, top, bottom, left, right in quadrants:
             surf = bg_overlay.get_bg_overlay_surface(top, bottom, left, right)
             self.background_icon_active.blit(surf, (draw_x, draw_y))
             self.background_icon_inactive.blit(surf, (draw_x, draw_y))
