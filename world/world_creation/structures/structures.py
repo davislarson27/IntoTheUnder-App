@@ -196,7 +196,7 @@ class Tree:
         # trunk
         start_y = ground_y-1
         for y in range(tree_height):
-            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Log(grid, grid.screen, ground_x+1, start_y-y, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Log))
 
         # leaves disappearing time thresholds
         def get_ticks(x, y):
@@ -266,7 +266,7 @@ class Snow_Tree:
         # trunk
         start_y = ground_y-1
         for y in range(tree_height):
-            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Log(grid, grid.screen, ground_x+1, start_y-y, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Log))
 
         # leaves disappearing time thresholds
         def get_ticks(x, y):
