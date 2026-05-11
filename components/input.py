@@ -30,6 +30,7 @@ class Input:
         self.e_keypress = False
         self.c_keypress = False
         self.return_keypress = False
+        self.f3_keypress = False
 
         # caps lock toggle
         self.caps_lock = False
@@ -48,6 +49,7 @@ class Input:
         self.c_keypress = False
         self.backspace_keypress = False
         self.return_keypress = False
+        self.f3_keypress = False
 
         # set event inputs
         for event in pygame.event.get():
@@ -66,6 +68,7 @@ class Input:
                 self.c_keypress = (event.key == pygame.K_c)
                 self.backspace_keypress = (event.key == pygame.K_BACKSPACE)
                 self.return_keypress = (event.key == pygame.K_RETURN)
+                self.f3_keypress = (event.key == pygame.K_F3)
 
 
             # get virtual mouse positions

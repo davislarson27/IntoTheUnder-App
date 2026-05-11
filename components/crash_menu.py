@@ -118,7 +118,7 @@ class Crash_Menu:
     def catch_exception(self): # this is like bad if this breaks lol
         return self.goToState
 
-    def run(self, input):
+    def run(self, input, clock):
         returnClass = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
         self.draw(input.virtual_mouse_x, input.virtual_mouse_y)
         if returnClass is not self:

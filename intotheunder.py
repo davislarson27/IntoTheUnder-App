@@ -156,7 +156,7 @@ try:
                 break
 
             # execute run function, includes drawing
-            run_class = run_class.run(input_object)
+            run_class = run_class.run(input_object, clock)
 
             # update screen
             pygame.display.flip()

@@ -123,6 +123,7 @@ class Help_Menu:
                 (["Scroll"],             "Change inventory slot"),
                 (["E"],                  "Open inventory"),
                 (["C"],                  "Open crafting recipes"),
+                (["F3"],                 "Show debug menu"),
             ],
             col_rect    = self.col_rects[0],
             inner_pad_x = inner_pad_x,

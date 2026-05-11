@@ -8,7 +8,8 @@ from .physics_rules import Physics_Rules
 from .in_play_menus.escape_menu import Escape_Menu
 from components.crash_menu import Crash_Menu
 from .bg_overlay import BG_Overlay
-from.bg_mining_icon import Bg_Mining_Icon
+from .bg_mining_icon import Bg_Mining_Icon
+from .in_play_menus.debug_screen_overlay import Debug_Overlay
 
 
 class Play:
@@ -56,6 +57,8 @@ class Play:
         bg_mining_icon_margin = 30
         bg_mining_icon_width = 51
         self.bg_mining_icon = Bg_Mining_Icon(screen, screen.get_width() - bg_mining_icon_width - bg_mining_icon_margin, bg_mining_icon_margin, bg_mining_icon_width, bg_mining_icon_width)
+
+        self.debug_overlay = Debug_Overlay(screen, player)
 
     # ------------------------------ helper functions ------------------------------ #
 
@@ -327,7 +330,7 @@ class Play:
             self.menu.reopen_menu_prep() # minimum required to prep menu
             print('CRASH WHILE ATTEMPTING SAVE')
 
-    def run(self, input):
+    def run(self, input, clock):
         # initialize return_class
         return_class = self
 
@@ -399,6 +402,11 @@ class Play:
             # ------------- draw inventory ------------- #
 
             self.inventory.draw_passive()
+
+            # ------------- run & draw the debug overlay ------------- #
+
+            self.debug_overlay.run(input, clock)
+            self.debug_overlay.draw()
 
 
         # check for changing menus in game

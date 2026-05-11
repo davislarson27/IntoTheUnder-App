@@ -1118,7 +1118,7 @@ class Menu:
     def finalExceptionHandle(self):
         pass
 
-    def run(self, input):
+    def run(self, input, clock):
         """runs the menu and returns function of class that will run next (normally itself)"""
 
         self.check_click(pygame.mouse, input.virtual_mouse_x, input.virtual_mouse_y)

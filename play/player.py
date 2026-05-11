@@ -150,7 +150,10 @@ class Player:
                 if distance_move_x < 0:
                     self.is_left_facing = True
     
-    def draw(self, screen_x = 0, screen_y = 0):
+    def get_player_block_coordinates(self):
+        return (floor((self.x) / self.BLOCK_WIDTH), floor((self.y) / self.BLOCK_WIDTH))
+
+    def draw(self, screen_x=0, screen_y=0):
 
         if self.is_left_facing:
             player_rect = self.images.player_left.get_rect(
