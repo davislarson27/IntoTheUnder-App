@@ -24,7 +24,7 @@ from components.crash_menu import Crash_Menu
 from components.game_file_reading import get_user_worlds_list
 from components.launch_load_screen import Launch_Load_Screen
 
-# from windows_path_resources import *
+# from components.path_resources.windows_path_resources import *
 from components.path_resources.mac_path_resources import *
 
 # pyinstaller command line
