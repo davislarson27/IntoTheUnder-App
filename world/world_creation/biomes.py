@@ -1,7 +1,7 @@
 from world.blocks.block_export import *
 from world.world_creation.structures.structures import *
 from world.world_creation.structures.structure_identifier import Structure_Identifier
-
+from .ore import Ore
 
 class Layer:
     def __init__(self, block, layer_depth, variation_amp=2, variation_freq=6):
@@ -18,28 +18,16 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     layers  = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 1)]
     sub_layer = Rock
 
-    multiplier = { # this is the increase in the noise per block beneath when the block can begin generating
-        Dirt: 0.00005,
-        Gravel: -0.00004,
-        Iron_Ore_Block: 0.00045,
-        Coal_Ore_Block: 0.000211,
-        Gold_Ore_Block: 0.0004,
-        Emerald_Ore_Block: -0.00085,
-        Diamond_Ore_Block: 0.00011,
-        Mabelite_Ore_Block: 0.00010,
-        Sulfur_Flakes_Block: -0.002
-    }
-
-    ore_threshold_adjustment = { # a postitive numbrer here is the amount that the threshold is dropped in this specific biome
-        Dirt: 0,
-        Gravel: 0,
-        Iron_Ore_Block: 0,
-        Coal_Ore_Block: 0,
-        Gold_Ore_Block: 0,
-        Emerald_Ore_Block: 0,
-        Diamond_Ore_Block: 0,
-        Mabelite_Ore_Block: 0,
-        Sulfur_Flakes_Block: 0
+    biome_ore_modifier = {
+        Dirt: 1,
+        Gravel: 1,
+        Iron_Ore_Block: 1,
+        Coal_Ore_Block: 1,
+        Gold_Ore_Block: 1,
+        Emerald_Ore_Block: 1,
+        Diamond_Ore_Block: 1,
+        Mabelite_Ore_Block: 1,
+        Sulfur_Flakes_Block: 1
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
@@ -67,11 +55,8 @@ class Volcano(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
-    multiplier = {**Biome.multiplier}
-    multiplier[Sulfur_Flakes_Block] *= 1.5
-
-    ore_threshold_adjustment = {**Biome.ore_threshold_adjustment}
-    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.64
+    biome_ore_modifier = {**Biome.biome_ore_modifier}
+    biome_ore_modifier[Sulfur_Flakes_Block] *= 1.5
 
 class Mountain(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -89,11 +74,8 @@ class Mountain(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
-    multiplier = {**Biome.multiplier}
-    multiplier[Sulfur_Flakes_Block] *= 3
-
-    ore_threshold_adjustment = {**Biome.ore_threshold_adjustment}
-    ore_threshold_adjustment[Sulfur_Flakes_Block] = 0.65
+    biome_ore_modifier = {**Biome.biome_ore_modifier}
+    biome_ore_modifier[Sulfur_Flakes_Block] *= 1.4
 
 class Lake(Biome):
     def claim(elevation, temp, humidity, mountain):

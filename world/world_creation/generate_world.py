@@ -13,6 +13,8 @@ class Grid_Superstructure:
         self.foreground_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/foreground_grid')
         self.background_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/background_grid') 
         
+        grid_height = self.foreground_grid.height
+
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)
 
@@ -63,15 +65,62 @@ class Grid_Superstructure:
         self.cave_threshold = 0.66
 
         self.ores = { # higher scale = smaller veins, higher threshold = less common
-            Dirt: Ore(self.seed, Dirt, threshold=0.5, scale=0.11, min_depth=10),
-            Gravel: Ore(self.seed, Gravel, threshold=0.5, scale=0.11, min_depth=10),
-            Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, threshold=0.61, scale=0.11, min_depth=10),
-            Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, threshold=0.62, scale=0.17, min_depth=15),
-            Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, threshold=0.70, scale=0.18, min_depth=30),
-            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, threshold=0.75, scale=0.18, min_depth=25),
-            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, threshold=0.79, scale=0.18, min_depth=35),
-            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, threshold=0.82, scale=0.17, min_depth=65),
-            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, threshold=0.67, scale=0.18, min_depth=12),
+            Dirt: Ore(self.seed, Dirt, grid_height, 
+                scale=0.11,
+                min_depth_threshold=0.5,
+                min_depth=10,
+                max_depth_threshold=0.505,
+            ),
+            Gravel: Ore(self.seed, Gravel, grid_height,
+                scale=0.11,
+                min_depth_threshold=0.5,
+                min_depth=10,
+                max_depth_threshold=0.495
+            ),
+            Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, grid_height,
+                scale=0.11,
+                min_depth_threshold=0.61,
+                min_depth=10,
+                max_depth_threshold=0.6312
+            ),
+            Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, grid_height,
+                scale=0.17,
+                min_depth_threshold=0.62,
+                min_depth=15,
+                max_depth_threshold=0.664
+            ),
+            Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, grid_height,
+                scale=0.18,
+                min_depth_threshold=0.70,
+                min_depth=30,
+                max_depth_threshold=0.721
+            ),
+            Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, grid_height,
+                scale=0.18,
+                min_depth_threshold=0.75,
+                min_depth=25,
+                max_depth_threshold=1,
+                max_depth=70
+            ),
+            Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, grid_height,
+                scale=0.18,
+                min_depth_threshold=0.79,
+                min_depth=35,
+                max_depth_threshold=0.801
+            ),
+            Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, grid_height,
+                scale=0.17,
+                min_depth_threshold=0.82,
+                min_depth=65,
+                max_depth_threshold=0.825
+            ),
+            Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, grid_height,
+                scale=0.18,
+                min_depth_threshold=0.67,
+                min_depth=12,
+                max_depth_threshold=1,
+                max_depth=70
+            ),
         }
 
         self.saltpeter_chance = 0.025
@@ -248,7 +297,7 @@ class Grid_Superstructure:
                     ore_noise = self.ores[ore]
                     if i < ore_noise.min_depth:
                         continue
-                    if ore_noise.find(x, y, biome.ore_threshold_adjustment[ore], biome.multiplier[ore] * (i - ore_noise.min_depth)): # returns True if this ore should be here
+                    if ore_noise.find(x, y, biome.biome_ore_modifier[ore]): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
                 i+=1
 
@@ -287,7 +336,6 @@ class Grid_Superstructure:
                     self.foreground_grid.set(x, y, block_set)
 
         # generate ground level objects & structures for the background
-        # should this be run with the foreground so foreground & background structures don't overlap?
         x = 1 # structures don't generate at x=0
         while x < self.background_grid.width:
             # get biome
