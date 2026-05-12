@@ -69,57 +69,57 @@ class Grid_Superstructure:
                 scale=0.11,
                 min_depth_threshold=0.5,
                 min_depth=10,
-                max_depth_threshold=0.505,
+                max_depth_threshold=0.51,
             ),
             Gravel: Ore(self.seed, Gravel, grid_height,
                 scale=0.11,
                 min_depth_threshold=0.5,
                 min_depth=10,
-                max_depth_threshold=0.495
+                max_depth_threshold=0.52
             ),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, grid_height,
                 scale=0.11,
-                min_depth_threshold=0.61,
-                min_depth=10,
-                max_depth_threshold=0.6312
+                min_depth_threshold=0.588,
+                min_depth=15,
+                max_depth_threshold=0.594
             ),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, grid_height,
                 scale=0.17,
-                min_depth_threshold=0.62,
-                min_depth=15,
-                max_depth_threshold=0.664
+                min_depth_threshold=0.608,
+                min_depth=45,
+                max_depth_threshold=0.597
             ),
             Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.70,
-                min_depth=30,
-                max_depth_threshold=0.721
+                min_depth_threshold=0.705,
+                min_depth=88,
+                max_depth_threshold=0.685
             ),
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.75,
+                min_depth_threshold=0.745,
                 min_depth=25,
                 max_depth_threshold=1,
-                max_depth=70
+                max_depth=95
             ),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.79,
-                min_depth=35,
-                max_depth_threshold=0.801
+                min_depth_threshold=0.789,
+                min_depth=95,
+                max_depth_threshold=0.774
             ),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, grid_height,
                 scale=0.17,
-                min_depth_threshold=0.82,
-                min_depth=65,
-                max_depth_threshold=0.825
+                min_depth_threshold=0.819,
+                min_depth=110,
+                max_depth_threshold=0.81
             ),
             Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, grid_height,
                 scale=0.18,
                 min_depth_threshold=0.67,
-                min_depth=12,
+                min_depth=10,
                 max_depth_threshold=1,
-                max_depth=70
+                max_depth=80
             ),
         }
 
