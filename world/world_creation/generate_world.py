@@ -16,10 +16,9 @@ class Grid_Superstructure:
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)
 
-        # self.seed = int(random.random() * 10000)
         self.seed = world_seed
         self.elev_seed = make_seed(self.seed, 'elevation')
-        self.mountain_seed = make_seed(self.seed, 'moutain')
+        self.mountain_seed = make_seed(self.seed, 'mountain')
         self.hill_seed = make_seed(self.seed, 'hill')
         self.terrain_variation_seed = make_seed(self.seed, 'terVar')
         self.humidity_seed = make_seed(self.seed, 'humidity')
