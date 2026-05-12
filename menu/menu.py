@@ -851,7 +851,7 @@ class Menu:
             self.draw_function = self.return_to
             self.return_to = None
 
-    # main functions
+    # ------------------------ main functions ------------------------ #
 
     def draw(self, mx, my, input):
         # draw background before menus
@@ -999,7 +999,8 @@ class Menu:
             self.execute_clicked((mx, my))
             self.is_clicked = False
 
-    # helper functions
+    # ------------------------ helper functions ------------------------ #
+
     def create_new_world(self):
         # initialize the loading screen
         # initialize grid and terrain
@@ -1115,6 +1116,7 @@ class Menu:
         self.return_to_main()
         self.custom_seed = self.getRandomSeed()
         self.selected_world_size = self.default_selected_world_size
+        self.return_to = None
 
     # ------------------------ functions interacting with the main loop ------------------------ #
 
