@@ -15,6 +15,7 @@ from play.player import Player
 from play.inventory.inventory import Inventory
 from components.world_details import World_Details
 from components.crash_menu import Crash_Menu
+from play.bg_overlay import BG_Overlay
 
 """
 explanation:
@@ -266,6 +267,8 @@ class Menu:
         grid_superstructure = Grid_Superstructure(screen, menu_world_settings, world_seed=menu_world_seed)
         grid_superstructure.generate_world()
         self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
+
+        self.bg_overlay = BG_Overlay(screen, self.background_grid.BLOCK_WIDTH, self.background_grid, self.bg_background_grid)
 
     def getRandomSeed(self):
         return str(int(random.random() * self.seed_length))
@@ -853,6 +856,10 @@ class Menu:
     def draw(self, mx, my, input):
         # draw background before menus
         self.screen.fill((30,30,30))
+
+        self.bg_background_grid.draw(floor(self.camera_x), 0)
+        self.bg_overlay.draw(floor(self.camera_x), 0, 0)
+
         self.background_grid.draw(floor(self.camera_x), 0)
 
         self.draw_function(mx, my, input)
