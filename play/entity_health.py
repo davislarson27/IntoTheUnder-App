@@ -45,33 +45,48 @@ class Entity_Health:
             self.bar_height
         )
 
-        # bar side icons
-        self.health_icon_rect = (
-            self.bar_start_x - int(2 * icon_width),
-            self.health_bar_start_y - icon_offset_y,
-            icon_width,
-            icon_width
-        )
         self.health_icon_x = self.bar_start_x - int(2 * icon_width)
         self.health_icon_y = self.health_bar_start_y - icon_offset_y
-        self.energy_icon_rect = (
-            self.bar_start_x - int(2 * icon_width),
-            self.energy_bar_start_y - icon_offset_y,
-            icon_width,
-            icon_width
-        )
+
         self.energy_icon_x = self.bar_start_x - int(2 * icon_width)
         self.energy_icon_y = self.energy_bar_start_y - icon_offset_y
-
-        # bar side icon surfaces
-        # self.health_icon_surf = pygame.Surface((icon_width, icon_width), pygame.SRCALPHA)
-
 
         self.margin_color = (50, 50, 50)
         self.bg_color = (190, 190, 190)
         self.divider_color = (150, 150, 150)
-        self.full_health_compartment_color = (150, 80, 80)
+        self.full_health_compartment_color = (185, 68, 68)
         self.full_energy_bar_color = (90, 140, 200)
+
+        # region drawing the cross myself
+
+        def draw_health_icon(surface, color=self.full_health_compartment_color, border_color=(135, 45, 45)):
+            surf_size = 90
+            border = 4
+            padding = border + 10  # shift inward so caps aren't clipped
+            size = surf_size - padding * 2
+            third = size // 3
+
+            x, y = padding, padding
+
+            # Horizontal caps
+            pygame.draw.rect(surface, border_color, (x - border, y + third - border, border, third + border * 2))
+            pygame.draw.rect(surface, border_color, (x + size, y + third - border, border, third + border * 2))
+            # Vertical caps
+            pygame.draw.rect(surface, border_color, (x + third - border, y - border, third + border * 2, border))
+            pygame.draw.rect(surface, border_color, (x + third - border, y + size, third + border * 2, border))
+            # Cross body border
+            pygame.draw.rect(surface, border_color, (x, y + third - border, size, third + border * 2))
+            pygame.draw.rect(surface, border_color, (x + third - border, y, third + border * 2, size))
+            # Fill
+            pygame.draw.rect(surface, color, (x, y + third, size, third))
+            pygame.draw.rect(surface, color, (x + third, y, third, size))
+
+        self.health_icon_surf = pygame.Surface((90, 90), pygame.SRCALPHA)
+        draw_health_icon(self.health_icon_surf)
+        self.health_icon_surf = pygame.transform.smoothscale(self.health_icon_surf, (15, 15))
+
+        # region end
+
 
     def get_health(self):
         return self.health
@@ -88,18 +103,15 @@ class Entity_Health:
             self.main_box
         )
 
-        # pygame.draw.rect( # health bar icon
-        #     self.screen,
-        #     self.full_health_compartment_color,
-        #     self.health_icon_rect
-        # )
-        self.screen.blit(self.images.health_icon, (self.health_icon_x, self.health_icon_y))
-        pygame.draw.rect( # draw health bar outline
+        # health bar
+        # self.screen.blit(self.images.health_icon, (self.health_icon_x, self.health_icon_y))
+        self.screen.blit(self.health_icon_surf, (self.health_icon_x, self.health_icon_y))
+        pygame.draw.rect(
             self.screen,
             self.divider_color,
             self.health_bar_outline
         )
-        pygame.draw.rect( # draw health bar outline
+        pygame.draw.rect(
             self.screen,
             self.full_health_compartment_color,
             (
@@ -110,18 +122,14 @@ class Entity_Health:
             )
         )
 
-        # pygame.draw.rect( # energy bar icon
-        #     self.screen,
-        #     self.full_energy_bar_color,
-        #     self.energy_icon_rect
-        # )
+        # draw energy bar
         self.screen.blit(self.images.energy_icon, (self.energy_icon_x, self.energy_icon_y))
-        pygame.draw.rect( # draw energy bar outline
+        pygame.draw.rect( 
             self.screen,
             self.divider_color,
             self.energy_bar_outline
         )
-        pygame.draw.rect( # draw energy bar outline
+        pygame.draw.rect(
             self.screen,
             self.full_energy_bar_color,
             (
