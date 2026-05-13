@@ -47,24 +47,12 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 """
 update notes:
- - remade the world generation
- - added a loading progress bar
- - added a pause menu
- - added ladders
- - increased world height
- - added mountains and ravines
- - added new biomes
- - added a screen to return to the main menu when the game crashes
- - improved performance
- - added world creation settings
- - switched to pygame-ce
 """
 
 """
 notes:
- - the health bar is not being drawn: uncomment in player.draw(), but note that play is not accounting for the health bar height when it stops drawing (health bar covers bottom blocks)
- - right now the player gets soft locked by falling through the ground at the bottom -> needs to get stopped
- """
+ - this update will probably need to be split into 2 or 3 parts
+"""
 
 # implementation details
 BLOCK_WIDTH = 25
@@ -78,9 +66,9 @@ INVENTORY_HEIGHT = HEALTH_BAR_HEIGHT + (grid_height_px * 7) # this is so hard co
 
 
 APP_NAME = "Into The Under"
-APP_DISPLAY_NAME = "Into The Under 1.6.0"
-VERSION_NAME = "intotheunder1.6.0"
-VERSION = 1.6 # primary version - ex 1.3.1 becomes 1.3
+APP_DISPLAY_NAME = "Into The Under 1.7.0-Beta"
+VERSION_NAME = "intotheunder1.7.0"
+VERSION = 1.7 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
 IMAGES_FILE_NAME = "image_files"
 pygame_icon_file = "ITU-Icon.png"
