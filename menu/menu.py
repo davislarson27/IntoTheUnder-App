@@ -1098,8 +1098,7 @@ class Menu:
             player_attr_dict["grid"] = grid
             player_attr_dict["inventory_bar_height"] = self.world_generation_settings.inventory_height
             player_attr_dict["health_bar_height"] = self.world_generation_settings.health_bar_height
-            player = Player(**player_attr_dict)
-            player.images = self.images
+            player = Player(**{**player_attr_dict, "images": self.images})
 
         with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
             world_details_dict = json.load(world_details_file)

@@ -21,7 +21,7 @@ class Player:
         self.ticks_falling = ticks_falling
         self.ticks_inc = ticks_inc
         self.BLOCK_WIDTH = BLOCK_WIDTH
-        self.health_bar = Entity_Health(screen, MAX_HEALTH, health)
+        self.health_bar = Entity_Health(screen, MAX_HEALTH, health, images)
         self.take_damage_threshold_velocity = 22
         self.loss_per_velocity = 1
         self.images = images
