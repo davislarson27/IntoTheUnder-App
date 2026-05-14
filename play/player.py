@@ -5,8 +5,9 @@ from play.entity_health import Entity_Health
 
 
 class Player:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, energy=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True):
         MAX_HEALTH = 100
+        MAX_ENERGY = 100
         
         self.grid = grid
         self.screen = screen
@@ -20,7 +21,7 @@ class Player:
         self.ticks_falling = ticks_falling
         self.ticks_inc = ticks_inc
         self.BLOCK_WIDTH = BLOCK_WIDTH
-        self.health_bar = Entity_Health(screen, MAX_HEALTH, health, images)
+        self.health_bar = Entity_Health(screen, MAX_HEALTH, health, MAX_ENERGY, energy, images)
         self.take_damage_threshold_velocity = 22
         self.loss_per_velocity = 1
         self.images = images
@@ -53,6 +54,9 @@ class Player:
         # block_position is ((x_min, x_max), (y_min, y_max))
         return (x_blocks, y_blocks)
     
+    def get_player_center_x(self):
+        return self.x + (self.x_size//2)
+
     def is_touching(self, block_positions, Block_Type):
         if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
             return True
@@ -138,6 +142,7 @@ class Player:
             "ticks_inc": self.ticks_inc,
             "BLOCK_WIDTH": self.BLOCK_WIDTH,
             "health": self.health_bar.get_health(),
+            "energy": self.health_bar.get_energy(),
             "is_left_facing": self.is_left_facing,
             "player_spawn_x": self.player_spawn_x,
             "player_spawn_y": self.player_spawn_y,
@@ -164,6 +169,23 @@ class Player:
     def get_player_block_coordinates(self):
         return (floor((self.x) / self.BLOCK_WIDTH), floor((self.y) / self.BLOCK_WIDTH))
 
+    def is_block_above(self, grid):
+        grid_pos_x = floor(self.get_player_center_x() / self.BLOCK_WIDTH)
+        grid_pos_y = floor(self.y  / self.BLOCK_WIDTH)
+        for y in range(grid_pos_y-1, -1, -1):
+            if grid.get(grid_pos_x, y) is not None:
+                return True
+        return False
+
+    def manage_energy(self, grid): # manages energy loss + solar gains in energy
+        energy_per_tick_no_sun = -0.00278
+        energy_per_tick_in_sun = 0.00833
+        if self.is_block_above(grid):
+            self.health_bar.change_energy(energy_per_tick_no_sun)
+        else:
+            self.health_bar.change_energy(energy_per_tick_in_sun)
+
+
     def is_alive(self):
         return self.health_bar.is_alive()
 
@@ -172,6 +194,7 @@ class Player:
         self.x = self.player_spawn_x
         self.y = self.player_spawn_y
         self.health_bar.reset_health()
+        self.health_bar.reset_energy()
 
     def prep_initial_spawn(self):
         self.can_take_fall_damage = False

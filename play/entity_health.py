@@ -1,9 +1,12 @@
 import pygame
 
 class Entity_Health:
-    def __init__(self, screen, max_health, cur_health, images):
+    def __init__(self, screen, max_health, cur_health, max_energy, energy, images):
         self.max_health = max_health
         self.health = cur_health
+
+        self.max_energy = max_energy
+        self.energy = energy
 
         self.screen = screen
         self.images = images
@@ -91,6 +94,12 @@ class Entity_Health:
         """takes the change in the health and applies it"""
         self.health += change_in_health
 
+    def change_energy(self, change_in_energy):
+        """takes the change in the energy and applies it"""
+        self.energy += change_in_energy
+        self.energy = max(self.energy, 0)
+        self.energy = min(self.energy, self.max_energy)
+
     def is_alive(self):
         if self.health <= 0:
             return False
@@ -99,14 +108,20 @@ class Entity_Health:
     def reset_health(self):
         self.health = self.max_health
 
+    def reset_energy(self):
+        self.energy = self.max_energy
+
     def get_health(self):
         return self.health
 
+    def get_energy(self):
+        return self.energy
+    
     def draw(self):
 
         # calculate percentages
         health_percent = max(min(self.health / self.max_health, 1), 0)
-        energy_percent = max(min(1, 1), 0)
+        energy_percent = max(min(self.energy / self.max_energy, 1), 0)
 
         pygame.draw.rect( # draw bg
             self.screen,
@@ -115,7 +130,6 @@ class Entity_Health:
         )
 
         # health bar
-        # self.screen.blit(self.images.health_icon, (self.health_icon_x, self.health_icon_y))
         self.screen.blit(self.health_icon_surf, (self.health_icon_x, self.health_icon_y))
         pygame.draw.rect(
             self.screen,

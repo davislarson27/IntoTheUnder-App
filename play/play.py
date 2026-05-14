@@ -309,9 +309,14 @@ class Play:
         # step 2: move player
         self.player.move(input, self.physics_rules)
 
+        # step 3: check for energy changes
+        self.player.manage_energy(self.grid)
+
+        # step 4: check for if the player is alive
         if not self.player.is_alive():
             self.sub_state = Death_Menu(self.screen, self)
 
+        # step 5: return run class
         return self
 
     def prep_menu(self):
