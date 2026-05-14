@@ -178,13 +178,12 @@ class Player:
         return False
 
     def manage_energy(self, grid): # manages energy loss + solar gains in energy
-        energy_per_tick_no_sun = -0.00278
-        energy_per_tick_in_sun = 0.00833
+        energy_per_tick_no_sun = -0.00139 # this is ~20 minutes, maybe bump to 15
+        energy_per_tick_in_sun = 0.00622
         if self.is_block_above(grid):
             self.health_bar.change_energy(energy_per_tick_no_sun)
         else:
             self.health_bar.change_energy(energy_per_tick_in_sun)
-
 
     def is_alive(self):
         return self.health_bar.is_alive()
