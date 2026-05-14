@@ -310,8 +310,6 @@ class Play:
         self.player.move(input, self.physics_rules)
 
         if not self.player.is_alive():
-            # print('insert a creative death message here :)')
-            # self.player.health_bar.health = 1
             self.sub_state = Death_Menu(self.screen, self)
 
         return self
