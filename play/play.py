@@ -10,6 +10,7 @@ from components.crash_menu import Crash_Menu
 from .bg_overlay import BG_Overlay
 from .bg_mining_icon import Bg_Mining_Icon
 from .in_play_menus.debug_screen_overlay import Debug_Overlay
+from .in_play_menus.death_menu import Death_Menu
 
 
 class Play:
@@ -59,6 +60,7 @@ class Play:
         self.bg_mining_icon = Bg_Mining_Icon(screen, screen.get_width() - bg_mining_icon_width - bg_mining_icon_margin, bg_mining_icon_margin, bg_mining_icon_width, bg_mining_icon_width)
 
         self.debug_overlay = Debug_Overlay(screen, player)
+
 
     # ------------------------------ helper functions ------------------------------ #
 
@@ -208,6 +210,26 @@ class Play:
         world_h_px = self.grid.height * self.BLOCK_WIDTH
         self.cur_camera_y = max(0, min(self.cur_camera_y, world_h_px - self.physics_rules.true_height))
 
+    def draw_grid(self):
+        """used when another class needs to draw the grid - does not draw player or inventory"""
+        # ------------- draw main game ------------- #
+
+        # fill screen with base color
+        self.screen.fill(self.background_color)
+
+        # draw background blocks
+        self.background_grid.draw(self.camera_x, self.cur_camera_y, 0)
+
+        # draw background overlay
+        self.bg_overlay.draw(self.camera_x, self.cur_camera_y, 0)
+
+        # draw main grid
+        main_grid_queue = self.grid.draw(self.camera_x, self.cur_camera_y, 0)
+        
+        # now draw the rest of the queue
+        main_grid_queue.draw(self.camera_x, self.cur_camera_y)
+
+
     # ---------------------------- main actions ---------------------------- #
 
     def interact_with_grid(self, input):
@@ -276,6 +298,11 @@ class Play:
         # step 2: move player
         self.player.move(input, self.physics_rules)
 
+        if not self.player.is_alive():
+            # print('insert a creative death message here :)')
+            # self.player.health_bar.health = 1
+            self.sub_state = Death_Menu(self.screen, self)
+
         return self
 
     def prep_menu(self):
@@ -314,6 +341,7 @@ class Play:
                 operate_menu(self.sub_state, esc=True)
             else:
                 operate_menu(self.escape_menu)
+
 
     # ---------------------------- interacting with main loop ---------------------------- #
 

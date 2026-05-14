@@ -91,7 +91,7 @@ class Entity_Health:
         """takes the change in the health and applies it"""
         self.health += change_in_health
 
-    def check_is_alive(self):
+    def is_alive(self):
         if self.health <= 0:
             return False
         return True

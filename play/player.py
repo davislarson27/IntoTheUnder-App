@@ -153,6 +153,9 @@ class Player:
     def get_player_block_coordinates(self):
         return (floor((self.x) / self.BLOCK_WIDTH), floor((self.y) / self.BLOCK_WIDTH))
 
+    def is_alive(self):
+        return self.health_bar.is_alive()
+
     def draw(self, screen_x=0, screen_y=0):
 
         if self.is_left_facing:
