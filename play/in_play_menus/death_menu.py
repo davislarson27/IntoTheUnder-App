@@ -112,7 +112,7 @@ class Death_Menu:
         pass
 
     def close(self):
-        pass
+        self.respawn()
 
     def sub_state_full_quit(self):
         if self.quit_to_menu: # ensures that when the player returns they are already respawned
