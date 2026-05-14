@@ -3,7 +3,7 @@ import pygame
 class Entity_Health:
     def __init__(self, screen, max_health, cur_health, images):
         self.max_health = max_health
-        self.health = 80
+        self.health = cur_health
 
         self.screen = screen
         self.images = images
@@ -87,6 +87,14 @@ class Entity_Health:
 
         # region end
 
+    def change_health(self, change_in_health):
+        """takes the change in the health and applies it"""
+        self.health += change_in_health
+
+    def check_is_alive(self):
+        if self.health <= 0:
+            return False
+        return True
 
     def get_health(self):
         return self.health
@@ -94,8 +102,8 @@ class Entity_Health:
     def draw(self):
 
         # calculate percentages
-        health_percent = min(self.health / self.max_health, 1)
-        energy_percent = min(0.6, 1)
+        health_percent = max(min(self.health / self.max_health, 1), 0)
+        energy_percent = max(min(1, 1), 0)
 
         pygame.draw.rect( # draw bg
             self.screen,

@@ -212,11 +212,16 @@ class Player:
         int_dy = int(self.y_remainder)
         self.y_remainder -= int_dy
 
+        prevel = abs(self.y_vel)
         collided = self.is_move_ok_y(int_dy)
+        damage_threshold_velocity = 20
 
-        # if collided and dy > 0 and abs(self.y_vel) > self.take_damage_threshold_velocity:
-        #     print("executed")
-        #     if self.health_bar.health > 0: self.health_bar.health -= self.loss_per_velocity * (abs(self.y_vel) - self.take_damage_threshold_velocity )
+        if collided:
+            if prevel > damage_threshold_velocity:
+                damage = (prevel - damage_threshold_velocity)
+                damage *= physics.FALL_DAMAGE_BASE_MULTIPLIER
+                # print(f'damage = {damage}, prevel = {prevel}')
+                self.health_bar.change_health(-damage)
 
         x_move = abs(dx)
         if dx < 0: x_direction = -1

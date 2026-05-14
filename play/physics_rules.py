@@ -5,6 +5,8 @@ class Physics_Rules:
         self.WATER_UPWARD_ACCEL = -0.05
         self.JUMP_VELOCITY = -15
 
+        self.FALL_DAMAGE_BASE_MULTIPLIER = 3.5
+
         self.BUILD_HOLD_THRESHOLD = 10 # count of frames held before destroyed motion happens
 
         self.true_height = screen.get_height() - inventory_height
