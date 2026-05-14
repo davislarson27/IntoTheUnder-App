@@ -12,13 +12,14 @@ class Death_Menu:
         possible_death_messages = [
             'Pro Tip: 10 out of 10 doctors do not recommend death.',
             'Well that\'s unfortunate. Hopefully you had some life insurance.',
-            '#whyyoushouldputitemsinchests',
+            '#whyyoushouldputitemsinchests should be trending in your feed',
             'So, you\'re dead. Probably didn\'t expect that, did you?',
             'Next time, maybe try to get healed up, eh?',
             'So what did you expect to happen with that move?',
             'Better luck next time! Respawn and keep going!',
             'Well that was honestly kinda cool, so maybe try again?',
-            'I\'m sure that [insert copyrighted superhero here] would definitely approve!'
+            'I\'m sure that [insert copyrighted superhero here] would definitely approve!',
+            'Was it worth it though?'
         ]
         self.death_message = random.choice(possible_death_messages)
 
