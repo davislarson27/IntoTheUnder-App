@@ -211,6 +211,10 @@ class Menu:
         self.world_seed_text_box = Text_Box()
         self.seed_length = 100000000000000000
         self.custom_seed = self.getRandomSeed()
+        self.default_keep_inventory = True
+        self.keep_inventory = self.default_keep_inventory
+        self.default_creative_mode = False
+        self.creative_mode = self.default_creative_mode
 
         # options screen - seed input and size selector
         self.seed_label_dimentions = pygame.Rect(
@@ -730,7 +734,7 @@ class Menu:
         # --- card background ---
         card_margin_x = self.menu_block_width * 6
         card_top = self.menu_block_height * 5
-        card_bottom = self.menu_block_height * 22
+        card_bottom = self.menu_block_height * 24
         card_rect = pygame.Rect(card_margin_x, card_top, self.width - (card_margin_x * 2), card_bottom - card_top)
         pygame.draw.rect(self.screen, (50, 50, 50), card_rect, border_radius=8)
         pygame.draw.rect(self.screen, (80, 80, 80), card_rect, width=1, border_radius=8)
@@ -820,6 +824,67 @@ class Menu:
             text_surf = self.button_font.render(label, True, (255, 255, 255))
             self.screen.blit(text_surf, text_surf.get_rect(center=rect.center))
 
+
+        # --- keep inventory section ---
+        toggle_section_top = size_button_top + size_button_height + self.menu_block_height * 1.5
+
+        label_surf = self.button_font.render("Keep Inventory", True, (220, 220, 220))
+        self.screen.blit(label_surf, label_surf.get_rect(midleft=(
+            card_rect.left + card_padding,
+            toggle_section_top + self.menu_block_height // 2
+        )))
+
+        toggle_btn_width = size_button_width * 0.6
+        toggle_btn_height = size_button_height * 0.75
+        toggle_right_edge = card_rect.right - card_padding
+
+        self.keep_inv_no_btn = pygame.Rect(toggle_right_edge - toggle_btn_width, toggle_section_top, toggle_btn_width, toggle_btn_height)
+        self.keep_inv_yes_btn = pygame.Rect(toggle_right_edge - toggle_btn_width * 2, toggle_section_top, toggle_btn_width, toggle_btn_height)
+
+        for btn, val, label in [(self.keep_inv_yes_btn, True, "On"), (self.keep_inv_no_btn, False, "Off")]:
+            if self.keep_inventory == val:
+                color = selected_color
+                border = (140, 190, 255)
+            elif btn.collidepoint((mx, my)):
+                color = hover_color
+                border = None
+            else:
+                color = unselected_color
+                border = None
+            pygame.draw.rect(self.screen, color, btn)
+            if border:
+                pygame.draw.rect(self.screen, border, btn, width=2)
+            ts = self.small_button_font.render(label, True, (255, 255, 255))
+            self.screen.blit(ts, ts.get_rect(center=btn.center))
+
+        # --- creative mode section ---
+        creative_section_top = toggle_section_top + toggle_btn_height + self.menu_block_height * 0.75
+
+        label_surf = self.button_font.render("Creative Mode", True, (220, 220, 220))
+        self.screen.blit(label_surf, label_surf.get_rect(midleft=(
+            card_rect.left + card_padding,
+            creative_section_top + self.menu_block_height // 2
+        )))
+
+        self.creative_no_btn = pygame.Rect(toggle_right_edge - toggle_btn_width, creative_section_top, toggle_btn_width, toggle_btn_height)
+        self.creative_yes_btn = pygame.Rect(toggle_right_edge - toggle_btn_width * 2, creative_section_top, toggle_btn_width, toggle_btn_height)
+
+        for btn, val, label in [(self.creative_yes_btn, True, "On"), (self.creative_no_btn, False, "Off")]:
+            if self.creative_mode == val:
+                color = selected_color
+                border = (140, 190, 255)
+            elif btn.collidepoint((mx, my)):
+                color = hover_color
+                border = None
+            else:
+                color = unselected_color
+                border = None
+            pygame.draw.rect(self.screen, color, btn)
+            if border:
+                pygame.draw.rect(self.screen, border, btn, width=2)
+            ts = self.small_button_font.render(label, True, (255, 255, 255))
+            self.screen.blit(ts, ts.get_rect(center=btn.center))
+
         # --- bottom buttons: Return (left) and Create World (right) ---
         btn_width = (card_rect.width - self.menu_block_width) // 2 - card_padding
         btn_height = self.menu_block_height * 2
@@ -843,6 +908,7 @@ class Menu:
         pygame.draw.rect(self.screen, cur_button_color, self.options_create_btn, border_radius=4)
         text_surf = self.button_font.render("Create World", True, (255, 255, 255))
         self.screen.blit(text_surf, text_surf.get_rect(center=self.options_create_btn.center))
+
 
     def returnToLast(self):
         if self.return_to is None:
@@ -979,6 +1045,19 @@ class Menu:
                 else:
                     self.execute_create_new_world()
 
+            # keep inventory toggle
+            elif self.keep_inv_yes_btn.collidepoint(self.position_on_click) and self.keep_inv_yes_btn.collidepoint(position_on_release):
+                self.keep_inventory = True
+            elif self.keep_inv_no_btn.collidepoint(self.position_on_click) and self.keep_inv_no_btn.collidepoint(position_on_release):
+                self.keep_inventory = False
+
+            # creative mode toggle
+            elif self.creative_yes_btn.collidepoint(self.position_on_click) and self.creative_yes_btn.collidepoint(position_on_release):
+                self.creative_mode = True
+            elif self.creative_no_btn.collidepoint(self.position_on_click) and self.creative_no_btn.collidepoint(position_on_release):
+                self.creative_mode = False
+
+
             # size selector buttons
             for i, rect in enumerate(self.size_button_dimentions):
                 if rect.collidepoint(self.position_on_click) and rect.collidepoint(position_on_release):
@@ -1047,7 +1126,7 @@ class Menu:
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
-        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed)
+        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, creative_mode=self.creative_mode)
 
         # initialize grid and terrain
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed, world_spawn_x)
@@ -1119,6 +1198,8 @@ class Menu:
         self.custom_seed = self.getRandomSeed()
         self.selected_world_size = self.default_selected_world_size
         self.return_to = None
+        self.keep_inventory = self.default_keep_inventory
+        self.creative_mode = self.default_creative_mode
 
     # ------------------------ functions interacting with the main loop ------------------------ #
 
