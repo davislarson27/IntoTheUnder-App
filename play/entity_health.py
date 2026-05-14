@@ -95,6 +95,9 @@ class Entity_Health:
         if self.health <= 0:
             return False
         return True
+    
+    def reset_health(self):
+        self.health = self.max_health
 
     def get_health(self):
         return self.health

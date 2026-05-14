@@ -92,7 +92,7 @@ class Death_Menu:
     def execute_clicked(self, pos):
         if self.btn_respawn.collidepoint(pos):
             self.respawn()
-            return self.play
+            return None
         elif self.btn_quit.collidepoint(pos):
             self.quit_to_menu = True
         return self
@@ -124,9 +124,9 @@ class Death_Menu:
     
     def run(self, input):
         return_class = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
+        if return_class is None:
+            return return_class
         self.draw(input.virtual_mouse_x, input.virtual_mouse_y)
-        if return_class is self.play:
-            self.respawn()
         return return_class
 
     def draw(self, mx=0, my=0):

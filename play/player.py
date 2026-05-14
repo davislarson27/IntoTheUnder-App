@@ -167,8 +167,13 @@ class Player:
         return self.health_bar.is_alive()
 
     def respawn(self):
-        self.can_take_damage = True
+        self.can_take_damage = False
+        self.x = self.player_spawn_x
+        self.y = self.player_spawn_y
+        self.health_bar.reset_health()
 
+    def prep_initial_spawn(self):
+        self.can_take_damage = False
 
     def draw(self, screen_x=0, screen_y=0):
 
