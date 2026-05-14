@@ -238,6 +238,7 @@ class Play:
     def respawn_user(self):
         self.player.respawn()
         self.reset_camera_positions()
+        if not self.world_details.keep_inventory: self.inventory.clear_inventory_contents()
         return True
 
     # ---------------------------- main actions ---------------------------- #
