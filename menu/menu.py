@@ -1016,6 +1016,7 @@ class Menu:
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
         player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images, world_details=world_details)
+        player.prep_initial_spawn()
 
         return grid, background_grid, inventory, player, world_details
     
@@ -1071,6 +1072,8 @@ class Menu:
         background_grid.reset_save_cache()
 
         self.custom_seed = self.getRandomSeed()
+
+        player.prep_initial_spawn()
 
         return grid, background_grid, inventory, player, world_details
     

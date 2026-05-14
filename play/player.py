@@ -5,7 +5,7 @@ from play.entity_health import Entity_Health
 
 
 class Player:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True):
         MAX_HEALTH = 100
         
         self.grid = grid
@@ -25,7 +25,7 @@ class Player:
         self.loss_per_velocity = 1
         self.images = images
         self.is_left_facing = is_left_facing
-        self.can_take_damage = True
+        self.can_take_fall_damage = can_take_fall_damage
 
         self.dx = 0
         self.y_remainder = 0
@@ -140,7 +140,8 @@ class Player:
             "health": self.health_bar.get_health(),
             "is_left_facing": self.is_left_facing,
             "player_spawn_x": self.player_spawn_x,
-            "player_spawn_y": self.player_spawn_y
+            "player_spawn_y": self.player_spawn_y,
+            "can_take_fall_damage": self.can_take_fall_damage
         }
  
     def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
@@ -167,13 +168,13 @@ class Player:
         return self.health_bar.is_alive()
 
     def respawn(self):
-        self.can_take_damage = False
+        self.can_take_fall_damage = False
         self.x = self.player_spawn_x
         self.y = self.player_spawn_y
         self.health_bar.reset_health()
 
     def prep_initial_spawn(self):
-        self.can_take_damage = False
+        self.can_take_fall_damage = False
 
     def draw(self, screen_x=0, screen_y=0):
 
@@ -243,7 +244,11 @@ class Player:
                 damage = (prevel - damage_threshold_velocity)
                 damage *= physics.FALL_DAMAGE_BASE_MULTIPLIER
                 # print(f'damage = {damage}, prevel = {prevel}')
-                self.health_bar.change_health(-damage)
+                if self.can_take_fall_damage: # stops fall damage from spawning
+                    self.health_bar.change_health(-damage)
+                else:
+                    self.can_take_fall_damage = True
+
 
         x_move = abs(dx)
         if dx < 0: x_direction = -1

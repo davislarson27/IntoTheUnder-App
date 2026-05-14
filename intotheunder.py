@@ -47,6 +47,9 @@ windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" 
 
 """
 update notes:
+ - added a health and energy bar
+ - added fall damage
+ - added dying and respawning
 """
 
 """
