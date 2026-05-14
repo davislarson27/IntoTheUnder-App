@@ -1014,8 +1014,8 @@ class Menu:
 
         # initialize inventory, player, and world
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
-        player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images)
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
+        player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images, world_details=world_details)
 
         return grid, background_grid, inventory, player, world_details
     
@@ -1059,7 +1059,7 @@ class Menu:
         grid.generate_save_files()
         background_grid.generate_save_files()
         
-        player = Player(grid, self.screen, world_spawn_x, world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height=self.world_generation_settings.health_bar_height, images=self.images)
+        player = Player(grid, self.screen, world_spawn_x, world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height=self.world_generation_settings.health_bar_height, images=self.images, world_details=world_details)
 
         save_start_percent = 55
         save_end_percent = 99
@@ -1092,17 +1092,17 @@ class Menu:
 
         self.draw_loading_world_screen(95, 'Loading World Details')
 
+        with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
+            world_details_dict = json.load(world_details_file)
+            world_details = World_Details.fill_from_dict(world_details_dict)
+
         with open(f"{worlds_directory}/player_attributes.json", "r") as player_attr_file:
             player_attr_dict = json.load(player_attr_file)
             player_attr_dict["screen"] = self.screen
             player_attr_dict["grid"] = grid
             player_attr_dict["inventory_bar_height"] = self.world_generation_settings.inventory_height
             player_attr_dict["health_bar_height"] = self.world_generation_settings.health_bar_height
-            player = Player(**{**player_attr_dict, "images": self.images})
-
-        with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
-            world_details_dict = json.load(world_details_file)
-            world_details = World_Details.fill_from_dict(world_details_dict)
+            player = Player(**{**player_attr_dict, "images": self.images, "world_details": world_details})
 
         self.draw_loading_world_screen(99, 'Finishing Up')
 

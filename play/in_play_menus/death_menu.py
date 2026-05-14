@@ -43,7 +43,7 @@ class Death_Menu:
         title_column_margin_x = (self.blocks_width - title_column_width) // 2
         self.title_space = pygame.Rect(
             self.menu_block_width * title_column_margin_x,
-            self.menu_block_height * 7,
+            self.menu_block_height * 6,
             self.menu_block_width * title_column_width,
             self.menu_block_height * 4
         )
@@ -52,20 +52,20 @@ class Death_Menu:
         # death message
         self.death_message_font = pygame.font.Font(None, 30)
         self.death_message_surf = self.death_message_font.render(self.death_message, True, self.title_text_color)
-        self.death_message_rect = self.death_message_surf.get_rect(center=(self.title_space.centerx, int(self.menu_block_height * 11.25)))
+        self.death_message_rect = self.death_message_surf.get_rect(center=(self.title_space.centerx, int(self.menu_block_height * 10.25)))
 
         center_column_width = 12
         center_column_margin_x = (self.blocks_width - center_column_width) // 2
 
         self.btn_respawn = pygame.Rect(
             self.menu_block_width * center_column_margin_x,
-            self.menu_block_height * 13,
+            self.menu_block_height * 12,
             self.menu_block_width * center_column_width,
             self.menu_block_height * 2
         )
         self.btn_quit = pygame.Rect(
             self.menu_block_width * center_column_margin_x,
-            self.menu_block_height * 16,
+            self.menu_block_height * 15,
             self.menu_block_width * center_column_width,
             self.menu_block_height * 2
         )
@@ -90,12 +90,17 @@ class Death_Menu:
         return self
     
     def execute_clicked(self, pos):
-        if self.btn_quit.collidepoint(pos):
+        if self.btn_respawn.collidepoint(pos):
+            self.respawn()
+            return self.play
+        elif self.btn_quit.collidepoint(pos):
             self.quit_to_menu = True
         return self
     
     def respawn(self):
-        pass
+        if self.play.respawn_user():
+            return True
+        return False
 
 
     # main loop interaction methods
@@ -110,7 +115,7 @@ class Death_Menu:
         pass
 
     def sub_state_full_quit(self):
-        if self.quit_to_menu:
+        if self.quit_to_menu: # ensures that when the player returns they are already respawned
             self.respawn()
         return self.quit_to_menu
     
@@ -142,6 +147,3 @@ class Death_Menu:
             text_surf = self.button_font.render(label, True, self.button_text_color)
             text_rect = text_surf.get_rect(center=rect.center)
             self.screen.blit(text_surf, text_rect)
-
-        
-        

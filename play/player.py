@@ -1,12 +1,11 @@
-import pygame
-from math import floor, pi
+from math import floor
 
 from world.blocks.block_export import *
 from play.entity_health import Entity_Health
 
 
 class Player:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health = 100, player_speed = 4, x_vel = 0, y_vel = 0, x_size = 25, y_size = 25, ticks_falling = 0, ticks_inc = False, inventory_bar_height = 100, health_bar_height = 25, images = None, is_left_facing = True):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None):
         MAX_HEALTH = 100
         
         self.grid = grid
@@ -26,9 +25,18 @@ class Player:
         self.loss_per_velocity = 1
         self.images = images
         self.is_left_facing = is_left_facing
+        self.can_take_damage = True
 
         self.dx = 0
         self.y_remainder = 0
+        if player_spawn_x is None:
+            self.player_spawn_x = world_details.world_spawn_x
+        else:
+            self.player_spawn_x = player_spawn_x
+        if player_spawn_y is None:
+            self.player_spawn_y = world_details.world_spawn_y
+        else:
+            self.player_spawn_y = player_spawn_y
 
 
     # needs redone to account for widths and heights
@@ -130,7 +138,9 @@ class Player:
             "ticks_inc": self.ticks_inc,
             "BLOCK_WIDTH": self.BLOCK_WIDTH,
             "health": self.health_bar.get_health(),
-            "is_left_facing": self.is_left_facing
+            "is_left_facing": self.is_left_facing,
+            "player_spawn_x": self.player_spawn_x,
+            "player_spawn_y": self.player_spawn_y
         }
  
     def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
@@ -155,6 +165,10 @@ class Player:
 
     def is_alive(self):
         return self.health_bar.is_alive()
+
+    def respawn(self):
+        self.can_take_damage = True
+
 
     def draw(self, screen_x=0, screen_y=0):
 

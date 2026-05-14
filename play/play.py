@@ -229,6 +229,9 @@ class Play:
         # now draw the rest of the queue
         main_grid_queue.draw(self.camera_x, self.cur_camera_y)
 
+    def respawn_user(self):
+        self.player.respawn()
+        return True
 
     # ---------------------------- main actions ---------------------------- #
 
