@@ -22,8 +22,13 @@ class Entity_Health:
         health_bar_width = self.row_width * 4 + int(icon_width * 1.5)
         bar_margin_y = int(self.health_bar_height / 4.4)
 
-        self.bar_start_x = margin + health_bar_width // 8 + icon_width
-        self.bar_full_width = 6 * health_bar_width // 8
+        self.bar_start_x = margin + health_bar_width // 6
+        self.bar_full_width = health_bar_width - health_bar_width // 6 - health_bar_width // 12
+
+        self.health_icon_x = self.bar_start_x - int(icon_width * 1.5)
+        self.energy_icon_x = self.bar_start_x - int(icon_width * 1.5)
+
+
         self.bar_height = 8
         icon_offset_y = (icon_width - self.bar_height) // 2
 
@@ -50,10 +55,10 @@ class Entity_Health:
             self.bar_height
         )
 
-        self.health_icon_x = self.bar_start_x - int(2 * icon_width)
+        self.health_icon_x = self.bar_start_x - int(icon_width * 1.5)
         self.health_icon_y = self.health_bar_start_y - icon_offset_y
 
-        self.energy_icon_x = self.bar_start_x - int(2 * icon_width)
+        self.energy_icon_x = self.bar_start_x - int(icon_width * 1.5)
         self.energy_icon_y = self.energy_bar_start_y - icon_offset_y
 
         self.margin_color = (50, 50, 50)
