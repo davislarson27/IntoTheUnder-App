@@ -8,10 +8,12 @@ class Debug_Overlay:
         self.player_coordinates = player.get_player_block_coordinates()
         self.fps = 0
 
+        allow_start_y = player.get_health_bar_height()
+
         self.font_height = 22
         self.font = pygame.font.Font(None, self.font_height)
-        self.margin_left = 22
-        self.margin_top = 22
+        self.margin_left = 30
+        self.margin_top = 12 + allow_start_y
 
 
     def run(self, input, clock):

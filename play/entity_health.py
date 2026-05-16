@@ -18,9 +18,9 @@ class Entity_Health:
 
         margin = 30
         icon_width = 15
-        health_bar_height = 50
+        self.health_bar_height = 50
         health_bar_width = self.row_width * 4 + int(icon_width * 1.5)
-        bar_margin_y = int(health_bar_height / 4.4)
+        bar_margin_y = int(self.health_bar_height / 4.4)
 
         self.bar_start_x = margin + health_bar_width // 8 + icon_width
         self.bar_full_width = 6 * health_bar_width // 8
@@ -28,13 +28,13 @@ class Entity_Health:
         icon_offset_y = (icon_width - self.bar_height) // 2
 
         self.health_bar_start_y = margin + bar_margin_y
-        self.energy_bar_start_y = health_bar_height + margin - bar_margin_y - self.bar_height
+        self.energy_bar_start_y = self.health_bar_height + margin - bar_margin_y - self.bar_height
 
         self.main_box = pygame.rect.Rect(
             margin,
             margin,
             health_bar_width,
-            health_bar_height
+            self.health_bar_height
         )
 
         self.health_bar_outline = pygame.rect.Rect(
@@ -130,6 +130,9 @@ class Entity_Health:
     def get_energy(self):
         return self.energy
     
+    def get_health_bar_height(self):
+        return self.health_bar_height + self.health_bar_start_y
+
     def draw(self):
 
         # calculate percentages

@@ -222,7 +222,9 @@ class Player:
 
         self.health_bar.draw()
 
-
+    def get_health_bar_height(self):
+        return self.health_bar.get_health_bar_height()
+    
     # ----------------------------- runs player physics ----------------------------- #
 
     def move(self, input, physics): # returns assessed damage object

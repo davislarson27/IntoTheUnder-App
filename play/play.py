@@ -40,9 +40,6 @@ class Play:
         self.build_mode = False
 
         self.mining_sprite.set_grid(grid)
-        # self.camera_x = player.x + (player.x_size // 2) - (screen.get_width() // 2)
-        # self.camera_y = player.y + (player.y_size // 2) - (screen.get_height() // 2)
-        # self.cur_camera_y = self.camera_y
         self.reset_camera_positions()
 
         # this is some predefined constants that are used at runtime
