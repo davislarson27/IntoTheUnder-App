@@ -3,7 +3,7 @@ import hashlib
 
 from world.blocks.block_export import *
 from .structure_instruction import Structure_Instruction
-from play.inventory.crafting_recipes import User_Crafting_Recipes_List
+from play.inventory.submenus.crafting_recipes import User_Crafting_Recipes_List
 
 class Recipe_Burrow:
     width = 8

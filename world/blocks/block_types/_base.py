@@ -65,7 +65,7 @@ class Block:
     def get_stored_inventory_items(self):
         return_list = []
         if len(self.stored_inventory_items) > 0:
-            from play.inventory.crafting_recipes import Crafting_Recipe
+            from play.inventory.submenus.crafting_recipes import Crafting_Recipe
             for item in self.stored_inventory_items:
                 if item is None:
                     return_list.append(None)

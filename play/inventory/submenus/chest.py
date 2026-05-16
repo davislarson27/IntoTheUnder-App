@@ -1,4 +1,4 @@
-from .inventory_position import Inventory_Position
+from ..inventory_position import Inventory_Position
 
 
 class Chest_Slots:

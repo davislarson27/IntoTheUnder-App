@@ -1,5 +1,5 @@
-from .inventory_position import Inventory_Position
-from .inventory_item import Inventory_Item
+from ..inventory_position import Inventory_Position
+from ..inventory_item import Inventory_Item
 from .crafting_recipes import *
 from world.blocks.block_export import *
 

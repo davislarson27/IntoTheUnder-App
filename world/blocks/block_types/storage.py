@@ -76,7 +76,7 @@ class Recipe_Frame(Block):
     can_store_items = True
 
     def hasCraftingRecipe(self): # helper function
-        from play.inventory.crafting_recipes import Crafting_Recipe
+        from play.inventory.submenus.crafting_recipes import Crafting_Recipe
         if len(self.stored_inventory_items) == 1 and isinstance(self.stored_inventory_items[0], Crafting_Recipe):
             return True
         return False

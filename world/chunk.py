@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from .blocks.block_export import *
 from play.inventory.inventory_item import Inventory_Item
-from play.inventory.crafting_recipes import *
+from play.inventory.submenus.crafting_recipes import *
 from .world_creation.structures.structures import *
 from components.block_queue import Block_Queue
 
