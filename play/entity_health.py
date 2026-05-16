@@ -8,6 +8,8 @@ class Entity_Health:
         self.max_energy = max_energy
         self.energy = energy
 
+        self.low_energy_speed_reduction_factor = 0.5
+
         self.screen = screen
         self.images = images
 
@@ -93,15 +95,17 @@ class Entity_Health:
     def change_health(self, change_in_health):
         """takes the change in the health and applies it"""
         self.health += change_in_health
+        self.health = min(self.health, self.max_health)
 
     def change_energy(self, change_in_energy):
         """takes the change in the energy and applies it"""
         self.energy += change_in_energy
-        self.energy = max(self.energy, 0)
         self.energy = min(self.energy, self.max_energy)
 
     def is_alive(self):
         if self.health <= 0:
+            return False
+        elif self.energy <= 0:
             return False
         return True
     
@@ -110,6 +114,15 @@ class Entity_Health:
 
     def reset_energy(self):
         self.energy = self.max_energy
+
+    def get_low_energy_speed_reduction_factor(self):
+        energy_percent = self.energy / self.max_energy
+        if energy_percent > 0.05:
+            return 1
+        elif energy_percent > 0.01:
+            return self.low_energy_speed_reduction_factor
+        else:
+            return self.low_energy_speed_reduction_factor / 2
 
     def get_health(self):
         return self.health

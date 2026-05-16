@@ -39,6 +39,7 @@ class Player:
         else:
             self.player_spawn_y = player_spawn_y
 
+        self.base_net_energy_change = -0.00417
 
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
@@ -176,13 +177,20 @@ class Player:
             if grid.get(grid_pos_x, y) is not None:
                 return True
         return False
+    
+    def apply_movement_cost_x(self):
+        self.health_bar.change_energy(self.base_net_energy_change)
+
+    def apply_movement_cost_y(self):
+        self.health_bar.change_energy(self.base_net_energy_change)
+
+    def apply_movement_cost_jump(self):
+        jump_energy_loss_multiplier = 3
+        self.health_bar.change_energy(self.base_net_energy_change * jump_energy_loss_multiplier)
 
     def manage_energy(self, grid): # manages energy loss + solar gains in energy
-        energy_per_tick_no_sun = -0.00139 # this is ~20 minutes, maybe bump to 15
         energy_per_tick_in_sun = 0.00622
-        if self.is_block_above(grid):
-            self.health_bar.change_energy(energy_per_tick_no_sun)
-        else:
+        if not self.is_block_above(grid):
             self.health_bar.change_energy(energy_per_tick_in_sun)
 
     def is_alive(self):
@@ -230,18 +238,23 @@ class Player:
 
         # ---------------------- step 2: process input ---------------------- #
         if input.a_hold > 0:
-            dx -= cur_player_speed_x
+            dx -= int(cur_player_speed_x * self.health_bar.get_low_energy_speed_reduction_factor())
+            self.apply_movement_cost_x()
         if input.d_hold > 0:
-            dx += cur_player_speed_x 
+            dx += int(cur_player_speed_x * self.health_bar.get_low_energy_speed_reduction_factor())
+            self.apply_movement_cost_x()
         if input.w_hold > 0 or input.space_hold > 0:
             if not self.is_not_block_below() and jump_is_possible:
                 self.y_vel = physics.JUMP_VELOCITY
                 self.ticks_falling = 1
+                self.apply_movement_cost_jump()
             if water_movement:
                 self.y_vel = -cur_player_speed_y
+                self.apply_movement_cost_y()
         if input.s_hold > 0:
             if water_movement:
                 self.y_vel = cur_player_speed_y
+                self.apply_movement_cost_y()
 
         # ---------------------- step 3: move ---------------------- #
         # apply gravity and jumping
