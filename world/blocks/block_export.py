@@ -86,6 +86,42 @@ def get_blocks_list():
             Water_L4
     ]
 
+def get_block_refuel_dict():
+    return {
+        Coal: 40,
+        Coal_Block: 120,
+        Log: 30,
+        Wood_Planks: 10,
+        Wood_Ladder: 5,
+        Door: 5,
+        Chest: 30,
+        Gunpowder: 50
+    }
+
+def get_block_repair_dict():
+    return {
+        Iron_Ingot: 30,
+        Iron_Block: 240,
+        Diamond: 70,
+        Diamond_Block: 560,
+        Mabelite: 100
+    }
+    
+def get_block_refuel_values(block_type):
+    block_refuel_dict = get_block_refuel_dict()
+    if block_type not in block_refuel_dict.keys():
+        return 0
+    else:
+        return block_refuel_dict[block_type]
+
+def get_block_repair_values(block_type):
+    block_refuel_dict = get_block_repair_dict()
+    if block_type not in block_refuel_dict.keys():
+        return 0
+    else:
+        return block_refuel_dict[block_type]
+
+
 def get_str_to_block(): # uses blocks_list to generate dictionary that converts str names to their types
     blocks_list = get_blocks_list()
 

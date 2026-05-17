@@ -59,6 +59,7 @@ class Play:
 
         self.debug_overlay = Debug_Overlay(screen, player)
 
+        self.inventory.set_health_bar(self.player.health_bar)
 
     # ------------------------------ helper functions ------------------------------ #
 

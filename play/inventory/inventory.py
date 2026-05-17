@@ -1060,6 +1060,9 @@ class Inventory:
         for slot in self.expanded_inventory:
             slot.inventory_item = None
 
+    def set_health_bar(self, health_bar_obj):
+        self.fuel_side_pannel.set_health_bar(health_bar_obj)
+
 # --------------------------------------------- open and close functions --------------------------------------------- #
 
     def open(self, side_pannel_use=None):
@@ -1117,6 +1120,9 @@ class Inventory:
             else:
                 self.increment_cur_position(True)
 
+        # check refueling
+        self.fuel_side_pannel.run_passive()
+    
            
 class Special_Slot_Polygon:
     def __init__(self, special_img_polygon, color, selected_color=None, outline_width=0):

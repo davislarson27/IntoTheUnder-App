@@ -107,12 +107,28 @@ class Entity_Health:
         self.energy += change_in_energy
         self.energy = min(self.energy, self.max_energy)
 
+    def is_energy_full(self):
+        return self.energy >= self.max_energy
+
+    def needs_more_energy(self, next_energy_recharge_amount):
+        return self.energy + next_energy_recharge_amount >= self.max_energy
+
+    def is_health_full(self):
+        return self.health >= self.max_health
+
     def is_alive(self):
         if self.health <= 0:
             return False
         elif self.energy <= 0:
             return False
         return True
+    
+    def get_health_missing(self):
+        return self.max_health - self.health
+    
+    def get_energy_missing(self):
+        return self.max_energy - self.energy
+
     
     def reset_health(self):
         self.health = self.max_health
