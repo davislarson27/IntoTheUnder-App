@@ -347,6 +347,9 @@ class Play:
             operate_menu(self.inventory)
         elif input.c_keypress:
             operate_menu(self.inventory.get_recipe_menu())
+        elif input.f_keypress:
+            self.inventory.open_fuel()
+            operate_menu(self.inventory)
         elif input.escape_keypress: # this one works differently
             if self.sub_state is not None:
                 operate_menu(self.sub_state, esc=True)

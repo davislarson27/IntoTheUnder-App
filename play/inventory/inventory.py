@@ -6,6 +6,7 @@ from .inventory_position import Inventory_Position
 from .submenus.crafting import Crafting_Slots
 from .submenus.crafting_recipes import Recipe_Slot_Contents
 from .submenus.chest import Chest_Slots
+from .submenus.fuel import Fuel_Slots
 
 
 class Inventory:
@@ -559,28 +560,133 @@ class Inventory:
                 self.chest_side_pannel.chest_slots[idx].label_rect = label_rect
 
 
-                # ----------------------------- chest section label ----------------------------- #
+        # ----------------------------- chest section label ----------------------------- #
 
-                chest_section_label_text_surface = self.section_label.render(  # optional: bigger font
-                    "Chest",
-                    True,
-                    self.section_title_color
+        chest_section_label_text_surface = self.section_label.render(  # optional: bigger font
+            "Chest",
+            True,
+            self.section_title_color
+        )
+
+        chest_section_label_rect = chest_section_label_text_surface.get_rect(
+            center=side_pannel_label_box.center
+        )
+
+        self.chest_side_pannel.title_label_text_surface = chest_section_label_text_surface
+        self.chest_side_pannel.section_label_rect = chest_section_label_rect
+
+
+        # --------------------------------------- fuel side panel --------------------------------------- #
+
+        self.fuel_side_pannel = Fuel_Slots(screen)
+
+        panel = self.side_pannel_background
+
+        fuel_slot_gap_y = margin_between_exp_inventory_boxes_y
+        fuel_grid_h     = (2 * self.box_width) + fuel_slot_gap_y
+        fuel_start_y    = panel.y + (panel.height - fuel_grid_h) // 2
+        fuel_slot_x     = panel.x + (panel.width - self.box_width) // 2
+
+        pipe_thickness = 3
+        pipe_gap       = max(4, self.grid_height_px // 2)
+
+        label_names = ["Refuel", "Repair"]
+
+        for i in range(2):
+            x = fuel_slot_x
+            y = fuel_start_y + i * (self.box_width + fuel_slot_gap_y)
+
+            hit_box    = pygame.Rect(x, y, self.box_width, self.box_width)
+            item_frame = pygame.Rect(
+                x + full_inventory_item_margin,
+                y + full_inventory_item_margin,
+                full_inventory_item_size,
+                full_inventory_item_size
+            )
+            label_box = pygame.Rect(
+                x,
+                y + self.box_width + self.label_gap_y,
+                self.box_width,
+                self.label_height
+            )
+
+            self.fuel_side_pannel.fuel_slots[i].hit_box    = hit_box
+            self.fuel_side_pannel.fuel_slots[i].item_frame = item_frame
+            self.fuel_side_pannel.fuel_slots[i].label_rect = label_box
+
+            pipe_rect = pygame.Rect(
+                hit_box.x,
+                hit_box.top - pipe_gap - pipe_thickness,
+                self.box_width,
+                pipe_thickness
+            )
+            self.fuel_side_pannel.pipe_rects.append(pipe_rect)
+
+            label_surf = self.inventory_item_name_font.render(label_names[i], True, self.slot_label_color)
+            label_rect = label_surf.get_rect(center=label_box.center)
+
+            if i == 0:
+                self.fuel_side_pannel.refuel_label_surface = label_surf
+                self.fuel_side_pannel.refuel_label_rect    = label_rect
+            else:
+                self.fuel_side_pannel.repair_label_surface = label_surf
+                self.fuel_side_pannel.repair_label_rect    = label_rect
+
+        # ---- action slots: pause and use per fuel slot ---- #
+        # pulled closer to center slots
+        action_gap_x = self.grid_width_px
+
+        pause_x = fuel_slot_x - action_gap_x - self.box_width
+        use_x   = fuel_slot_x + self.box_width + action_gap_x
+
+        action_slots = [
+            (self.fuel_side_pannel.pause_slot_0, self.fuel_side_pannel.use_slot_0, 0),
+            (self.fuel_side_pannel.pause_slot_1, self.fuel_side_pannel.use_slot_1, 1),
+        ]
+
+        for pause_slot, use_slot, i in action_slots:
+            action_y = fuel_start_y + i * (self.box_width + fuel_slot_gap_y)
+
+            for slot, x in [(pause_slot, pause_x), (use_slot, use_x)]:
+                hit_box    = pygame.Rect(x, action_y, self.box_width, self.box_width)
+                item_frame = hit_box.inflate(
+                    -full_inventory_item_margin * 4,
+                    -full_inventory_item_margin * 4
                 )
+                slot.hit_box    = hit_box
+                slot.item_frame = item_frame
+                slot.label_rect = None
 
-                chest_section_label_rect = chest_section_label_text_surface.get_rect(
-                    center=side_pannel_label_box.center
-                )
+        # section title
+        fuel_label_surface = self.section_label.render("Fuel & Repair", True, self.section_title_color)
+        self.fuel_side_pannel.title_label_text_surface = fuel_label_surface
+        self.fuel_side_pannel.section_label_rect = fuel_label_surface.get_rect(
+            center=side_pannel_label_box.center
+        )
+        
+        symbol_color = (95, 95, 105)
 
-                self.chest_side_pannel.title_label_text_surface = chest_section_label_text_surface
-                self.chest_side_pannel.section_label_rect = chest_section_label_rect
+        for slot in [self.fuel_side_pannel.pause_slot_0, self.fuel_side_pannel.pause_slot_1]:
+            f      = slot.item_frame
+            bar_w  = max(2, f.width // 4)
+            gap    = max(2, f.width // 5)
+            total  = (2 * bar_w) + gap
+            lx     = f.centerx - total // 2
+            rect1  = pygame.Rect(lx, f.top, bar_w, f.height)
+            rect2  = pygame.Rect(lx + bar_w + gap, f.top, bar_w, f.height)
+            slot.inventory_item = Special_Slot_Dual_Rect(rect1, rect2, symbol_color)
 
+        for slot in [self.fuel_side_pannel.use_slot_0, self.fuel_side_pannel.use_slot_1]:
+            f    = slot.item_frame
+            pts  = [(f.left, f.top), (f.left, f.bottom), (f.right, f.centery)]
+            slot.inventory_item = Special_Slot_Polygon(pts, symbol_color)
 
+                
+        # --------------------------------------- general side pannel logic --------------------------------------- #
+        self.default_side_pannel = self.crafting_object
+        self.side_pannel = self.default_side_pannel
 
-                # --------------------------------------- general side pannel logic --------------------------------------- #
-                self.default_side_pannel = self.crafting_object
-                self.side_pannel = self.default_side_pannel
-
-                self.side_pannel_slots = 0
+        self.side_pannel_slots = 0
 
 
 
@@ -795,6 +901,8 @@ class Inventory:
                 )
             elif isinstance(item, Special_Slot_Polygon):
                 item.draw(self.screen, False)
+            elif isinstance(item, Special_Slot_Dual_Rect):
+                item.draw(self.screen, False)
             elif isinstance(item, Recipe_Slot_Contents):
                 item.draw(self.screen)
 
@@ -965,6 +1073,11 @@ class Inventory:
         self.set_active_slots()
         self.openNextFrame = True
 
+    def open_fuel(self):
+        self.side_pannel = self.fuel_side_pannel
+        self.set_active_slots()
+        self.openNextFrame = True
+
     def close(self):
         self.clear_selected_slot_full_inventory()
         self.side_pannel.close(self)
@@ -1018,3 +1131,16 @@ class Special_Slot_Polygon:
             self.special_img_polygon,
             width=self.outline_width
         )
+
+class Special_Slot_Dual_Rect:
+    """Two filled rects drawn inside a slot — used for the pause symbol."""
+    def __init__(self, rect1, rect2, color, selected_color=None):
+        self.rect1 = rect1
+        self.rect2 = rect2
+        self.color = color
+        self.selected_color = selected_color
+
+    def draw(self, screen, invalid_color=False):
+        color = self.selected_color if invalid_color and self.selected_color else self.color
+        pygame.draw.rect(screen, color, self.rect1)
+        pygame.draw.rect(screen, color, self.rect2)
