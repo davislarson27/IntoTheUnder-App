@@ -11,6 +11,8 @@ from .bg_overlay import BG_Overlay
 from .bg_mining_icon import Bg_Mining_Icon
 from .in_play_menus.debug_screen_overlay import Debug_Overlay
 from .in_play_menus.death_menu import Death_Menu
+from .inventory.submenus.crafting import Crafting_Slots
+from .inventory.submenus.fuel import Fuel_Slots
 
 
 class Play:
@@ -334,23 +336,39 @@ class Play:
             self.sub_state.open()
             return
 
-        def operate_menu(menu, esc=False):
+        def operate_menu(menu, esc=False, side_pannel_type=None):
             if self.sub_state is menu:
                 self.sub_state.close()
                 self.sub_state = self.sub_state.onEsc() # this lets menus go 'back' to a chosen location
+                return False
             else:
                 if self.sub_state is not None:
                     self.sub_state.close()
                 self.sub_state = menu
                 self.sub_state.open()
+                return True
+            
+        # def operate_menu(menu, esc=False, side_pannel_type=None, side_pannel_open_func=None):
+        #     if self.sub_state is menu:
+        #         self.sub_state.close()
+        #         self.sub_state = self.sub_state.onEsc()
+        #         if side_pannel_type is not None and hasattr(self.sub_state, 'side_pannel') and isinstance(self.sub_state.side_pannel, side_pannel_type):
+        #             # it closed like it should but it will pull a psych moment and reopen it with a new side pannel if applicable
+        #             if side_pannel_open_func is not None:
+        #                 side_pannel_open_func()
+        #     else:
+        #         if self.sub_state is not None:
+        #             self.sub_state.close()
+        #         self.sub_state = menu
+        #         self.sub_state.open()
 
         if input.e_keypress:
             operate_menu(self.inventory)
         elif input.c_keypress:
-            operate_menu(self.inventory.get_recipe_menu())
+            operate_menu(self.inventory.get_recipe_menu()) # this isn't an inventory menu, but it does access it through the inventory
         elif input.f_keypress:
-            self.inventory.open_fuel()
-            operate_menu(self.inventory)
+            if operate_menu(self.inventory):
+                self.inventory.open_fuel()
         elif input.escape_keypress: # this one works differently
             if self.sub_state is not None:
                 operate_menu(self.sub_state, esc=True)
