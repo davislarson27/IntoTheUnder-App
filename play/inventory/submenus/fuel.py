@@ -8,7 +8,7 @@ from world.blocks.block_export import *
 class Fuel_Slots:
     def __init__(self, screen=None):
         self.fuel_slots = [
-            Inventory_Position(None, None, allowed_items_list=[Coal, Coal_Block, Log, Wood_Planks, Wood_Ladder, Door, Chest]),
+            Inventory_Position(None, None, allowed_items_list=[Coal, Coal_Block, Log, Wood_Planks, Wood_Ladder, Door, Chest, Gunpowder]),
             Inventory_Position(None, None, allowed_items_list=[Iron_Ingot, Iron_Block, Diamond, Diamond_Block, Mabelite])
         ]
 
