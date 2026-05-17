@@ -336,7 +336,7 @@ class Play:
             self.sub_state.open()
             return
 
-        def operate_menu(menu, esc=False, side_pannel_type=None):
+        def operate_menu(menu, esc=False):
             if self.sub_state is menu:
                 self.sub_state.close()
                 self.sub_state = self.sub_state.onEsc() # this lets menus go 'back' to a chosen location
