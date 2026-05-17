@@ -26,7 +26,7 @@ class Play:
         self.BLOCK_WIDTH = BLOCK_WIDTH
 
         # set up crash menu
-        self.crash_menu = Crash_Menu(screen, self.menu, self, button_message="Save and Return to Menu")
+        self.crash_menu = Crash_Menu(screen, menu, self, button_message="Save and Return to Menu")
 
         # generate in play menus
         self.escape_menu = Escape_Menu(screen)
