@@ -798,7 +798,13 @@ class Inventory:
         
     def execute_clicked(self, position_on_release):
         swap_index = self.get_slot_from_mouse(position_on_release)
-        if swap_index is None or (self.active_slots[swap_index].allow_swap()): # allows None to be passed in and dealt with in self.full_swap()
+
+        # get the item being moved to check if it's legal in its new position
+        moving_item = None
+        if self.position_on_click is not None:
+            moving_item = self.active_slots[self.position_on_click].inventory_item
+
+        if swap_index is None or (self.active_slots[swap_index].allow_swap(moving_item)): # allows None to be passed in and dealt with in self.full_swap()
             self.full_swap(swap_index)
         
         if swap_index is not None and not self.active_slots[swap_index].block_check_on_click:

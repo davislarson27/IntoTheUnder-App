@@ -2,11 +2,15 @@ import pygame
 
 from ..inventory_position import Inventory_Position
 from ..inventory_item import Inventory_Item
+from world.blocks.block_export import *
 
 
 class Fuel_Slots:
     def __init__(self, screen=None):
-        self.fuel_slots = [Inventory_Position(None, None), Inventory_Position(None, None)]
+        self.fuel_slots = [
+            Inventory_Position(None, None, allowed_items_list=[Coal, Coal_Block, Log, Wood_Planks, Wood_Ladder, Door, Chest]),
+            Inventory_Position(None, None, allowed_items_list=[Iron_Ingot, Iron_Block, Diamond, Diamond_Block, Mabelite])
+        ]
 
         self.title_label_text_surface = None
         self.section_label_rect       = None
