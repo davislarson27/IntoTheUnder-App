@@ -1076,6 +1076,11 @@ class Inventory:
     def open_off_cycle(self):
         return self.openNextFrame
 
+    def open_crafting(self):
+        self.side_pannel = self.crafting_object
+        self.set_active_slots()
+        self.openNextFrame = True
+
     def open_chest(self, chest_items):
         self.side_pannel = self.chest_side_pannel
         self.side_pannel.fill_on_open(chest_items)

@@ -336,39 +336,44 @@ class Play:
             self.sub_state.open()
             return
 
-        def operate_menu(menu, esc=False):
-            if self.sub_state is menu:
+        def operate_menu(menu, esc=False, side_pannel_type=None, side_pannel_open_func=None):
+            if esc:
                 self.sub_state.close()
-                self.sub_state = self.sub_state.onEsc() # this lets menus go 'back' to a chosen location
-                return False
+                self.sub_state = self.sub_state.onEsc()
+            elif self.sub_state is menu:
+                same_panel = (
+                    side_pannel_type is None
+                    or (
+                        hasattr(self.sub_state, 'side_pannel')
+                        and isinstance(self.sub_state.side_pannel, side_pannel_type)
+                    )
+                )
+                if same_panel:
+                    # same menu, same mode → toggle closed
+                    self.sub_state.close()
+                    self.sub_state = self.sub_state.onEsc()
+                else:
+                    # same menu, different mode → close old panel, open new one
+                    if hasattr(self.sub_state, 'side_pannel'):
+                        self.sub_state.side_pannel.close(self.sub_state)
+                    if side_pannel_open_func is not None:
+                        side_pannel_open_func()
             else:
                 if self.sub_state is not None:
                     self.sub_state.close()
                 self.sub_state = menu
+                if side_pannel_open_func is not None:
+                    side_pannel_open_func()
                 self.sub_state.open()
-                return True
-            
-        # def operate_menu(menu, esc=False, side_pannel_type=None, side_pannel_open_func=None):
-        #     if self.sub_state is menu:
-        #         self.sub_state.close()
-        #         self.sub_state = self.sub_state.onEsc()
-        #         if side_pannel_type is not None and hasattr(self.sub_state, 'side_pannel') and isinstance(self.sub_state.side_pannel, side_pannel_type):
-        #             # it closed like it should but it will pull a psych moment and reopen it with a new side pannel if applicable
-        #             if side_pannel_open_func is not None:
-        #                 side_pannel_open_func()
-        #     else:
-        #         if self.sub_state is not None:
-        #             self.sub_state.close()
-        #         self.sub_state = menu
-        #         self.sub_state.open()
 
         if input.e_keypress:
-            operate_menu(self.inventory)
+            operate_menu(self.inventory, side_pannel_type=Crafting_Slots, side_pannel_open_func=self.inventory.open_crafting)
         elif input.c_keypress:
             operate_menu(self.inventory.get_recipe_menu()) # this isn't an inventory menu, but it does access it through the inventory
         elif input.f_keypress:
-            if operate_menu(self.inventory):
-                self.inventory.open_fuel()
+            operate_menu(self.inventory, side_pannel_type=Fuel_Slots, side_pannel_open_func=self.inventory.open_fuel)
+            # if operate_menu(self.inventory):
+            #     self.inventory.open_fuel()
         elif input.escape_keypress: # this one works differently
             if self.sub_state is not None:
                 operate_menu(self.sub_state, esc=True)

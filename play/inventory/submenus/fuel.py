@@ -76,6 +76,19 @@ class Fuel_Slots:
 
     # ------------------------------------------------------------------ #
 
+    def to_dict(self):
+        return_dict = {
+            'refuel_bar_remaining': self.refuel_bar_remaining,
+            'repair_bar_remaining': self.repair_bar_remaining,
+            'refuel_bar_max': self.refuel_bar_max,
+            'repair_bar_max': self.repair_bar_max,
+            'refuel_is_paused': self.refuel_is_paused,
+            'repair_is_paused': self.repair_is_paused
+        }
+
+    def from_dict(self, dict):
+        pass
+
     def set_health_bar(self, health_bar_obj):
         self.health_bar = health_bar_obj
 
@@ -132,7 +145,7 @@ class Fuel_Slots:
                 use_slot.inventory_item.color   = color_lit if (has_anything and is_paused) else color_dim
 
     def close(self, inventory_object):
-        pass
+        inventory_object.side_pannel = None
 
     # ------------------------------------------------------------------ #
 
