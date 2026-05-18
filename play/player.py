@@ -1,7 +1,23 @@
-from play.entity import Entity
+from play.entities.entity import Entity
 
 
 class Player(Entity):
+
+    def draw(self, screen_x=0, screen_y=0):
+
+        if self.is_left_facing:
+            player_rect = self.images.player_left.get_rect(
+                topleft=(self.x - screen_x, self.y - screen_y)
+            )
+            self.screen.blit(self.images.player_left, player_rect)
+        else:
+            player_rect = self.images.player_right.get_rect(
+                topleft=(self.x - screen_x, self.y - screen_y)
+            )
+            self.screen.blit(self.images.player_right, player_rect)
+
+        # also draw the health bar for the player
+        self.health_bar.draw()
 
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement):
         if input.a_hold > 0:

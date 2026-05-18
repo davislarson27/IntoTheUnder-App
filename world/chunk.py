@@ -111,6 +111,9 @@ class Chunk:
         
         return block_queue
 
+    def insert_entity(self, entity):
+        self.entity_set.add(entity)
+
     def get_entities(self):
         return self.entity_set
 

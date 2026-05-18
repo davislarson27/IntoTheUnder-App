@@ -46,6 +46,12 @@ class Grid:
         chunk_x = global_x % cls.chunk_width
         return chunk_id, chunk_x
 
+    def get_chunk(self, global_x, y):
+        if not self.in_bounds(global_x, y):
+            return None
+        chunk_id, x = self.get_chunk_x(global_x)
+        return self.chunks[chunk_id]
+
     def get(self, global_x, y):
         if not self.in_bounds(global_x, y):
             return None
@@ -143,6 +149,11 @@ class Grid:
             block_queue = block_queue + chunk_block_queue
 
         return block_queue
+
+    def insert_entity(self, new_entity):
+        global_grid_x, grid_y = new_entity.get_player_block_coordinates()
+        chunk = self.get_chunk(global_grid_x, grid_y)
+        chunk.insert_entity(new_entity)
 
     def get_entities(self, camera_x):
         """returns a set of entities on the screen"""

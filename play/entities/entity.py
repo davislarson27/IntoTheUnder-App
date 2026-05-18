@@ -41,6 +41,8 @@ class Entity:
 
         self.base_net_energy_change = -0.00417
 
+        self.initialize_drawing_vars()
+
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
         if(self.grid.in_bounds(x, y) and (self.grid.get(x, y) is None or self.grid.get(x, y).pass_through)):
@@ -225,7 +227,20 @@ class Entity:
     def get_health_bar_height(self):
         return self.health_bar.get_health_bar_height()
     
+    def initialize_drawing_vars(self):
+        pass
     
+    @classmethod
+    def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px):
+        # step 1: initialize the entity
+        new_entity = cls(grid, screen, player_x_pixel=x_px, player_y_pixel=y_px, BLOCK_WIDTH=BLOCK_WIDTH, player_spawn_x=x_px, player_spawn_y=y_px)
+
+        # step 2: insert the entity into the appropriate chunk
+        grid.insert_entity(new_entity)
+
+        # step 3: return in case the play class wants it for this frame
+        return new_entity
+
     # ----------------------------- get movement inputs ----------------------------- #
         
     def initialize_temp_movement_vars(self, physics):

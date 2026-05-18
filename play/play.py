@@ -13,6 +13,7 @@ from .in_play_menus.debug_screen_overlay import Debug_Overlay
 from .in_play_menus.death_menu import Death_Menu
 from .inventory.submenus.crafting import Crafting_Slots
 from .inventory.submenus.fuel import Fuel_Slots
+from .entities.entities_export import *
 
 
 class Play:
@@ -425,6 +426,15 @@ class Play:
             screen_x = self.player.x - self.camera_x
             self.player.get_direction(self.player.dx, screen_x, input.virtual_mouse_x, is_interacting)
 
+            # ------------------------------------- temp spawn using enter ------------------------------------- #
+            if input.return_keypress:
+                Blob.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, 0)
+            # ------------------------------------- end spawn using enter ------------------------------------- #
+
+            # process entities
+            entities = self.grid.get_entities(self.camera_x)
+            for entity in entities:
+                entity.move(input, self.physics_rules)
 
             # ------------- draw main game ------------- #
 
@@ -451,6 +461,8 @@ class Play:
                 self.bg_overlay.draw_at(self.affected_x, self.affected_y, self.camera_x, self.cur_camera_y)
 
             self.player.draw(self.camera_x, self.cur_camera_y)
+            for entity in entities:
+                entity.draw(self.camera_x, self.cur_camera_y)
 
             # now draw the rest of the queue
             main_grid_queue.draw(self.camera_x, self.cur_camera_y)
