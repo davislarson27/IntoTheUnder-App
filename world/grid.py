@@ -116,7 +116,7 @@ class Grid:
     def generate_save_files(self):
         Path(f'{self.save_directory}').mkdir()
 
-    def physics(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
+    def physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
@@ -127,7 +127,7 @@ class Grid:
             global_x_offset = chunk_id * self.chunk_width
             self.chunks[chunk_id].physics(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
 
-    def draw(self, camera_x, camera_y, INVENTORY_HEIGHT = 0):
+    def draw(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         """draws the grid on the screen and returns blocks that need to get drawn later"""
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
@@ -143,6 +143,20 @@ class Grid:
             block_queue = block_queue + chunk_block_queue
 
         return block_queue
+
+    def get_entities(self, camera_x):
+        """returns a set of entities on the screen"""
+        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
+
+        min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
+        max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
+        
+        entities_set = set()
+        for chunk_id in range(min_chunk_id, max_chunk_id+1):
+            entities_set.update(self.chunks[chunk_id].get_entities())
+
+        return entities_set
 
     def set_chunks(self, chunks):
         self.chunks = chunks

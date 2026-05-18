@@ -23,6 +23,7 @@ class Chunk:
             for x in range(self.width):
                 inner.append(None)
             self.array.append(inner)
+        self.entity_set = set()
     
     def in_bounds(self, x, y):
         if x < self.width and x >= 0 and y < self.height and y >= 0:
@@ -109,6 +110,9 @@ class Chunk:
                         block_queue.append(obj)
         
         return block_queue
+
+    def get_entities(self):
+        return self.entity_set
 
     @staticmethod
     def fill_from_dict(grid_dict, screen, BLOCK_WIDTH, global_x_offset, return_grid):
