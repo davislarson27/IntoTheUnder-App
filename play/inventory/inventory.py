@@ -612,7 +612,6 @@ class Inventory:
 
             self.fuel_side_pannel.fuel_slots[i].hit_box    = hit_box
             self.fuel_side_pannel.fuel_slots[i].item_frame = item_frame
-            self.fuel_side_pannel.fuel_slots[i].label_rect = label_box
 
             pipe_rect = pygame.Rect(
                 hit_box.x,
