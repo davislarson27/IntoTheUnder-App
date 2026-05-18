@@ -42,6 +42,7 @@ class Entity:
         self.base_net_energy_change = -0.00417
 
         self.initialize_drawing_vars()
+        self.initialize_unique_entity_attrs()
 
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
@@ -230,6 +231,9 @@ class Entity:
     def initialize_drawing_vars(self):
         pass
     
+    def initialize_unique_entity_attrs(self):
+        pass
+
     @classmethod
     def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px):
         # step 1: initialize the entity
