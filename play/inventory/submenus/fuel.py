@@ -83,11 +83,29 @@ class Fuel_Slots:
             'refuel_bar_max': self.refuel_bar_max,
             'repair_bar_max': self.repair_bar_max,
             'refuel_is_paused': self.refuel_is_paused,
-            'repair_is_paused': self.repair_is_paused
+            'repair_is_paused': self.repair_is_paused,
         }
+        if self.fuel_slots[0].inventory_item is not None:
+            return_dict['refuel_slots'] = self.fuel_slots[0].inventory_item.rerender_as_array()
+        else:
+            return_dict['refuel_slots'] = None
+        if self.fuel_slots[1].inventory_item is not None:
+            return_dict['repair_slots'] = self.fuel_slots[1].inventory_item.rerender_as_array()
+        else:
+            return_dict['repair_slots'] = None
+
+        return return_dict
 
     def from_dict(self, dict):
-        pass
+        """fills in details from a dictionary for a preinitialized Fuel_Slots object"""
+        self.refuel_bar_remaining = dict['refuel_bar_remaining']
+        self.repair_bar_remaining = dict['repair_bar_remaining']
+        self.refuel_bar_max = dict['refuel_bar_max']
+        self.repair_bar_max = dict['repair_bar_max']
+        self.refuel_is_paused = dict['refuel_is_paused']
+        self.repair_is_paused = dict['repair_is_paused']
+        self.fuel_slots[0].inventory_item = Inventory_Item.create_from_array(dict['refuel_slots'])
+        self.fuel_slots[1].inventory_item = Inventory_Item.create_from_array(dict['repair_slots'])
 
     def set_health_bar(self, health_bar_obj):
         self.health_bar = health_bar_obj

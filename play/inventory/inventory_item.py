@@ -32,5 +32,8 @@ class Inventory_Item:
     
     @staticmethod
     def create_from_array(array):
+        if array is None:
+            return None
         block_str_dict = get_str_to_block()
         return Inventory_Item(block_str_dict[array[0]], array[1])
+    

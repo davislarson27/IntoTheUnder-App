@@ -715,11 +715,11 @@ class Inventory:
             if cur_item is not None: inventory_items.append([cur_item.Block_Type.str_name, cur_item.count_of_items])
             else: inventory_items.append(None)
 
-
         return {
             "cur_position_index": self.cur_position_index,
             "inventory_items": inventory_items,
-            "crafting_recipes": self.crafting_object.get_recipes_dict()
+            "crafting_recipes": self.crafting_object.get_recipes_dict(),
+            "fuel_side_pannel": self.fuel_side_pannel.to_dict()
         }
     
     @staticmethod
@@ -744,6 +744,9 @@ class Inventory:
 
         # fill discovered recieps list
         inventory.setRecipesFromDict(inventory_dict["crafting_recipes"])
+
+        # fill the fuel side pannel
+        inventory.fuel_side_pannel.from_dict(inventory_dict['fuel_side_pannel'])
 
         return inventory
     
