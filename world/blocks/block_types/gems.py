@@ -110,7 +110,7 @@ class Mabelite(Item):
         # gold core
         outer_dark  = (20, 100, 60)
         outer_mid   = (30, 155, 90)
-        inner_light = (195, 155, 20)
+        inner_light = (165, 155, 33)
 
         # # purple
         # outer_dark  = (20, 100, 60)

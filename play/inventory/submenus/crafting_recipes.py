@@ -276,6 +276,15 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Diamond_Block, 1),
             category=Recipe_Category.Building
         ),
+        Crafting_Recipe(
+            "Mabelite Block",
+            [
+                Ingredient(Mabelite, 8),
+            ],
+            output=Ingredient(Mabelite_Block, 1),
+            category=Recipe_Category.Building
+        ),
+
 
         # ---------------------------------- materials ---------------------------------- #
         Crafting_Recipe(
@@ -447,6 +456,14 @@ class User_Crafting_Recipes_List:
                 Ingredient(Diamond_Block, 1),
             ],
             output=Ingredient(Diamond, 8),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
+            "Mabelite",
+            [
+                Ingredient(Mabelite_Block, 1),
+            ],
+            output=Ingredient(Mabelite, 8),
             category=Recipe_Category.Resources
         ),
 

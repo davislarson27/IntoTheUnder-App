@@ -67,6 +67,7 @@ def get_blocks_list():
         Diamond_Block,
         Coal_Block,
         Gold_Block,
+        Mabelite_Block,
         Stone_Bricks,
         Frozen_Stone_Bricks,
         Ice_Bricks,
@@ -104,7 +105,8 @@ def get_block_repair_dict():
         Iron_Block: 240,
         Diamond: 70,
         Diamond_Block: 560,
-        Mabelite: 100
+        Mabelite: 100,
+        Mabelite_Block: 800
     }
     
 def get_block_refuel_values(block_type):
