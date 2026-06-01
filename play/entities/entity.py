@@ -170,8 +170,22 @@ class Entity:
                 if distance_move_x < 0:
                     self.is_left_facing = True
     
+    def get_block_below(self, x_offset):
+        """returns the block that is one px below the center of the entity's feet"""
+        x, y = floor((self.x + x_offset) / self.BLOCK_WIDTH), floor((self.y + self.y_size + 1) / self.BLOCK_WIDTH)
+        return self.grid.get(x, y)
+    
+    def get_block_below_center(self):
+        return self.get_block_below(self.x_size // 2)
+    
+    def get_block_below_right(self):
+        return self.get_block_below(self.x_size)
+    
+    def get_block_below_left(self):
+        return self.get_block_below(0)
+
     def get_player_block_coordinates(self):
-        return (floor((self.x) / self.BLOCK_WIDTH), floor((self.y) / self.BLOCK_WIDTH))
+        return (floor((self.x + (self.x_size // 2)) / self.BLOCK_WIDTH), floor((self.y) / self.BLOCK_WIDTH))
 
     def is_block_above(self, grid):
         grid_pos_x = floor(self.get_player_center_x() / self.BLOCK_WIDTH)
