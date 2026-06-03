@@ -169,6 +169,10 @@ class Grid:
 
         return entities_set
 
+    def reassign_entity_chunks(self, rendered_entities):
+        for entity in rendered_entities:
+            pass
+
     def set_chunks(self, chunks):
         self.chunks = chunks
 

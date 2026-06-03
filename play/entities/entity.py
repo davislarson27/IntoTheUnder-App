@@ -2,6 +2,7 @@ from math import floor
 
 from world.blocks.block_export import *
 from play.entity_health import Entity_Health
+from world.grid import Grid
 
 
 class Entity:
@@ -247,6 +248,10 @@ class Entity:
     
     def initialize_unique_entity_attrs(self):
         pass
+
+    def compute_chunk_id(self):
+        global_x, _ = self.get_player_block_coordinates()
+        return global_x // Grid.chunk_width
 
     @classmethod
     def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px):

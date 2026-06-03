@@ -341,6 +341,7 @@ class Menu:
         self.menu_running = True
         self.generate_new_world = False
         self.world_name = None
+        self.load_screen_factor = 0
 
     def move_background(self):
         if self.camera_x + self.width < self.background_world_width_px: self.camera_x += self.background_move_speed
