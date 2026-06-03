@@ -45,6 +45,8 @@ class Entity:
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
 
+        self.entity_chunk = self.compute_chunk_id()
+
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
         if(self.grid.in_bounds(x, y) and (self.grid.get(x, y) is None or self.grid.get(x, y).pass_through)):

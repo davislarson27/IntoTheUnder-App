@@ -484,6 +484,9 @@ class Play:
             self.debug_overlay.run(input, clock)
             self.debug_overlay.draw()
 
+            # ------------- check entity chunks --------------#
+            self.grid.check_entity_chunks(entities)
+
 
         # check for changing menus in game
         self.manage_menus(input)

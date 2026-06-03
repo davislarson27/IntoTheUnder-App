@@ -169,9 +169,16 @@ class Grid:
 
         return entities_set
 
-    def reassign_entity_chunks(self, rendered_entities):
+    def check_entity_chunks(self, rendered_entities):
         for entity in rendered_entities:
-            pass
+            cur_chunk_id = entity.compute_chunk_id()
+            if entity.entity_chunk != cur_chunk_id:
+                self.reasign_entity_chunk(entity, cur_chunk_id)
+
+    def reasign_entity_chunk(self, entity, new_chunk_id):
+        self.chunks[entity.entity_chunk].entity_set.remove(entity)
+        self.chunks[new_chunk_id].entity_set.add(entity)
+        entity.entity_chunk = new_chunk_id
 
     def set_chunks(self, chunks):
         self.chunks = chunks
