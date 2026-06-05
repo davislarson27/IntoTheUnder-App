@@ -51,6 +51,7 @@ update notes:
  - added fall damage
  - added dying and respawning
  - added a gold tinted glass
+ - added flowers
 """
 
 """

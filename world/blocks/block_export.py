@@ -81,6 +81,7 @@ def get_blocks_list():
         Rose,
         Wild_Flower,
         White_Lily,
+        Forget_Me_Not,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

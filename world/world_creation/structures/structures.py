@@ -484,7 +484,7 @@ class Flowers:
         elif biome_name == 'Tundra':
             flower_options = [White_Lily]
         else:
-            flower_options = [Rose, Wild_Flower, White_Lily]
+            flower_options = [Rose, Wild_Flower, White_Lily, Forget_Me_Not]
             
         index = int(random_factor * len(flower_options)) % len(flower_options)
         Flower = flower_options[index]
