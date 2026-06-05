@@ -483,6 +483,8 @@ class Flowers:
             flower_options = [Wild_Flower]
         elif biome_name == 'Tundra':
             flower_options = [White_Lily]
+        elif biome_name == 'Montane_Forest':
+            flower_options = [Rose, White_Lily]
         else:
             flower_options = [Rose, Wild_Flower, White_Lily, Forget_Me_Not]
             
