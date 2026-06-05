@@ -230,7 +230,7 @@ class Crafting_Slots:
 
         cur_recipes = inventory_object.crafting_object.get_possible_recipes()
         cur_index = inventory_object.crafting_object.cur_recipe_index
-        if cur_index is not None and len(cur_recipes) > 0:
+        if cur_index is not None and cur_index < len(cur_recipes):
             cur_recipe = cur_recipes[cur_index]
             output_object = inventory_object.crafting_object.output_slot.inventory_item
             if output_object is not None and (cur_recipe.output.block_type != output_object.Block_Type or output_object.count_of_items + cur_recipe.output.count > output_object.MAX_ITEMS_IN_INVENTORY_SLOT):

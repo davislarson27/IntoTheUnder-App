@@ -509,7 +509,7 @@ class User_Crafting_Recipes_List:
                 Ingredient(Gunpowder, 1)
             ],
             output=Ingredient(Rose, 5),
-            category=Recipe_Category.Building
+            category=Recipe_Category.Materials
         ),
 
         # ---------------------------------- resources ---------------------------------- #
