@@ -75,16 +75,8 @@ class Golden_Glass(Block):
             y *= block_width
 
         # new warmer and lighter colors
-        primary_background_color = (215, 215, 220, 50)
-        detail_color = (180, 180, 185, 65)
-
-        frost_fill      = (215, 190, 90, 45)
-        frost_light     = (245, 238, 190, 55)
-        frost_highlight = (238, 232, 200, 130)
-
-        primary_background_color = frost_fill
-        detail_color = frost_light
-
+        primary_background_color = (215, 190, 90, 45)
+        detail_color = (245, 238, 190, 55)
 
         def clamp_add(color, added):
             return (
