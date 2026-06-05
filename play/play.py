@@ -11,8 +11,11 @@ from .bg_overlay import BG_Overlay
 from .bg_mining_icon import Bg_Mining_Icon
 from .in_play_menus.debug_screen_overlay import Debug_Overlay
 from .in_play_menus.death_menu import Death_Menu
+from .inventory.inventory import Inventory
 from .inventory.submenus.crafting import Crafting_Slots
 from .inventory.submenus.fuel import Fuel_Slots
+from .inventory.submenus.chest import Chest_Slots
+from.inventory.submenus.enduring_chest import Enduring_Chest_Slots
 from .entities.entities_export import *
 
 
@@ -367,7 +370,13 @@ class Play:
                     side_pannel_open_func()
                 self.sub_state.open()
 
-        if input.e_keypress:
+        if isinstance(self.inventory.side_pannel, Chest_Slots) and isinstance(self.sub_state, Inventory): # allows easier escaping from chests
+            if input.e_keypress or input.c_keypress or input.f_keypress or input.escape_keypress:
+                operate_menu(self.inventory, side_pannel_type=Chest_Slots, side_pannel_open_func=self.inventory.open_crafting)
+        elif isinstance(self.inventory.side_pannel, Enduring_Chest_Slots) and isinstance(self.sub_state, Inventory): # allows easier escaping from chests
+            if input.e_keypress or input.c_keypress or input.f_keypress or input.escape_keypress:
+                operate_menu(self.inventory, side_pannel_type=Enduring_Chest_Slots, side_pannel_open_func=self.inventory.open_crafting)
+        elif input.e_keypress:
             operate_menu(self.inventory, side_pannel_type=Crafting_Slots, side_pannel_open_func=self.inventory.open_crafting)
         elif input.c_keypress:
             operate_menu(self.inventory.get_recipe_menu()) # this isn't an inventory menu, but it does access it through the inventory
