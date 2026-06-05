@@ -83,6 +83,7 @@ def get_blocks_list():
         White_Lily,
         Forget_Me_Not,
         Tree_Sappling,
+        Gold_Stone_Bricks,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

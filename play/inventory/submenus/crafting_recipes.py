@@ -246,6 +246,15 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Gold Stone Bricks",
+            [
+                Ingredient(Stone_Bricks, 5),
+                Ingredient(Gold_Ingot, 1)
+            ],
+            output=Ingredient(Gold_Stone_Bricks, 5),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Iron Block",
             [
                 Ingredient(Iron_Ingot, 8),
