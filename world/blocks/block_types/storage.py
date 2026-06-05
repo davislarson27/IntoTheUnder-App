@@ -68,7 +68,7 @@ class Enduring_Chest(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Enduring Chest"
-    ticks_to_mine = 85
+    ticks_to_mine = 90
 
     can_store_items = True
     
@@ -92,8 +92,6 @@ class Enduring_Chest(Block):
         latch_color = (30, 155, 90)
         primary_bg_color = (220, 175, 138)
         outline_color = (85, 70, 55)
-
-        # latch_color = (30, 130, 125)
 
         pygame.draw.rect( # draw base color
             screen,
