@@ -147,47 +147,13 @@ class Recipe_Category(Enum):
     Materials = "Materials"
     Resources = "Resources"
     Building = "Building"
-    Explosives = "Explosives"
+    Utility = "Utility"
 
 
 class User_Crafting_Recipes_List:
 
     default_crafting_recipes = [
         # building
-        Crafting_Recipe(
-            "Chest",
-            [
-                Ingredient(Wood_Planks, 6), 
-                Ingredient(Iron_Ingot, 1)
-            ],
-            output=Ingredient(Chest, 1),
-            category=Recipe_Category.Building
-        ),
-        Crafting_Recipe(
-            "Door",
-            [
-                Ingredient(Wood_Planks, 3),
-            ],
-            output=Ingredient(Door, 2),
-            category=Recipe_Category.Building
-        ),
-        Crafting_Recipe(
-            "Iron Ladder",
-            [
-                Ingredient(Wood_Planks, 3),
-                Ingredient(Iron_Ingot, 1)
-            ],
-            output=Ingredient(Iron_Ladder, 5),
-            category=Recipe_Category.Building
-        ),
-        Crafting_Recipe(
-            "Wood Ladder",
-            [
-                Ingredient(Wood_Planks, 3),
-            ],
-            output=Ingredient(Wood_Ladder, 4),
-            category=Recipe_Category.Building
-        ),
         Crafting_Recipe(
             "Wood Planks",
             [
@@ -484,8 +450,6 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Mabelite, 8),
             category=Recipe_Category.Resources
         ),
-
-        # ---------------------------------- explosives ---------------------------------- #
         Crafting_Recipe(
             "Gun Powder",
             [
@@ -494,8 +458,45 @@ class User_Crafting_Recipes_List:
                 Ingredient(Sulfur_Powder, 1),
             ],
             output=Ingredient(Gunpowder, 5),
-            category=Recipe_Category.Explosives
+            category=Recipe_Category.Resources
         ),
+
+        # ---------------------------------- Utility ---------------------------------- #
+        Crafting_Recipe(
+            "Chest",
+            [
+                Ingredient(Wood_Planks, 6), 
+                Ingredient(Iron_Ingot, 1)
+            ],
+            output=Ingredient(Chest, 1),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
+            "Door",
+            [
+                Ingredient(Wood_Planks, 3),
+            ],
+            output=Ingredient(Door, 2),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
+            "Iron Ladder",
+            [
+                Ingredient(Wood_Planks, 3),
+                Ingredient(Iron_Ingot, 1)
+            ],
+            output=Ingredient(Iron_Ladder, 5),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
+            "Wood Ladder",
+            [
+                Ingredient(Wood_Planks, 3),
+            ],
+            output=Ingredient(Wood_Ladder, 4),
+            category=Recipe_Category.Utility
+        ),
+
     ]
 
     additional_possible_recipes = [
@@ -523,7 +524,7 @@ class User_Crafting_Recipes_List:
 
         # ---------------------------------- resources ---------------------------------- #
 
-        # ---------------------------------- explosives ---------------------------------- #
+        # ---------------------------------- utility ---------------------------------- #
         Crafting_Recipe(
             "TNT",
             [
@@ -531,7 +532,7 @@ class User_Crafting_Recipes_List:
                 Ingredient(Gravel, 1),
             ],
             output=Ingredient(TNT, 1),
-            category=Recipe_Category.Explosives
+            category=Recipe_Category.Utility
         ),
     ]
 
@@ -718,7 +719,7 @@ class User_Crafting_Recipes_List:
         )
 
         # ── category tab bar ──────────────────────────────────────────── #
-        self.categories = [Recipe_Category.Building, Recipe_Category.Materials, Recipe_Category.Resources, Recipe_Category.Explosives]
+        self.categories = [Recipe_Category.Building, Recipe_Category.Materials, Recipe_Category.Resources, Recipe_Category.Utility]
         category_strings = [category.value for category in self.categories]
         self.categories_rects           = []
         self.category_label_surfaces    = []

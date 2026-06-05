@@ -52,6 +52,7 @@ update notes:
  - added dying and respawning
  - added a gold tinted glass
  - added flowers
+ - reorganized the crafting recipes menu
 """
 
 """
