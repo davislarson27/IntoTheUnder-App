@@ -1,7 +1,6 @@
 from world.blocks.block_export import *
 from world.world_creation.structures.structures import *
 from world.world_creation.structures.structure_identifier import Structure_Identifier
-from .ore import Ore
 
 class Layer:
     def __init__(self, block, layer_depth, variation_amp=2, variation_freq=6):
@@ -180,6 +179,7 @@ class Rain_Forest(Biome):
         Structure_Identifier(Tree, 0.12),
         Structure_Identifier(Small_Bush, 0.02),
         Structure_Identifier(Flowers, 0.01),
+        Structure_Identifier(Puddle, 0.01),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.12)
@@ -220,10 +220,11 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
         Structure_Identifier(Tree, 0.028),
         Structure_Identifier(Snow_Tree, 0.002),
         Structure_Identifier(Small_Bush, 0.025),
-        Structure_Identifier(Flowers, 0.028)
+        Structure_Identifier(Flowers, 0.028),
+        Structure_Identifier(Puddle, 0.012),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Tree, 0.02)
+        Structure_Identifier(Tree, 0.019)
     ]
     
 
