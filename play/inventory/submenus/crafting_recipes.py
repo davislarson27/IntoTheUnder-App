@@ -555,7 +555,7 @@ class User_Crafting_Recipes_List:
     ]
 
     additional_possible_recipes = basic_additional_possible_recipes + rare_possible_recipes
-    
+
     def __init__(self, discovered_recipes=None, screen=None):
         self.discovered_recipes = []
         if discovered_recipes is not None:
@@ -631,6 +631,26 @@ class User_Crafting_Recipes_List:
     @classmethod
     def getFindableRecipesList(cls):
         return cls.additional_possible_recipes
+
+    @classmethod
+    def getBiomeWeightedFindableRecipesList(cls, biome_name):
+        recipe_list = cls._getBiomeWeightedFindableRecipesList(biome_name)
+        if recipe_list is None or None in recipe_list:
+            return cls.basic_additional_possible_recipes
+        return recipe_list
+
+    @classmethod
+    def _getBiomeWeightedFindableRecipesList(cls, biome_name):
+        if biome_name == 'Glacier':
+            more_common = cls.getRecipeFromString('Snowman Head')
+            return cls.basic_additional_possible_recipes + ([more_common] * (((len(cls.basic_additional_possible_recipes) - 1) * 2) - 1))
+        elif biome_name == 'Volcano':
+            return [cls.getRecipeFromString('TNT')]
+        elif biome_name == 'Desert':
+            return [recipe for recipe in cls.basic_additional_possible_recipes if recipe.name != 'Snowman Head']
+        elif biome_name == 'Montane_Forest':
+            return cls.basic_additional_possible_recipes + [cls.getRecipeFromString('Rose')]
+        return cls.basic_additional_possible_recipes
 
     @classmethod
     def getAllRecipesList(cls):

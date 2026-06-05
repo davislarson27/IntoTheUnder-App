@@ -84,7 +84,9 @@ class Recipe_Burrow:
         # now add the recipe frame block
         recipeFrame_x, recipeFrame_y = start_x + 6, start_y + bottom_y_add - 1
         recipeFrameBlock = Recipe_Frame(grid, grid.screen, recipeFrame_x, recipeFrame_y, grid.BLOCK_WIDTH)
-        recipeList = User_Crafting_Recipes_List.getFindableRecipesList()
+
+        recipeList = User_Crafting_Recipes_List.getBiomeWeightedFindableRecipesList(biome_name)
+
         index = int(random_factor * len(recipeList)) % len(recipeList)
         randomRecipe = recipeList[index]
         recipeFrameBlock.stored_inventory_items.append(randomRecipe)
@@ -500,4 +502,4 @@ class Flowers:
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
-    
+
