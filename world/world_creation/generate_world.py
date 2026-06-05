@@ -79,44 +79,44 @@ class Grid_Superstructure:
             ),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, grid_height,
                 scale=0.11,
-                min_depth_threshold=0.588,
+                min_depth_threshold=0.584,
                 min_depth=15,
-                max_depth_threshold=0.594
+                max_depth_threshold=0.591
             ),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, grid_height,
                 scale=0.17,
-                min_depth_threshold=0.608,
+                min_depth_threshold=0.599,
                 min_depth=45,
-                max_depth_threshold=0.597
+                max_depth_threshold=0.592
             ),
             Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, grid_height,
                 scale=0.18,
                 min_depth_threshold=0.705,
                 min_depth=88,
-                max_depth_threshold=0.685
+                max_depth_threshold=0.672
             ),
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.745,
+                min_depth_threshold=0.742,
                 min_depth=25,
                 max_depth_threshold=1,
                 max_depth=95
             ),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.789,
+                min_depth_threshold=0.785,
                 min_depth=95,
-                max_depth_threshold=0.774
+                max_depth_threshold=0.77
             ),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, grid_height,
                 scale=0.17,
-                min_depth_threshold=0.819,
+                min_depth_threshold=0.814,
                 min_depth=110,
-                max_depth_threshold=0.81
+                max_depth_threshold=0.8
             ),
             Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.67,
+                min_depth_threshold=0.667,
                 min_depth=10,
                 max_depth_threshold=1,
                 max_depth=80
