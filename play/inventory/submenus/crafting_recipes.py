@@ -498,7 +498,7 @@ class User_Crafting_Recipes_List:
 
     ]
 
-    additional_possible_recipes = [
+    basic_additional_possible_recipes = [
         # ---------------------------------- building ---------------------------------- #
         Crafting_Recipe(
             "Snowman Head",
@@ -511,15 +511,6 @@ class User_Crafting_Recipes_List:
         ),
 
         # ---------------------------------- materials ---------------------------------- #
-        Crafting_Recipe(
-            "Rose",
-            [
-                Ingredient(Mabelite, 1),
-                Ingredient(Gunpowder, 1)
-            ],
-            output=Ingredient(Rose, 5),
-            category=Recipe_Category.Materials
-        ),
 
         # ---------------------------------- resources ---------------------------------- #
 
@@ -544,6 +535,27 @@ class User_Crafting_Recipes_List:
         ),
     ]
 
+    rare_possible_recipes = [
+        # ---------------------------------- building ---------------------------------- #
+
+        # ---------------------------------- materials ---------------------------------- #
+        Crafting_Recipe(
+            "Rose",
+            [
+                Ingredient(Mabelite, 1),
+                Ingredient(Gunpowder, 1)
+            ],
+            output=Ingredient(Rose, 5),
+            category=Recipe_Category.Materials
+        ),
+
+        # ---------------------------------- resources ---------------------------------- #
+
+        # ---------------------------------- utility ---------------------------------- #
+    ]
+
+    additional_possible_recipes = basic_additional_possible_recipes + rare_possible_recipes
+    
     def __init__(self, discovered_recipes=None, screen=None):
         self.discovered_recipes = []
         if discovered_recipes is not None:
