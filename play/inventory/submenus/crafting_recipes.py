@@ -296,14 +296,6 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Materials
         ),
         Crafting_Recipe(
-            "Rock",
-            [
-                Ingredient(Stone_Bricks, 1),
-            ],
-            output=Ingredient(Rock, 2),
-            category=Recipe_Category.Materials
-        ),
-        Crafting_Recipe(
             "Sand Stone",
             [
                 Ingredient(Sand, 4),
@@ -311,7 +303,14 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Sand_Stone, 1),
             category=Recipe_Category.Materials
         ),
-
+        Crafting_Recipe(
+            "Rock",
+            [
+                Ingredient(Stone_Bricks, 1),
+            ],
+            output=Ingredient(Rock, 2),
+            category=Recipe_Category.Materials
+        ),
         Crafting_Recipe(
             "Frozen Rock",
             [
