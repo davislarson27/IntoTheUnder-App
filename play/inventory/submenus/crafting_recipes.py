@@ -525,6 +525,15 @@ class User_Crafting_Recipes_List:
 
         # ---------------------------------- utility ---------------------------------- #
         Crafting_Recipe(
+            "Enduring Chest",
+            [
+                Ingredient(Wood_Planks, 6), 
+                Ingredient(Mabelite, 1)
+            ],
+            output=Ingredient(Enduring_Chest, 1),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
             "TNT",
             [
                 Ingredient(Gunpowder, 4),

@@ -7,6 +7,7 @@ from .submenus.crafting import Crafting_Slots
 from .submenus.crafting_recipes import Recipe_Slot_Contents
 from .submenus.chest import Chest_Slots
 from .submenus.fuel import Fuel_Slots
+from .submenus.enduring_chest import Enduring_Chest_Slots
 
 
 class Inventory:
@@ -562,18 +563,22 @@ class Inventory:
 
         # ----------------------------- chest section label ----------------------------- #
 
-        chest_section_label_text_surface = self.section_label.render(  # optional: bigger font
+        self.chest_label_surface = self.section_label.render(
             "Chest",
             True,
             self.section_title_color
         )
+        self.chest_label_rect = self.chest_label_surface.get_rect(center=side_pannel_label_box.center)
 
-        chest_section_label_rect = chest_section_label_text_surface.get_rect(
-            center=side_pannel_label_box.center
+        self.enduring_chest_label_surface = self.section_label.render(
+            "Enduring Chest",
+            True,
+            self.section_title_color
         )
+        self.enduring_chest_label_rect = self.enduring_chest_label_surface.get_rect(center=side_pannel_label_box.center)
 
-        self.chest_side_pannel.title_label_text_surface = chest_section_label_text_surface
-        self.chest_side_pannel.section_label_rect = chest_section_label_rect
+        self.chest_side_pannel.title_label_text_surface = self.chest_label_surface
+        self.chest_side_pannel.section_label_rect = self.chest_label_rect
 
 
         # --------------------------------------- fuel side panel --------------------------------------- #
@@ -688,6 +693,20 @@ class Inventory:
         self.side_pannel_slots = 0
 
 
+        # ----------------------------------- enduring chest side pannel logic ----------------------------------- #
+        count_enduring_chest_slots = count_chest_slots
+        self.enduring_chest_side_pannel = Enduring_Chest_Slots(count_enduring_chest_slots)
+
+        for i in range(count_enduring_chest_slots):
+            src = self.chest_side_pannel.chest_slots[i]
+            self.enduring_chest_side_pannel.chest_slots[i].hit_box    = src.hit_box
+            self.enduring_chest_side_pannel.chest_slots[i].item_frame = src.item_frame
+            self.enduring_chest_side_pannel.chest_slots[i].label_rect = src.label_rect
+
+        self.enduring_chest_side_pannel.title_label_text_surface = self.enduring_chest_label_surface
+        self.enduring_chest_side_pannel.section_label_rect       = self.enduring_chest_label_rect
+
+
 
         # --------------------------------------- end __init__() --------------------------------------- #
 
@@ -714,11 +733,18 @@ class Inventory:
             if cur_item is not None: inventory_items.append([cur_item.Block_Type.str_name, cur_item.count_of_items])
             else: inventory_items.append(None)
 
+        enduring_chest_inventory_items = []
+        for slot in self.enduring_chest_side_pannel.chest_slots:
+            cur_item = slot.inventory_item            
+            if cur_item is not None: enduring_chest_inventory_items.append([cur_item.Block_Type.str_name, cur_item.count_of_items])
+            else: enduring_chest_inventory_items.append(None)
+
         return {
             "cur_position_index": self.cur_position_index,
             "inventory_items": inventory_items,
             "crafting_recipes": self.crafting_object.get_recipes_dict(),
-            "fuel_side_pannel": self.fuel_side_pannel.to_dict()
+            "fuel_side_pannel": self.fuel_side_pannel.to_dict(),
+            "enduring_chest": enduring_chest_inventory_items
         }
     
     @staticmethod
@@ -740,6 +766,16 @@ class Inventory:
                 block_type = str_to_block[slot[0]]
                 block_count = slot[1]
                 inventory.expanded_inventory[i].inventory_item = Inventory_Item(block_type, block_count)
+
+        enduring_chest_items = inventory_dict["enduring_chest"]
+
+        # get enduring chest contents
+        for i in range(len(enduring_chest_items)):
+            slot = enduring_chest_items[i]
+            if slot is not None:
+                block_type = str_to_block[slot[0]]
+                block_count = slot[1]
+                inventory.enduring_chest_side_pannel.chest_slots[i].inventory_item = Inventory_Item(block_type, block_count)
 
         # fill discovered recieps list
         inventory.setRecipesFromDict(inventory_dict["crafting_recipes"])
@@ -1085,7 +1121,16 @@ class Inventory:
 
     def open_chest(self, chest_items):
         self.side_pannel = self.chest_side_pannel
+        self.chest_side_pannel.title_label_text_surface = self.chest_label_surface
+        self.chest_side_pannel.section_label_rect = self.chest_label_rect
         self.side_pannel.fill_on_open(chest_items)
+        self.set_active_slots()
+        self.openNextFrame = True
+
+    def open_enduring_chest(self, chest_items):
+        self.side_pannel = self.enduring_chest_side_pannel  # use the enduring panel, not chest
+        self.enduring_chest_side_pannel.title_label_text_surface = self.enduring_chest_label_surface
+        self.enduring_chest_side_pannel.section_label_rect = self.enduring_chest_label_rect
         self.set_active_slots()
         self.openNextFrame = True
 

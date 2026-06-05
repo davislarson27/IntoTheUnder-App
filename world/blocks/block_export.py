@@ -52,6 +52,7 @@ def get_blocks_list():
         Packed_Ice,
         Frozen_Rock,
         Chest,
+        Enduring_Chest,
         Door,
         Door_Top,
         Door_Bottom,

@@ -37,32 +37,98 @@ class Chest(Block):
             x *= block_width
             y *= block_width
         
+        primary_bg_color = (220, 175, 138)
+        outline_color = (85, 70, 55)
+        latch_color = (140, 140, 140)
+
         pygame.draw.rect( # draw base color
             screen,
-            (220 + added_color, 175 + added_color, 138 + added_color),
+            (primary_bg_color[0] + added_color, primary_bg_color[1] + added_color, primary_bg_color[2] + added_color),
             (x, y, block_width, block_width)
-        )
-        pygame.draw.rect( # draw base color
-            screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),
-            (x, y, block_width, block_width),
-            2
         )
         pygame.draw.rect( # draw outline
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),
+            (outline_color[0] + added_color, outline_color[1] + added_color, outline_color[2] + added_color),
             (x, y, block_width, block_width),
             floor(block_width * 0.08) # width of border
         )
         pygame.draw.rect( # draw divider between top and bottom of the chest
             screen,
-            (85 + added_color, 70 + added_color, 55 + added_color),
+            (outline_color[0] + added_color, outline_color[1] + added_color, outline_color[2] + added_color),
             (x, y + floor(block_width * 0.3), block_width, floor(block_width * 0.08))
         )
-        pygame.draw.rect(
+        pygame.draw.rect( # draw the latch
             screen,
-            (140 + added_color, 140 + added_color, 140 + added_color),
+            (latch_color[0] + added_color, latch_color[1] + added_color, latch_color[2] + added_color),
             (x + floor(block_width * 0.42), y + floor(block_width * 0.3),floor(block_width * 0.18), floor(block_width * 0.24))
+        )
+
+class Enduring_Chest(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Enduring Chest"
+    ticks_to_mine = 85
+
+    can_store_items = True
+    
+    def interaction(self, inventory):
+        inventory.open_enduring_chest(self.stored_inventory_items)
+        return True
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False): 
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        primary_bg_color = (145, 155, 165)
+        outline_color = (95, 100, 102)
+        latch_color = (30, 155, 90)
+        primary_bg_color = (220, 175, 138)
+        outline_color = (85, 70, 55)
+
+        # latch_color = (30, 130, 125)
+
+        pygame.draw.rect( # draw base color
+            screen,
+            (primary_bg_color[0] + added_color, primary_bg_color[1] + added_color, primary_bg_color[2] + added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect( # draw outline
+            screen,
+            (outline_color[0] + added_color, outline_color[1] + added_color, outline_color[2] + added_color),
+            (x, y, block_width, block_width),
+            floor(block_width * 0.08) # width of border
+        )
+        pygame.draw.rect( # draw divider between top and bottom of the chest
+            screen,
+            (outline_color[0] + added_color, outline_color[1] + added_color, outline_color[2] + added_color),
+            (x, y + floor(block_width * 0.3), block_width, floor(block_width * 0.08))
+        )
+        latch_cx = x + floor(block_width * 0.51)
+        latch_cy = y + floor(block_width * 0.42)
+        latch_hw = floor(block_width * 0.10)
+        latch_hh = floor(block_width * 0.13)
+        latch_draw_color = (latch_color[0] + added_color, latch_color[1] + added_color, latch_color[2] + added_color)
+        diamond_points = [
+            (latch_cx, latch_cy - latch_hh),
+            (latch_cx + latch_hw, latch_cy),
+            (latch_cx, latch_cy + latch_hh),
+            (latch_cx - latch_hw, latch_cy),
+        ]
+        pygame.draw.polygon(screen, latch_draw_color, diamond_points)
+        shine_color = (min(255, latch_color[0] + added_color + 120), min(255, latch_color[1] + added_color + 90), min(255, latch_color[2] + added_color + 90))
+        pygame.draw.line(
+            screen, shine_color,
+            (latch_cx - floor(latch_hw * 0.55), latch_cy - floor(latch_hh * 0.3)),
+            (latch_cx - floor(latch_hw * 0.1), latch_cy - floor(latch_hh * 0.65)),
+            max(1, floor(block_width * 0.025))
         )
 
 class Recipe_Frame(Block):
