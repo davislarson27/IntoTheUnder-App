@@ -358,7 +358,7 @@ class Grid_Superstructure:
                     foreground_height = self.get_terrain_height(x + structure.get_x_difference_for_y())
                     if y > foreground_height: # no structures can generate in the background if it is below the surface
                         break
-                    buildInstructions = structure.getStructureInstructions(x, y, self.background_grid, instruction_variance_chance)
+                    buildInstructions = structure.getStructureInstructions(x, y, self.background_grid, instruction_variance_chance, biome.__name__)
                     for instruction in buildInstructions:
                         instruction.setBlock(self.background_grid)
 
@@ -391,10 +391,10 @@ class Grid_Superstructure:
                     # build structure
                     structure = structureIdentifier.structure
                     y = self.get_terrain_height(x + structure.get_x_difference_for_y())
-                    buildInstructions = structure.getStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance)
+                    buildInstructions = structure.getStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance, biome.__name__)
                     for instruction in buildInstructions:
                         instruction.setBlock(self.foreground_grid)
-                    bg_build_instructions = structure.getBgStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance)
+                    bg_build_instructions = structure.getBgStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance, biome.__name__)
                     for instruction in bg_build_instructions:
                         instruction.setBlock(self.background_grid)
 

@@ -58,6 +58,7 @@ class Volcano(Biome):
     biome_ore_modifier = {**Biome.biome_ore_modifier}
     biome_ore_modifier[Sulfur_Flakes_Block] *= 1.5
 
+
 class Mountain(Biome):
     def claim(elevation, temp, humidity, mountain):
         if mountain < -10:
@@ -102,7 +103,8 @@ class Ravine(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Tree, 0.01)
+        Structure_Identifier(Tree, 0.01),
+        Structure_Identifier(Flowers, 0.018)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -126,6 +128,7 @@ class Desert(Biome):
         Structure_Identifier(Cactus_Structure, 0.015)
     ]
 
+
 class Tundra(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity < 0 and temp < 0 and elevation < 0:
@@ -142,6 +145,7 @@ class Tundra(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
+
 class Glacier(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity < 0 and temp < 0 and elevation >= 0:
@@ -153,10 +157,12 @@ class Glacier(Biome):
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Recipe_Burrow, 0.0002),
-        Structure_Identifier(Snow_Man_Structure, 0.006)
+        Structure_Identifier(Snow_Man_Structure, 0.006),
+        Structure_Identifier(Flowers, 0.001)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
+
 
 # high humidity
 class Rain_Forest(Biome):
@@ -172,11 +178,12 @@ class Rain_Forest(Biome):
         Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.12),
         Structure_Identifier(Small_Bush, 0.02),
-        Structure_Identifier(Rose_Structure, 0.03),
+        Structure_Identifier(Flowers, 0.03),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.12)
     ]
+
 
 class Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -191,12 +198,13 @@ class Forest(Biome):
         Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.1),
         Structure_Identifier(Small_Bush, 0.01),
-        Structure_Identifier(Rose_Structure, 0.025),
+        Structure_Identifier(Flowers, 0.025),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
     ]
     
+
 class Montane_Forest(Biome): # at some point get more gravel to appear here near the surface
     def claim(elevation, temp, humidity, mountain):
         if humidity >= 0 and temp < 0 and elevation < 0:
@@ -211,7 +219,7 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
         Structure_Identifier(Tree, 0.028),
         Structure_Identifier(Snow_Tree, 0.002),
         Structure_Identifier(Small_Bush, 0.025),
-        Structure_Identifier(Rose_Structure, 0.03)
+        Structure_Identifier(Flowers, 0.03)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)
@@ -235,3 +243,4 @@ class Plains(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)
     ]
+

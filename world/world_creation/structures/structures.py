@@ -34,7 +34,7 @@ class Recipe_Burrow:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -94,7 +94,7 @@ class Recipe_Burrow:
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -178,7 +178,7 @@ class Tree:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -214,7 +214,7 @@ class Tree:
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
 
@@ -248,7 +248,7 @@ class Snow_Tree:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -288,7 +288,7 @@ class Snow_Tree:
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
 
@@ -322,7 +322,7 @@ class Cactus_Structure:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -346,7 +346,7 @@ class Cactus_Structure:
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
 
@@ -380,7 +380,7 @@ class Snow_Man_Structure:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -392,7 +392,7 @@ class Snow_Man_Structure:
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
 
@@ -426,7 +426,7 @@ class Small_Bush:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
@@ -437,12 +437,12 @@ class Small_Bush:
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
 
 
-class Rose_Structure:
+class Flowers:
     width = 1
     start_x_diff = 0 # distance from the origin x that the y elevation should be set to
     height = 1 # distance above ground
@@ -471,18 +471,29 @@ class Rose_Structure:
         return cls.depth
 
     @classmethod
-    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0):
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         # initialize list
         structureInstructionsList = []
 
-        structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Rose(grid, grid.screen, ground_x, ground_y-1, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+        
+        if biome_name == 'Glacier':
+            flower_options = [Rose]
+        elif biome_name == 'Ravine':
+            flower_options = [Wild_Flower]
+        else:
+            flower_options = [Rose, Wild_Flower]
+            
+        index = int(random_factor * len(flower_options)) % len(flower_options)
+        Flower = flower_options[index]
+
+        structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Flower(grid, grid.screen, ground_x, ground_y-1, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
 
         # return list
         return structureInstructionsList
 
     @classmethod
-    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0): # needs to actually reflect the background
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [] # trees don't have backgrounds
     
