@@ -80,6 +80,7 @@ def get_blocks_list():
         Golden_Glass,
         Rose,
         Wild_Flower,
+        White_Lily,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,
