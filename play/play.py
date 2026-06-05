@@ -382,8 +382,6 @@ class Play:
             operate_menu(self.inventory.get_recipe_menu()) # this isn't an inventory menu, but it does access it through the inventory
         elif input.f_keypress:
             operate_menu(self.inventory, side_pannel_type=Fuel_Slots, side_pannel_open_func=self.inventory.open_fuel)
-            # if operate_menu(self.inventory):
-            #     self.inventory.open_fuel()
         elif input.escape_keypress: # this one works differently
             if self.sub_state is not None:
                 operate_menu(self.sub_state, esc=True)
