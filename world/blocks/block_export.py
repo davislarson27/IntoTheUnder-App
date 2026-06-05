@@ -106,6 +106,7 @@ def get_block_refuel_dict():
         Door: 5,
         Chest: 30,
         Gunpowder: 50,
+        Recipe_Frame: 10,
         Rose: 5
     }
 
