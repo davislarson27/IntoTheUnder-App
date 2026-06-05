@@ -46,3 +46,65 @@ class Glass(Block):
     def onDestroy(self, inventory=None):
         self.grid.set(self.x, self.y, None)
         return None
+
+class Golden_Glass(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Golden Glass"
+    ticks_to_mine = 15
+
+    draw_background = True
+    ignore_shading_from = {
+        (0, 1): True, # coming from the top
+        (0, -1): True, # coming from the bottom
+        (1, 0): True, # coming from the right
+        (-1, 0): True # comin from the left
+    }
+
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        # new warmer and lighter colors
+        primary_background_color = (215, 215, 220, 50)
+        detail_color = (180, 180, 185, 65)
+
+        frost_fill      = (215, 190, 90, 45)
+        frost_light     = (245, 238, 190, 55)
+        frost_highlight = (238, 232, 200, 130)
+
+        primary_background_color = frost_fill
+        detail_color = frost_light
+
+
+        def clamp_add(color, added):
+            return (
+                min(color[0] + added, 255),
+                min(color[1] + added, 255),
+                min(color[2] + added, 255),
+                color[3]
+            )
+
+        pygame.draw.rect(
+            screen,
+            clamp_add(primary_background_color, added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            clamp_add(detail_color, added_color),       # also fixed the alpha bug from before
+            (x + block_width // 10, y + block_width // 10, block_width // 4, block_width // 4)
+        )
+
+    def onDestroy(self, inventory=None):
+        self.grid.set(self.x, self.y, None)
+        return None

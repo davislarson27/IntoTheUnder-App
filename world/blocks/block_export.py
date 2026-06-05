@@ -76,6 +76,7 @@ def get_blocks_list():
         Wood_Ladder,
         Border_Block,
         Glass,
+        Golden_Glass,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

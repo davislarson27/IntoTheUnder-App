@@ -205,6 +205,15 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Golden Glass",
+            [
+                Ingredient(Glass, 10),
+                Ingredient(Gold_Ingot, 1)
+            ],
+            output=Ingredient(Golden_Glass, 10),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Stone Bricks",
             [
                 Ingredient(Rock, 2),

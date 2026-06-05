@@ -50,6 +50,7 @@ update notes:
  - added a health and energy bar
  - added fall damage
  - added dying and respawning
+ - added a gold tinted glass
 """
 
 """
