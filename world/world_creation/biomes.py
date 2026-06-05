@@ -179,7 +179,7 @@ class Rain_Forest(Biome):
         Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.12),
         Structure_Identifier(Small_Bush, 0.02),
-        Structure_Identifier(Flowers, 0.03),
+        Structure_Identifier(Flowers, 0.01),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.12)
@@ -220,7 +220,7 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
         Structure_Identifier(Tree, 0.028),
         Structure_Identifier(Snow_Tree, 0.002),
         Structure_Identifier(Small_Bush, 0.025),
-        Structure_Identifier(Flowers, 0.03)
+        Structure_Identifier(Flowers, 0.028)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)
@@ -240,7 +240,7 @@ class Plains(Biome):
         Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.02),
         Structure_Identifier(Small_Bush, 0.03),
-        Structure_Identifier(Flowers, 0.28)
+        Structure_Identifier(Flowers, 0.25)
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)
