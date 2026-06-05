@@ -14,6 +14,7 @@ from .block_types.wood import *
 from .block_types.resource_blocks import *
 from .block_types.bricks import *
 from .block_types.glass import *
+from .block_types.flowers import *
 
 """
 make sure ot add each block to the get_str_to_block() function and add any new files to the import list
@@ -77,6 +78,7 @@ def get_blocks_list():
         Border_Block,
         Glass,
         Golden_Glass,
+        Rose,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,
@@ -97,7 +99,8 @@ def get_block_refuel_dict():
         Wood_Ladder: 5,
         Door: 5,
         Chest: 30,
-        Gunpowder: 50
+        Gunpowder: 50,
+        Rose: 5
     }
 
 def get_block_repair_dict():
@@ -107,7 +110,8 @@ def get_block_repair_dict():
         Diamond: 70,
         Diamond_Block: 560,
         Mabelite: 100,
-        Mabelite_Block: 800
+        Mabelite_Block: 800,
+        Rose: 5
     }
     
 def get_block_refuel_values(block_type):

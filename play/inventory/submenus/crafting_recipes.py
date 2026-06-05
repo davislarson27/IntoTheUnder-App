@@ -502,6 +502,15 @@ class User_Crafting_Recipes_List:
         ),
 
         # ---------------------------------- materials ---------------------------------- #
+        Crafting_Recipe(
+            "Rose",
+            [
+                Ingredient(Mabelite, 1),
+                Ingredient(Gunpowder, 1)
+            ],
+            output=Ingredient(Rose, 5),
+            category=Recipe_Category.Building
+        ),
 
         # ---------------------------------- resources ---------------------------------- #
 
