@@ -415,3 +415,71 @@ class Snow_Leaves_Top(Leaves):
         cx = int(px + pad + 0.48 * (block_width - 2 * pad))
         cy = int(py + pad + 0.46 * (block_width - 2 * pad))
         pygame.draw.circle(screen, snow_color, (cx, cy), 1)
+
+class Tree_Sappling(Block):
+
+    str_name = "Tree Sapling"
+    ticks_to_mine = 10
+    pass_through = True
+    draw_background = True
+    ignore_shading_from = {
+        (0, 1): True,
+        (0, -1): True,
+        (1, 0): True,
+        (-1, 0): True
+    }
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added = 25 if being_mined else 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        bw = block_width
+
+        def c(rgb):
+            return (min(255, rgb[0] + added), min(255, rgb[1] + added), min(255, rgb[2] + added))
+
+        bark      = c((88, 65, 42))
+        bark_dark = c((60, 42, 24))
+        # Match the actual Leaves block palette
+        leaf_base = c((120, 155, 110))
+        leaf_dark = c((112, 147, 102))
+        leaf_hi   = c((126, 161, 116))
+
+        mid_x = x + bw // 2
+
+        # Trunk — runs bottom 60% of tile
+        trunk_w = max(3, int(bw * 0.13))
+        trunk_x = mid_x - trunk_w // 2
+        trunk_top = y + int(bw * 0.40)
+        pygame.draw.rect(screen, bark, (trunk_x, trunk_top, trunk_w, bw - int(bw * 0.40)))
+        pygame.draw.rect(screen, bark_dark, (trunk_x, trunk_top, max(1, trunk_w // 3), bw - int(bw * 0.40)))
+
+        # Short side branches
+        branch_y = y + int(bw * 0.44)
+        branch_h = max(2, int(bw * 0.05))
+        branch_len = int(bw * 0.18)
+        pygame.draw.rect(screen, bark, (trunk_x - branch_len, branch_y, branch_len, branch_h))
+        pygame.draw.rect(screen, bark, (trunk_x + trunk_w, branch_y, branch_len, branch_h))
+
+        def leaf_cluster(rx, ry, rw, rh):
+            pygame.draw.rect(screen, leaf_dark, (rx, ry, rw, rh))
+            pygame.draw.rect(screen, leaf_base, (rx + int(bw * 0.03), ry + int(bw * 0.03), max(1, rw - int(bw * 0.06)), max(1, rh - int(bw * 0.06))))
+            pygame.draw.rect(screen, leaf_hi,   (rx + int(bw * 0.05), ry + int(bw * 0.03), max(1, rw - int(bw * 0.10)), max(1, int(bw * 0.05))))
+
+        # Leaf clusters at branch ends
+        cluster_w = int(bw * 0.28)
+        cluster_h = int(bw * 0.24)
+        cluster_y = branch_y - int(bw * 0.16)
+        for ox in (trunk_x - branch_len - cluster_w // 2, trunk_x + trunk_w + branch_len - cluster_w // 2):
+            leaf_cluster(ox, cluster_y, cluster_w, cluster_h)
+
+        # Top canopy sitting above the trunk
+        top_w = int(bw * 0.40)
+        top_h = int(bw * 0.24)
+        top_y = y + int(bw * 0.07)
+        top_x = x + (bw - top_w) // 2 + 1
+        leaf_cluster(top_x, top_y, top_w, top_h)
