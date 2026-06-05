@@ -299,7 +299,7 @@ class Play:
                 if self.active_grid.get(self.affected_x, self.affected_y) is not None and self.destroy_held_time > self.active_grid.get(self.affected_x, self.affected_y).ticks_to_mine:
                     self.destroy_held_time = 0
                     selected_block = self.active_grid.get(self.affected_x, self.affected_y)
-                    inventory_block_type = selected_block.onDestroy()
+                    inventory_block_type = selected_block.onDestroy(self.inventory)
                     if inventory_block_type is not None:
                         self.inventory.add_item(inventory_block_type)
 

@@ -15,7 +15,7 @@ class Chest(Block):
         inventory.open_chest(self.stored_inventory_items)
         return True
     
-    def onDestruction(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
+    def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
         for item in self.stored_inventory_items:
             if item is not None:
                 for i in range(item.count_of_items):
