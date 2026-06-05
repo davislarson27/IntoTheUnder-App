@@ -52,6 +52,7 @@ update notes:
  - added dying and respawning
  - added a gold tinted glass
  - added flowers
+ - added puddles
  - reorganized the crafting recipes menu
  - added enduring chests
 """
