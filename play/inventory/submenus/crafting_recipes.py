@@ -163,14 +163,6 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
-            "Sappling",
-            [
-                Ingredient(Dirt, 1)
-            ],
-            output=Ingredient(Tree_Sappling, 5),
-            category=Recipe_Category.Resources
-        ),
-        Crafting_Recipe(
             "Glass",
             [
                 Ingredient(Sand, 1),
