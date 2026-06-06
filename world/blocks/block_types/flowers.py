@@ -16,6 +16,17 @@ class Rose(Block):
         (1, 0): True,
         (-1, 0): True
     }
+    tick_threshold = 2
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1):
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Rose, False)
+                    self.ticks_till_physics = 0
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -98,6 +109,17 @@ class Wild_Flower(Block):
         (1, 0): True,
         (-1, 0): True
     }
+    tick_threshold = 2
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1):
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Wild_Flower, False)
+                    self.ticks_till_physics = 0
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -180,6 +202,17 @@ class White_Lily(Block): # Moonflower?
         (1, 0): True,
         (-1, 0): True
     }
+    tick_threshold = 2
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1):
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, White_Lily, False)
+                    self.ticks_till_physics = 0
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -262,6 +295,17 @@ class Forget_Me_Not(Block): # Moonflower?
         (1, 0): True,
         (-1, 0): True
     }
+    tick_threshold = 2
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1):
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Forget_Me_Not, False)
+                    self.ticks_till_physics = 0
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

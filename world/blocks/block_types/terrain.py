@@ -376,7 +376,6 @@ class Snow_Block(Block):
                 else: #tick count has reached go time :)
                     self.grid.set(self.x, self.y, None)
                     self.grid.set(self.x, self.y+1, Snow_Block, False)
-                    # self.y += 1
                     self.ticks_till_physics = 0
 
     @staticmethod
