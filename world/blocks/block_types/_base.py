@@ -52,6 +52,8 @@ class Block:
 
         self.is_initialized = True
 
+        self.special_init()
+
     @classmethod
     def draw_to_surface(cls, block_width, being_mined=False, use_alt_drawing=False):
         surface = pygame.Surface((block_width, block_width), pygame.SRCALPHA).convert_alpha()
@@ -130,6 +132,9 @@ class Block:
         """returns true or false if the bg block should be shaded on the corner"""
         return self.ignore_shading_from[(directionOfBgBlock_x, directionofBgBlock_y)]
 
+    def special_init(self):
+        pass
+    
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
         if self.is_initialized and name in self.DIRTY_ATTRS:

@@ -1,6 +1,9 @@
 import pygame
 from math import floor
+import random
+
 from world.blocks.block_types._base import Block
+from world.blocks.block_types.terrain import Grass, Dirt
 
 class Log(Block):
 
@@ -419,7 +422,7 @@ class Snow_Leaves_Top(Leaves):
 class Tree_Sappling(Block):
 
     str_name = "Tree Sapling"
-    ticks_to_mine = 10
+    ticks_to_mine = 12
     pass_through = True
     draw_background = True
     ignore_shading_from = {
@@ -428,7 +431,48 @@ class Tree_Sappling(Block):
         (1, 0): True,
         (-1, 0): True
     }
+    tick_threshold = 2
+    grow_tick_threshold = 400
 
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1):
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time to fall
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Tree_Sappling, False)
+                    self.ticks_till_physics = 0
+            else: # this means that growing can continue
+                block_below = self.grid.get(self.x, self.y+1)
+                if not isinstance(block_below, Grass) and not isinstance(block_below, Dirt):
+                        self.ticks_till_physics = 0
+                        return
+                if not (self.grid.in_bounds(self.x-1, self.y-self.full_tree_height+1) and self.grid.in_bounds(self.x+1, self.y-self.full_tree_height+1)):
+                    self.ticks_till_physics = 0
+                    return
+                for y in range(self.y - self.full_tree_height + 1, self.y):
+                    for x in range(self.x - 1, self.x + 2):
+                        if self.grid.get(x, y) is not None:
+                            self.ticks_till_physics = 0
+                            return
+                    
+                if self.ticks_till_physics > self.grow_tick_threshold:
+                    self.grow_tree()
+                else:
+                    self.ticks_till_physics += 1
+
+    def grow_tree(self):
+        from world.world_creation.structures.structures import Tree
+        tree_instructions = Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
+        for instruct in tree_instructions:
+            instruct.setBlock(self.grid)
+
+    def special_init(self):
+        max_tree_height = 4 # includes leaves
+        self.tree_height = max_tree_height + 3
+        self.full_tree_height = self.tree_height + 3 # includes the height of the leaves
+    
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         added = 25 if being_mined else 0

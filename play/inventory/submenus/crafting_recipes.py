@@ -163,6 +163,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Sappling",
+            [
+                Ingredient(Dirt, 1)
+            ],
+            output=Ingredient(Tree_Sappling, 5),
+            category=Recipe_Category.Resources
+        ),
+        Crafting_Recipe(
             "Glass",
             [
                 Ingredient(Sand, 1),
@@ -539,6 +547,9 @@ class User_Crafting_Recipes_List:
         # ---------------------------------- building ---------------------------------- #
 
         # ---------------------------------- materials ---------------------------------- #
+
+        # ---------------------------------- resources ---------------------------------- #
+
         Crafting_Recipe(
             "Rose",
             [
@@ -546,10 +557,8 @@ class User_Crafting_Recipes_List:
                 Ingredient(Gunpowder, 1)
             ],
             output=Ingredient(Rose, 5),
-            category=Recipe_Category.Materials
+            category=Recipe_Category.Resources
         ),
-
-        # ---------------------------------- resources ---------------------------------- #
 
         # ---------------------------------- utility ---------------------------------- #
     ]
