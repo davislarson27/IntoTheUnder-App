@@ -50,17 +50,23 @@ class Log(Block):
 class Leaves(Block):
     str_name = "Leaves"
     ticks_to_mine = 18
+    sappling_drop_chance = 0.12
 
     tick_threshold = 60
 
     def onDestroy(self, inventory=None):
         self.grid.set(self.x, self.y, None)
+        if random.random() < self.sappling_drop_chance:
+            for y in range(self.y, self.y + 8):
+                if isinstance(self.grid.get(self.x, y), Tree_Sappling):
+                    return None
+            self.grid.set(self.x, self.y, Tree_Sappling)
         return None
 
     def physics(self):
         if self.anchor_x is not None and self.anchor_y is not None:
             if self.ticks_till_physics > self.tick_threshold:
-                self.grid.set(self.x, self.y, None)
+                self.onDestroy()
             else:
                 if self.grid.get(self.anchor_x, self.anchor_y) is None:
                     self.ticks_till_physics += 1
@@ -432,7 +438,7 @@ class Tree_Sappling(Block):
         (-1, 0): True
     }
     tick_threshold = 2
-    grow_tick_threshold = 400
+    grow_tick_threshold = 4000
 
     def physics(self):
         if self.grid.in_bounds(self.x, self.y + 1):
