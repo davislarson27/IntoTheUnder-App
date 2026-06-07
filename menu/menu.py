@@ -32,7 +32,7 @@ it then checks the mouse coordinates on click and compares them against the expe
 
 
 class Menu:
-    def __init__(self, screen, window, images, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory, world_generation_settings):
+    def __init__(self, screen, window, images, fonts, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory, world_generation_settings):
         # draw_function_call
         self.draw_function = self.draw_main
 
@@ -42,23 +42,22 @@ class Menu:
         self.screen = screen
         self.window = window
         self.images = images
+        self.fonts = fonts
         self.width = width_px
         self.height = height_px
         self.block_width = BLOCK_WIDTH
         self.run_game = False
-        _font_dir = Path(__file__).resolve().parent.parent / "game_files" / "fonts" / "Pixeloid"
-        _sans      = str(_font_dir / "PixeloidSans.ttf")
-        _sans_bold = str(_font_dir / "PixeloidSans-Bold.ttf")
-        _mono      = str(_font_dir / "PixeloidMono.ttf")
-        self.button_font               = pygame.font.Font(_sans, 18)
-        self.small_button_font         = pygame.font.Font(_sans, 14)
-        self.loading_world_screen_font = pygame.font.Font(_sans, 22)
-        self.title_font                = pygame.font.Font(_sans_bold, 48)
-        self.small_title_font          = pygame.font.Font(_sans_bold, 36)
-        self.create_world_title_font   = pygame.font.Font(_sans_bold, 32)
-        self.subscript_font            = pygame.font.Font(_sans, 11)
-        self.medium_font               = pygame.font.Font(_sans, 24)
-        self.input_font                = pygame.font.Font(_mono, 18)
+
+        self.button_font               = pygame.font.Font(str(fonts.PixeloidSans), 18)
+        self.small_button_font         = pygame.font.Font(str(fonts.PixeloidSans), 14)
+        self.loading_world_screen_font = pygame.font.Font(str(fonts.PixeloidSans), 22)
+        self.title_font                = pygame.font.Font(str(fonts.PixeloidSans_Bold), 48)
+        self.small_title_font          = pygame.font.Font(str(fonts.PixeloidSans_Bold), 36)
+        self.create_world_title_font   = pygame.font.Font(str(fonts.PixeloidSans_Bold), 32)
+        self.subscript_font            = pygame.font.Font(str(fonts.PixeloidSans), 11)
+        self.medium_font               = pygame.font.Font(str(fonts.PixeloidSans), 24)
+        self.input_font                = pygame.font.Font(str(fonts.PixeloidMono), 18)
+
         self.camera_x = 0
         self.background_move_speed = 0.2
         self.menu_running = True

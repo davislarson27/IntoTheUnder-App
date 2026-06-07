@@ -16,6 +16,7 @@ from math import floor
 from world.blocks.block_export import *
 from menu.menu import Menu
 from components.images import Images
+from components.fonts import Fonts
 from components.game_file_reading import *
 from components.input import Input
 from world.world_creation.world_generation_settings import World_Generation_Settings
@@ -79,6 +80,7 @@ VERSION_NAME = "intotheunder1.7.0"
 VERSION = 1.7 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
 IMAGES_FILE_NAME = "image_files"
+FONTS_FILE_NAME = 'fonts'
 pygame_icon_file = "ITU-Icon.png"
 
 game_files_location = VERSION_NAME + '/' + GAME_FILE_FOLDER_NAME
@@ -103,8 +105,9 @@ launch_load_screen.draw(0, 'Loading Game Files')
 icon_surface = pygame.image.load(resource_path(f"game_files/{IMAGES_FILE_NAME}/{pygame_icon_file}"))
 pygame.display.set_icon(icon_surface)
 
-# load in images
+# load in images & fonts
 images = Images(resource_path(f"game_files/{IMAGES_FILE_NAME}"), BLOCK_WIDTH)
+fonts = Fonts(resource_path(f"game_files/{FONTS_FILE_NAME}"))
 
 launch_load_screen.draw(15, 'Launching Menu')
 
@@ -119,7 +122,7 @@ TICKS = 60
 grid_width = 5000
 grid_height = 150
 world_generation_settings = World_Generation_Settings(VERSION, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, grid_width, grid_height, BLOCK_WIDTH)
-menu = Menu(screen, window, images, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME, VERSION), directory, world_generation_settings)
+menu = Menu(screen, window, images, fonts, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME, VERSION), directory, world_generation_settings)
 
 # running class
 run_class = menu
