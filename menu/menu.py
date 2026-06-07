@@ -57,6 +57,7 @@ class Menu:
         self.small_title_font          = pygame.font.Font(_sans_bold, 36)
         self.create_world_title_font   = pygame.font.Font(_sans_bold, 32)
         self.subscript_font            = pygame.font.Font(_sans, 11)
+        self.medium_font               = pygame.font.Font(_sans, 24)
         self.input_font                = pygame.font.Font(_mono, 18)
         self.camera_x = 0
         self.background_move_speed = 0.2
@@ -219,8 +220,10 @@ class Menu:
         self.custom_seed = self.getRandomSeed()
         self.default_keep_inventory = True
         self.keep_inventory = self.default_keep_inventory
-        self.default_creative_mode = False
-        self.creative_mode = self.default_creative_mode
+        self.default_survival_mode = True
+        self.survival_mode = self.default_survival_mode
+        self.default_recipe_progression = True
+        self.recipe_progression = self.default_recipe_progression
 
         # options screen - seed input and size selector
         self.seed_label_dimentions = pygame.Rect(
@@ -267,8 +270,10 @@ class Menu:
         self.cw_size_rects    = [empty(), empty(), empty()]
         self.cw_keep_inv_on   = empty()
         self.cw_keep_inv_off  = empty()
-        self.cw_creative_on   = empty()
-        self.cw_creative_off  = empty()
+        self.cw_survival_on        = empty()
+        self.cw_survival_off       = empty()
+        self.cw_recipe_prog_on    = empty()
+        self.cw_recipe_prog_off   = empty()
         self.cw_create_btn    = empty()
 
         # palette tied to the rest of the menu: gray panels/buttons, with the
@@ -407,6 +412,25 @@ class Menu:
         cx, cy = center
         pygame.draw.circle(self.screen, color, (cx, cy - 3), 8, 2)
         pygame.draw.rect(self.screen, color, pygame.Rect(cx - 4, cy + 4, 8, 4))
+
+    def _draw_book_icon(self, center, color=(200, 204, 210)):
+        cx, cy = center
+        pygame.draw.rect(self.screen, color, pygame.Rect(cx - 8, cy - 7, 16, 14))
+        pygame.draw.line(self.screen, (50, 50, 50), (cx, cy - 7), (cx, cy + 7), 2)
+        pygame.draw.line(self.screen, (50, 50, 50), (cx - 5, cy - 3), (cx - 2, cy - 3), 1)
+        pygame.draw.line(self.screen, (50, 50, 50), (cx - 5, cy + 1), (cx - 2, cy + 1), 1)
+
+    def _draw_heart_icon(self, center, color=(200, 204, 210)):
+        cx, cy = center
+        r, ox, oy = 5, 4, 2
+        pygame.draw.circle(self.screen, color, (cx - ox, cy - oy), r)
+        pygame.draw.circle(self.screen, color, (cx + ox, cy - oy), r)
+        points = [
+            (cx - ox - r, cy - oy),
+            (cx,          cy + r + oy),
+            (cx + ox + r, cy - oy),
+        ]
+        pygame.draw.polygon(self.screen, color, points)
 
     def draw_main(self, mx, my, input):
         # draw game title
@@ -594,7 +618,7 @@ class Menu:
     def draw_confirm_delete_screen(self, mx, my, input): # eventually this will allow deleting worlds in the game UI
                 
         # draw game title
-        load_screen_text_surf = self.small_title_font.render(f"Are You Sure You Want to Delete \"{self.world_name}\"", True, (255, 255, 255))
+        load_screen_text_surf = self.medium_font.render(f"Are You Sure You Want to Delete \"{self.world_name}\"", True, (255, 255, 255))
         text_rect = load_screen_text_surf.get_rect(center=self.title_space.center)
         self.screen.blit(load_screen_text_surf, text_rect)
 
@@ -678,7 +702,7 @@ class Menu:
         pygame.event.pump()
 
     def draw_announce_and_return_screen(self, mx, my, input):
-            text_surf = self.button_font.render(self.announce_message, True, (255, 255, 255))
+            text_surf = self.small_button_font.render(self.announce_message, True, (160, 165, 170))
             text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
@@ -722,7 +746,7 @@ class Menu:
         bk = self.small_button_font.render("Back", True, (255, 255, 255))
         self.screen.blit(bk, bk.get_rect(center=self.button0_dimentions.center))
 
-        tab_labels = ["Basic", "World Options", "Gameplay"]
+        tab_labels = ["General", "World", "Gameplay"]
         tab_y = card.top + mb_h * 2.7
         tab_h = mb_h * 1.4
         tab_w = content_w / 3
@@ -856,10 +880,12 @@ class Menu:
                 t = self.small_button_font.render(txt, True, (255, 255, 255))
                 self.screen.blit(t, t.get_rect(center=rect.center))
 
-        toggle_row(top + mb_h * 0.5, self._draw_bag_icon,  "Keep Inventory",
+        toggle_row(top + mb_h * 0.5, self._draw_heart_icon, "Survival Mode",
+                   self.survival_mode,  "cw_survival_on",  "cw_survival_off")
+        toggle_row(top + mb_h * 3.0, self._draw_bag_icon,  "Keep Inventory",
                    self.keep_inventory, "cw_keep_inv_on", "cw_keep_inv_off")
-        toggle_row(top + mb_h * 3.0, self._draw_bulb_icon, "Creative Mode",
-                   self.creative_mode,  "cw_creative_on",  "cw_creative_off")
+        toggle_row(top + mb_h * 5.5, self._draw_book_icon, "Recipe Progression",
+                   self.recipe_progression, "cw_recipe_prog_on", "cw_recipe_prog_off")
 
 
     def returnToLast(self):
@@ -1013,10 +1039,14 @@ class Menu:
                     self.keep_inventory = True
                 elif hit(self.cw_keep_inv_off):
                     self.keep_inventory = False
-                elif hit(self.cw_creative_on):
-                    self.creative_mode = True
-                elif hit(self.cw_creative_off):
-                    self.creative_mode = False
+                elif hit(self.cw_survival_on):
+                    self.survival_mode = True
+                elif hit(self.cw_survival_off):
+                    self.survival_mode = False
+                elif hit(self.cw_recipe_prog_on):
+                    self.recipe_progression = True
+                elif hit(self.cw_recipe_prog_off):
+                    self.recipe_progression = False
 
     def check_click(self, mouse, mx, my):
         if not self.is_clicked and mouse.get_pressed()[0]: # detect click
@@ -1075,7 +1105,7 @@ class Menu:
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
-        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, creative_mode=self.creative_mode)
+        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, survival_mode=self.survival_mode)
 
         # initialize grid and terrain
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed, world_spawn_x)
@@ -1148,7 +1178,8 @@ class Menu:
         self.selected_world_size = self.default_selected_world_size
         self.return_to = None
         self.keep_inventory = self.default_keep_inventory
-        self.creative_mode = self.default_creative_mode
+        self.survival_mode = self.default_survival_mode
+        self.recipe_progression = self.default_recipe_progression
 
     # ------------------------ functions interacting with the main loop ------------------------ #
 
