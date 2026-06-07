@@ -1148,25 +1148,6 @@ class Menu:
             self.is_clicked = False
 
     # ------------------------ helper functions ------------------------ #
-
-    def create_new_world(self):
-        # initialize the loading screen
-        # initialize grid and terrain
-        self.world_generation_settings.reset_ground_level(50)
-        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings)
-        for GenerationText, percentComplete in grid_superstructure._generate_world():
-            pass
-        grid, background_grid = grid_superstructure.get_grids()
-        grid.reset_save_cache()
-        background_grid.reset_save_cache()
-
-        # initialize inventory, player, and world
-        inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
-        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version)
-        player = Player(grid, self.screen, ((self.world_generation_settings.grid_width * self.block_width) // 2), 0, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height = self.world_generation_settings.health_bar_height, images=self.images, world_details=world_details)
-        player.prep_initial_spawn()
-
-        return grid, background_grid, inventory, player, world_details
     
     def create_new_world_with_loading(self):
         # initialize the loading screen
@@ -1195,7 +1176,7 @@ class Menu:
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
-        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, survival_mode=self.survival_mode)
+        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, survival_mode=self.survival_mode, recipe_progression=self.recipe_progression)
 
         # initialize grid and terrain
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed, world_spawn_x)
