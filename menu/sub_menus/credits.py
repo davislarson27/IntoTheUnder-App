@@ -50,7 +50,7 @@ class Credits:
         message = ("Thank you for playing Into the Under! I always wanted to learn "
                    "to make a game, and the fact that you are here reading this right "
                    "now means I have succeeded! Thank you for helping my dreams "
-                   "become reality.")
+                   "become reality!")
         self.message_lines = self._wrap(message, self.body_font, self.panel_rect.width - self.mw * 4)
 
         # back button
