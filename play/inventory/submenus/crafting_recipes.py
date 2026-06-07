@@ -613,6 +613,10 @@ class User_Crafting_Recipes_List:
             return True
         return False
 
+    def add_all_recipes(self):
+            for recipe in self.additional_possible_recipes:
+                self.add_recipe(recipe)
+
     def to_dict(self):
         return {
             "discovered_recipes": [str(recipe) for recipe in self.discovered_recipes]

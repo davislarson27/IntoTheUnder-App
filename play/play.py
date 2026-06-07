@@ -38,6 +38,10 @@ class Play:
         # prep substate
         self.sub_state = None # holds the run function for submenus when applicable
 
+        # check for if the recipes are supposed to be filled in
+        if not world_details.recipe_progression:
+            self.inventory.crafting_object.crafting_recipes.add_all_recipes()
+
         # prep the world to work
         self.mining_sprite = Mining_Sprite(screen, BLOCK_WIDTH)
         self.destroy_held_time = 0

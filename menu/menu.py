@@ -351,7 +351,8 @@ class Menu:
 
         menu_world_seed = self.getRandomSeed()
         menu_world_settings.reset_ground_level(13)
-        grid_superstructure = Grid_Superstructure(screen, menu_world_settings, world_seed=menu_world_seed)
+        world_details = World_Details('menu world', 'non-saved data', None, None)
+        grid_superstructure = Grid_Superstructure(screen, menu_world_settings, world_details, world_seed=menu_world_seed)
         grid_superstructure.generate_world()
         self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
 
@@ -1179,7 +1180,7 @@ class Menu:
         world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, survival_mode=self.survival_mode, recipe_progression=self.recipe_progression)
 
         # initialize grid and terrain
-        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, new_directory_path, world_seed, world_spawn_x)
+        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, world_details, new_directory_path, world_seed, world_spawn_x)
         for GenerationText, percentComplete in grid_superstructure._generate_world():
             self.draw_loading_world_screen(percentComplete, GenerationText)
         grid, background_grid = grid_superstructure.get_grids()
