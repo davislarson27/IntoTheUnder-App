@@ -75,7 +75,7 @@ INVENTORY_HEIGHT = HEALTH_BAR_HEIGHT + (grid_height_px * 7) # this is so hard co
 
 
 APP_NAME = "Into The Under"
-APP_DISPLAY_NAME = "Into The Under 1.7.0-Beta"
+APP_DISPLAY_NAME = "Into The Under v1.7.0-Beta"
 VERSION_NAME = "intotheunder1.7.0"
 VERSION = 1.7 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
@@ -124,7 +124,7 @@ TICKS = 60
 grid_width = 5000
 grid_height = 150
 world_generation_settings = World_Generation_Settings(VERSION, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT, grid_width, grid_height, BLOCK_WIDTH)
-menu = Menu(screen, window, images, fonts, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME, VERSION), directory, world_generation_settings)
+menu = Menu(screen, window, images, fonts, screen_width_px, screen_height_px, BLOCK_WIDTH, get_user_worlds_list(directory, IMAGES_FILE_NAME, VERSION), directory, world_generation_settings, APP_DISPLAY_NAME)
 
 # running class
 run_class = menu

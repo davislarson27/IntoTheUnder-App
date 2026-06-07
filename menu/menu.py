@@ -16,6 +16,9 @@ from play.inventory.inventory import Inventory
 from components.world_details import World_Details
 from components.crash_menu import Crash_Menu
 from play.bg_overlay import BG_Overlay
+from .sub_menus.menu_help import Menu_Help
+from .sub_menus.credits import Credits
+from .sub_menus.settings import Settings
 
 """
 explanation:
@@ -32,7 +35,7 @@ it then checks the mouse coordinates on click and compares them against the expe
 
 
 class Menu:
-    def __init__(self, screen, window, images, fonts, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory, world_generation_settings):
+    def __init__(self, screen, window, images, fonts, width_px, height_px, BLOCK_WIDTH, world_names_list, game_files_directory, world_generation_settings, APP_DISPLAY_NAME):
         # draw_function_call
         self.draw_function = self.draw_main
 
@@ -46,8 +49,15 @@ class Menu:
         self.width = width_px
         self.height = height_px
         self.block_width = BLOCK_WIDTH
+        self.APP_DISPLAY_NAME = APP_DISPLAY_NAME
         self.run_game = False
 
+        # initialize main menu submenus
+        self.help_menu = Menu_Help(screen, self)
+        self.credits = Credits(screen, self)
+        self.settings = Settings(screen, self)
+
+        # initialize fonts
         self.button_font               = pygame.font.Font(str(fonts.PixeloidSans), 18)
         self.small_button_font         = pygame.font.Font(str(fonts.PixeloidSans), 14)
         self.loading_world_screen_font = pygame.font.Font(str(fonts.PixeloidSans), 22)
@@ -285,6 +295,44 @@ class Menu:
         self.label_col     = (220, 220, 220)
         self.sublabel_col  = (160, 165, 170)
 
+        # ------------------------------- main menu footer bar ------------------------------- #
+
+        # which submenu (if any) the footer wants to open this frame; consumed in run()
+        self.open_submenu = None
+
+        self.footer_height = max(34, floor(self.menu_block_height * 1.0))
+        self.footer_rect = pygame.Rect(0, self.height - self.footer_height, self.width, self.footer_height)
+        self.footer_font = self.subscript_font
+        self.footer_pad_x = floor(self.menu_block_width * 0.6)
+        footer_cy = self.footer_rect.centery
+
+        self.footer_text_col = (200, 200, 200)
+
+        # version text (left side) — drawn from the app's display name so it stays in sync
+        self.footer_version_surf = self.footer_font.render(self.APP_DISPLAY_NAME, True, self.footer_text_col)
+
+        # link list (right side): "Help • Credits • Settings"
+        self.footer_sep_surf = self.footer_font.render("•", True, self.footer_text_col)
+        sep_w = self.footer_sep_surf.get_width()
+        sep_gap = floor(self.menu_block_width * 0.35)
+
+        footer_link_defs = [("Help", self.help_menu), ("Credits", self.credits), ("Settings", self.settings)]
+        link_surfs = [self.footer_font.render(lbl, True, self.footer_text_col) for lbl, _ in footer_link_defs]
+
+        total_w = sum(s.get_width() for s in link_surfs) + (len(link_surfs) - 1) * (sep_gap * 2 + sep_w)
+        x = self.width - self.footer_pad_x - total_w
+
+        self.footer_items = []          # each: {"label", "target", "rect"}
+        self.footer_sep_positions = []  # topleft positions for the "•" separators
+        for i, ((lbl, target), surf) in enumerate(zip(footer_link_defs, link_surfs)):
+            rect = surf.get_rect(midleft=(x, footer_cy))
+            self.footer_items.append({"label": lbl, "target": target, "rect": rect})
+            x += surf.get_width()
+            if i < len(link_surfs) - 1:
+                x += sep_gap
+                self.footer_sep_positions.append(self.footer_sep_surf.get_rect(midleft=(x, footer_cy)).topleft)
+                x += sep_w + sep_gap
+
         # ----------------------------------------- generate menu background world ----------------------------------------- #
 
         load_screen_block_width = floor(BLOCK_WIDTH * 1.15) #slightly enlarge the blocks
@@ -472,6 +520,34 @@ class Menu:
         text_rect = text_surf.get_rect(center=self.button3_dimentions.center)
         self.screen.blit(text_surf, text_rect)
 
+        # footer bar (over the background art, below the menu buttons)
+        self.draw_footer(mx, my)
+
+    def draw_footer(self, mx, my):
+        text_col = self.footer_text_col
+
+        # solid background bar
+        pygame.draw.rect(self.screen, (40, 40, 40), self.footer_rect)
+
+        # version text (left, vertically centered)
+        vrect = self.footer_version_surf.get_rect(midleft=(self.footer_pad_x, self.footer_rect.centery))
+        self.screen.blit(self.footer_version_surf, vrect)
+
+        # separators
+        for sep_pos in self.footer_sep_positions:
+            self.screen.blit(self.footer_sep_surf, sep_pos)
+
+        # clickable links (right), underline on hover
+        for item in self.footer_items:
+            hovered = item["rect"].collidepoint((mx, my))
+            surf = self.footer_font.render(item["label"], True, text_col)
+            self.screen.blit(surf, item["rect"].topleft)
+            if hovered:
+                underline_y = item["rect"].bottom - 1
+                pygame.draw.line(self.screen, text_col,
+                                 (item["rect"].left, underline_y),
+                                 (item["rect"].right, underline_y), 1)
+
     def draw_load_menu(self, mx, my, input):
 
         if len(self.world_names_list) > 0: # checks to make sure there are actual worlds that can be loaded
@@ -614,6 +690,8 @@ class Menu:
             text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
+        self.draw_footer(mx, my)
+
     def draw_confirm_delete_screen(self, mx, my, input): # eventually this will allow deleting worlds in the game UI
                 
         # draw game title
@@ -647,6 +725,8 @@ class Menu:
         text_surf = self.button_font.render("Cancel", True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
         self.screen.blit(text_surf, text_rect)
+
+        self.draw_footer(mx, my)
 
     def draw_loading_world_screen(self, percent_complete=0, message='Loading'):
         self.screen.fill(self.loading_world_screen_background_color)
@@ -717,6 +797,8 @@ class Menu:
             text_surf = self.button_font.render("Return", True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
             self.screen.blit(text_surf, text_rect)
+
+            self.draw_footer(mx, my)
 
     def draw_create_world_menu(self, mx, my, input):
         self.new_world_name_text_box.take_input(input, self.world_name_length_limit)
@@ -921,7 +1003,13 @@ class Menu:
                 self.draw_function = self.draw_create_world_menu
             elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
-                
+            else:
+                # footer links — flag the submenu to open; run() returns it
+                for item in self.footer_items:
+                    if item["rect"].collidepoint(self.position_on_click) and item["rect"].collidepoint(position_on_release):
+                        self.open_submenu = item["target"]
+                        break
+
         # if load world menu is active
         elif self.draw_function.__func__ is self.draw_load_menu.__func__:
             if len(self.world_names_list) > 0:
@@ -1183,7 +1271,7 @@ class Menu:
     # ------------------------ functions interacting with the main loop ------------------------ #
 
     def catch_exception(self): # reboots the menu
-        new_menu = Menu(self.screen, self.window, self.images, self.fonts, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings)
+        new_menu = Menu(self.screen, self.window, self.images, self.fonts, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings, self.APP_DISPLAY_NAME)
         return Crash_Menu(self.screen, new_menu, self, "Sorry... The Menu Crashed", "Attempt to Reload")
 
     def finalExceptionHandle(self):
@@ -1199,6 +1287,12 @@ class Menu:
         # register keyboard inputs
         if input.escape_keypress:
             self.returnToLast()
+
+        # a footer link was clicked — hand control to that submenu
+        if self.open_submenu is not None:
+            submenu = self.open_submenu
+            self.open_submenu = None
+            return submenu
 
         if self.run_game: # creates the play object that will be returned
             
