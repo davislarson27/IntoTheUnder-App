@@ -935,10 +935,11 @@ class Menu:
         toggle_h = mb_h * 1.4
         gap      = mb_h * 0.4
 
-        def toggle_row(yc, icon_fn, label_text, value, on_attr, off_attr):
+        def toggle_row(yc, icon_fn, label_text, value, on_attr, off_attr, locked=False):
             cy = int(yc + row_h / 2)
-            icon_fn((left + 14, cy))
-            ls = self.button_font.render(label_text, True, self.label_col)
+            label_col = self.sublabel_col if locked else self.label_col
+            icon_fn((left + 14, cy), color=(120, 120, 120) if locked else (200, 204, 210))
+            ls = self.button_font.render(label_text, True, label_col)
             self.screen.blit(ls, ls.get_rect(midleft=(left + 38, cy)))
 
             off_rect = pygame.Rect(int(left + w - toggle_w), int(yc + (row_h - toggle_h) / 2),
@@ -949,20 +950,24 @@ class Menu:
             setattr(self, off_attr, off_rect)
 
             for rect, is_on, txt in ((on_rect, True, "On"), (off_rect, False, "Off")):
-                if value == is_on:
+                if locked:
+                    pygame.draw.rect(self.screen, (85, 85, 90), rect)
+                elif value == is_on:
                     pygame.draw.rect(self.screen, self.accent, rect)
                     pygame.draw.rect(self.screen, self.accent_bright, rect, width=2)
                 else:
                     hov = rect.collidepoint((mx, my))
-                    pygame.draw.rect(self.screen, self.button_select_color if hov else self.button_color,
-                                     rect)
-                t = self.small_button_font.render(txt, True, (255, 255, 255))
+                    pygame.draw.rect(self.screen, self.button_select_color if hov else self.button_color, rect)
+                text_col = (130, 130, 135) if locked else (255, 255, 255)
+                t = self.small_button_font.render(txt, True, text_col)
                 self.screen.blit(t, t.get_rect(center=rect.center))
+
+        keep_inv_locked = not self.survival_mode
 
         toggle_row(top + mb_h * 0.5, self._draw_heart_icon, "Survival Mode",
                    self.survival_mode,  "cw_survival_on",  "cw_survival_off")
         toggle_row(top + mb_h * 3.0, self._draw_bag_icon,  "Keep Inventory",
-                   self.keep_inventory, "cw_keep_inv_on", "cw_keep_inv_off")
+                   self.keep_inventory, "cw_keep_inv_on", "cw_keep_inv_off", locked=keep_inv_locked)
         toggle_row(top + mb_h * 5.5, self._draw_book_icon, "Recipe Progression",
                    self.recipe_progression, "cw_recipe_prog_on", "cw_recipe_prog_off")
 
@@ -1119,14 +1124,14 @@ class Menu:
                     if hit(rect):
                         self.selected_world_size = i
             elif self.active_tab == 2:
-                if hit(self.cw_keep_inv_on):
-                    self.keep_inventory = True
-                elif hit(self.cw_keep_inv_off):
-                    self.keep_inventory = False
-                elif hit(self.cw_survival_on):
+                if hit(self.cw_survival_on):
                     self.survival_mode = True
                 elif hit(self.cw_survival_off):
                     self.survival_mode = False
+                elif hit(self.cw_keep_inv_on):
+                    self.keep_inventory = True
+                elif hit(self.cw_keep_inv_off):
+                    self.keep_inventory = False
                 elif hit(self.cw_recipe_prog_on):
                     self.recipe_progression = True
                 elif hit(self.cw_recipe_prog_off):
