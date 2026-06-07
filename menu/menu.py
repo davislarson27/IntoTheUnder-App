@@ -980,15 +980,14 @@ class Menu:
 
     # ------------------------ main functions ------------------------ #
 
-    def draw(self, mx, my, input):
-        # draw background before menus
-        self.screen.fill((30,30,30))
-
+    def draw_background(self):
+        self.screen.fill((30, 30, 30))
         self.bg_background_grid.draw(floor(self.camera_x), 0)
         self.bg_overlay.draw(floor(self.camera_x), 0, 0)
-
         self.background_grid.draw(floor(self.camera_x), 0)
 
+    def draw(self, mx, my, input):
+        self.draw_background()
         self.draw_function(mx, my, input)
     
     def execute_clicked(self, position_on_release): # may need to add in self.

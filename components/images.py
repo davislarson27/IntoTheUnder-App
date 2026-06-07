@@ -12,6 +12,8 @@ class Images():
         self.player_left = Images.file_to_image(image_path / "robot_left.png", 22, 40)
         self.player_right = Images.file_to_image(image_path / "robot_right.png", 22, 40)
         self.energy_icon = Images.file_to_image(image_path / "energy_icon.png", 15, 15)
+        self.python_logo    = pygame.image.load(image_path / "python_powered_logo.png").convert_alpha()
+        self.pygame_ce_logo = pygame.image.load(image_path / "pygame_ce_logo.png").convert_alpha()
 
 
     @staticmethod
