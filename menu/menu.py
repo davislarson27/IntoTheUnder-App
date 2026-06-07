@@ -121,6 +121,15 @@ class Menu:
         self.padding = 12
         self.new_world_name_text_box = Text_Box()
 
+        # world detail screen state
+        self.wd_name_text_box = Text_Box()
+        self.wd_world_seed = None
+        self.wd_world_size = None
+        self.wd_original_clean_name = None
+        self.wd_open_btn = pygame.Rect(0, 0, 0, 0)
+        self.wd_cancel_btn = pygame.Rect(0, 0, 0, 0)
+        self.wd_name_box_rect = pygame.Rect(0, 0, 0, 0)
+
         # buttons on the menu
         self.button0_dimentions = pygame.Rect(floor(self.menu_block_width * 0.5), self.menu_block_height * 1, floor(self.menu_block_width * 2.5), floor(self.menu_block_height * 1.75))
         
@@ -284,6 +293,7 @@ class Menu:
         self.cw_recipe_prog_on    = empty()
         self.cw_recipe_prog_off   = empty()
         self.cw_create_btn    = empty()
+        self.cw_cancel_btn    = empty()
 
         # palette tied to the rest of the menu: gray panels/buttons, with the
         # same blue the loading bar uses (90,140,200) reserved for selection
@@ -382,6 +392,55 @@ class Menu:
         self.draw_function = self.draw_confirm_delete_screen
         self.world_name = self.world_names_list[(self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset]
         self.special_world_reference_index = (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset
+
+    def open_world_detail_screen(self, button_offset):
+        self.world_name = self.world_names_list[(self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset]
+        self.special_world_reference_index = (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + button_offset
+        clean_name = self.world_name
+        if clean_name.endswith(self.string_end_if_corrupted):
+            clean_name = clean_name[:-len(self.string_end_if_corrupted)]
+        self.wd_original_clean_name = clean_name
+        self.wd_name_text_box.open_text_box(clean_name)
+        self.wd_world_seed, self.wd_world_size = self._read_world_details_quick(self.world_name)
+        self.draw_function = self.draw_world_detail_screen
+
+    def _read_world_details_quick(self, world_name):
+        clean = world_name
+        if clean.endswith(self.string_end_if_corrupted):
+            clean = clean[:-len(self.string_end_if_corrupted)]
+        path = Path(self.game_files_directory) / clean / "world_details.json"
+        try:
+            with open(path) as f:
+                d = json.load(f)
+            seed = d.get("world_seed", "Unknown")
+            spawn_x = d.get("world_spawn_x", 0)
+            grid_width = round((spawn_x * 2) / self.block_width)
+            if grid_width <= 3000: size = "Small"
+            elif grid_width <= 10000: size = "Medium"
+            else: size = "Large"
+            return seed, size
+        except Exception:
+            return "Unknown", "Unknown"
+
+    def _rename_world(self, old_name, new_name):
+        clean_old = old_name
+        if clean_old.endswith(self.string_end_if_corrupted):
+            clean_old = clean_old[:-len(self.string_end_if_corrupted)]
+        old_path = Path(self.game_files_directory) / clean_old
+        new_path = Path(self.game_files_directory) / new_name
+        try:
+            old_path.rename(new_path)
+            details_path = new_path / "world_details.json"
+            with open(details_path) as f:
+                d = json.load(f)
+            d["world_name"] = new_name
+            with open(details_path, "w") as f:
+                json.dump(d, f)
+            idx = self.world_names_list.index(old_name)
+            self.world_names_list[idx] = new_name
+            return True
+        except Exception:
+            return False
 
     def delete_world_files(self, world_file_name):
         # step 1: strip file name of " (CORRUPTED)" if applicable
@@ -734,6 +793,69 @@ class Menu:
 
         self.draw_footer(mx, my)
 
+    def draw_world_detail_screen(self, mx, my, input):
+        self.wd_name_text_box.take_input(input, self.world_name_length_limit)
+
+        mb_w, mb_h = self.menu_block_width, self.menu_block_height
+        card_margin_x = mb_w * 5
+        card_h = int(mb_h * 22)
+        card = pygame.Rect(card_margin_x, (self.height - card_h) // 2, self.width - card_margin_x * 2, card_h)
+        pad = mb_w * 1
+        content_left = card.left + pad
+        content_w = card.width - pad * 2
+
+        pygame.draw.rect(self.screen, self.card_fill, card, border_radius=8)
+        pygame.draw.rect(self.screen, self.card_border, card, width=1, border_radius=8)
+
+        # title
+        title_surf = self.create_world_title_font.render("World Details", True, (255, 255, 255))
+        self.screen.blit(title_surf, title_surf.get_rect(center=(card.centerx, card.top + int(mb_h * 1.4))))
+
+        y = card.top + mb_h * 3.5
+
+        # world name text box
+        self.screen.blit(self.subscript_font.render("WORLD NAME", True, self.sublabel_col), (content_left, int(y)))
+        y += mb_h * 0.9
+        self.wd_name_box_rect = pygame.Rect(content_left, int(y), int(content_w), int(mb_h * 2))
+        active = self.wd_name_text_box.is_typing
+        pygame.draw.rect(self.screen, self.field_fill, self.wd_name_box_rect)
+        pygame.draw.rect(self.screen, self.accent_bright if active else self.card_border,
+                         self.wd_name_box_rect, width=3 if active else 1)
+        cursor = self.wd_name_text_box.get_text_cursor() if active else ""
+        ns = self.input_font.render(self.wd_name_text_box.get_cur_string() + cursor, True, (235, 235, 235))
+        self.screen.blit(ns, ns.get_rect(midleft=(self.wd_name_box_rect.left + self.padding,
+                                                  self.wd_name_box_rect.centery)))
+        y += mb_h * 2 + mb_h * 1.6
+
+        # world info (seed + size)
+        self.screen.blit(self.subscript_font.render("WORLD INFO", True, self.sublabel_col), (content_left, int(y)))
+        y += mb_h * 1.1
+        self.screen.blit(self.button_font.render(f"Seed:  {self.wd_world_seed}", True, self.label_col),
+                         (int(content_left + mb_w * 0.5), int(y)))
+        y += mb_h * 1.8
+        self.screen.blit(self.button_font.render(f"Size:  {self.wd_world_size}", True, self.label_col),
+                         (int(content_left + mb_w * 0.5), int(y)))
+
+        # bottom buttons: Cancel (left) | Open World (right)
+        btn_h = int(mb_h * 2)
+        btn_y = card.bottom - int(mb_h) - btn_h
+        gap = int(mb_w * 0.5)
+        half_w = int((content_w - gap) / 2)
+
+        self.wd_cancel_btn = pygame.Rect(content_left, btn_y, half_w, btn_h)
+        cancel_hov = self.wd_cancel_btn.collidepoint((mx, my))
+        pygame.draw.rect(self.screen, self.button_select_color if cancel_hov else self.button_color,
+                         self.wd_cancel_btn, border_radius=4)
+        ds = self.button_font.render("Cancel", True, (255, 255, 255))
+        self.screen.blit(ds, ds.get_rect(center=self.wd_cancel_btn.center))
+
+        self.wd_open_btn = pygame.Rect(content_left + half_w + gap, btn_y, half_w, btn_h)
+        open_hov = self.wd_open_btn.collidepoint((mx, my))
+        pygame.draw.rect(self.screen, self.button_select_color if open_hov else self.button_color,
+                         self.wd_open_btn, border_radius=4)
+        os_surf = self.button_font.render("Open World", True, (255, 255, 255))
+        self.screen.blit(os_surf, os_surf.get_rect(center=self.wd_open_btn.center))
+
     def draw_loading_world_screen(self, percent_complete=0, message='Loading'):
         self.screen.fill(self.loading_world_screen_background_color)
 
@@ -815,8 +937,9 @@ class Menu:
         mb_w, mb_h = self.menu_block_width, self.menu_block_height
 
         card_margin_x = mb_w * 5
-        card = pygame.Rect(card_margin_x, mb_h * 4,
-                           self.width - card_margin_x * 2, mb_h * 21)
+        card_h = int(mb_h * 22)
+        card = pygame.Rect(card_margin_x, (self.height - card_h) // 2,
+                           self.width - card_margin_x * 2, card_h)
         pad = mb_w * 1
         content_left = card.left + pad
         content_w = card.width - pad * 2
@@ -827,11 +950,6 @@ class Menu:
         title_surf = self.create_world_title_font.render("Create New World", True, (255, 255, 255))
         self.screen.blit(title_surf, title_surf.get_rect(
             center=(card.centerx, card.top + int(mb_h * 1.4))))
-
-        cur = self.button_select_color if self.button0_dimentions.collidepoint((mx, my)) else self.button_color
-        pygame.draw.rect(self.screen, cur, self.button0_dimentions)
-        bk = self.small_button_font.render("Back", True, (255, 255, 255))
-        self.screen.blit(bk, bk.get_rect(center=self.button0_dimentions.center))
 
         tab_labels = ["General", "World", "Gameplay"]
         tab_y = card.top + mb_h * 2.7
@@ -864,12 +982,22 @@ class Menu:
         else:
             self._draw_gameplay_tab(mx, my, content_left, content_w, content_top, mb_h)
 
-        btn_h = mb_h * 2
-        self.cw_create_btn = pygame.Rect(content_left, card.bottom - mb_h - btn_h,
-                                         content_w, btn_h)
+        btn_h = int(mb_h * 2)
+        btn_y = card.bottom - int(mb_h) - btn_h
+        gap = int(mb_w * 0.5)
+        half_w = int((content_w - gap) / 2)
+
+        self.cw_cancel_btn = pygame.Rect(content_left, btn_y, half_w, btn_h)
+        cancel_hov = self.cw_cancel_btn.collidepoint((mx, my))
+        pygame.draw.rect(self.screen, self.button_select_color if cancel_hov else self.button_color,
+                         self.cw_cancel_btn, border_radius=4)
+        self.screen.blit(self.button_font.render("Cancel", True, (255, 255, 255)),
+                         self.button_font.render("Cancel", True, (255, 255, 255)).get_rect(center=self.cw_cancel_btn.center))
+
+        self.cw_create_btn = pygame.Rect(content_left + half_w + gap, btn_y, half_w, btn_h)
         hov = self.cw_create_btn.collidepoint((mx, my))
         pygame.draw.rect(self.screen, self.button_select_color if hov else self.button_color,
-                         self.cw_create_btn)
+                         self.cw_create_btn, border_radius=4)
         cs = self.button_font.render("Create New World", True, (255, 255, 255))
         self.screen.blit(cs, cs.get_rect(center=self.cw_create_btn.center))
 
@@ -1021,13 +1149,13 @@ class Menu:
                 # now check the launch world buttons
                 elif self.button1_longL_dimentions.collidepoint(self.position_on_click) and self.button1_longL_dimentions.collidepoint(position_on_release):
                     if self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor < len(self.world_names_list):
-                        self.execute_load_world(0)
-                elif self.button2_longL_dimentions.collidepoint(self.position_on_click) and self.button2_longL_dimentions.collidepoint(position_on_release):                    
+                        self.open_world_detail_screen(0)
+                elif self.button2_longL_dimentions.collidepoint(self.position_on_click) and self.button2_longL_dimentions.collidepoint(position_on_release):
                     if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 1 < len(self.world_names_list):
-                        self.execute_load_world(1)
-                elif self.button3_longL_dimentions.collidepoint(self.position_on_click) and self.button3_longL_dimentions.collidepoint(position_on_release):                    
+                        self.open_world_detail_screen(1)
+                elif self.button3_longL_dimentions.collidepoint(self.position_on_click) and self.button3_longL_dimentions.collidepoint(position_on_release):
                     if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
-                        self.execute_load_world(2)
+                        self.open_world_detail_screen(2)
                 
                 # check the delete world buttons
                 elif self.button1_shortR_dimentions.collidepoint(self.position_on_click) and self.button1_shortR_dimentions.collidepoint(position_on_release):
@@ -1055,6 +1183,46 @@ class Menu:
             else: # allows alt return button to work
                 if self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
                     self.draw_function = self.draw_main
+
+        # world detail screen
+        elif self.draw_function.__func__ is self.draw_world_detail_screen.__func__:
+            def hit(r):
+                return r.collidepoint(self.position_on_click) and r.collidepoint(position_on_release)
+
+            if self.wd_name_box_rect.collidepoint(self.position_on_click):
+                self.wd_name_text_box.is_typing = True
+            elif hit(self.wd_open_btn):
+                self.wd_name_text_box.is_typing = False
+                new_name = self.wd_name_text_box.get_cur_string().strip()
+                if new_name == "":
+                    pass
+                elif new_name != self.wd_original_clean_name:
+                    if (new_name in self.world_names_list
+                            or f"{new_name}{self.string_end_if_corrupted}" in self.world_names_list):
+                        self.announce_message = f"World Name \"{new_name}\" is Already in Use"
+                        self.prev_draw_func = self.draw_world_detail_screen
+                        self.draw_function = self.draw_announce_and_return_screen
+                    elif self._rename_world(self.world_name, new_name):
+                        self.world_name = new_name
+                        self.draw_function = self.draw_main
+                        self.load_world = True
+                        self.run_game = True
+                    else:
+                        self.announce_message = "Failed to Rename World"
+                        self.prev_draw_func = self.draw_world_detail_screen
+                        self.draw_function = self.draw_announce_and_return_screen
+                else:
+                    self.draw_function = self.draw_main
+                    self.load_world = True
+                    self.run_game = True
+            elif hit(self.wd_cancel_btn):
+                self.wd_name_text_box.is_typing = False
+                self.draw_function = self.draw_load_menu
+                self.world_name = None
+                self.special_world_reference_index = None
+                self.wd_original_clean_name = None
+            else:
+                self.wd_name_text_box.is_typing = False
 
         # confirm world deletion menu
         elif self.draw_function.__func__ is self.draw_confirm_delete_screen.__func__:
@@ -1090,7 +1258,7 @@ class Menu:
                 self.new_world_name_text_box.is_typing = False
                 self.world_seed_text_box.is_typing = False
 
-            if hit(self.button0_dimentions):
+            if hit(self.cw_cancel_btn):
                 blur_boxes()
                 self.returnToLast()
             elif hit(self.tab_rects[0]):
