@@ -56,6 +56,7 @@ update notes:
  - added puddles
  - reorganized the crafting recipes menu
  - added enduring chests
+ - redesigned the menu and added new world gen settings
 """
 
 """
