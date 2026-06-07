@@ -8,7 +8,6 @@ class Images():
         image_path = Path(images_file_path)
 
         # start converting images
-        self.trash = Images.file_to_image(image_path / "trash-can-outline-2.png", floor(BLOCK_SIZE * 0.75))
         self.player_left = Images.file_to_image(image_path / "robot_left.png", 22, 40)
         self.player_right = Images.file_to_image(image_path / "robot_right.png", 22, 40)
         self.energy_icon = Images.file_to_image(image_path / "energy_icon.png", 15, 15)

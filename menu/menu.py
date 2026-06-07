@@ -480,6 +480,14 @@ class Menu:
         ]
         pygame.draw.polygon(self.screen, color, points)
 
+    def _draw_trash_icon(self, center, color=(222, 224, 230)):
+        cx, cy = center
+        pygame.draw.rect(self.screen, color, pygame.Rect(cx - 3, cy - 11, 6, 3), border_radius=1)
+        pygame.draw.rect(self.screen, color, pygame.Rect(cx - 9, cy - 9, 18, 3), border_radius=1)
+        pygame.draw.rect(self.screen, color, pygame.Rect(cx - 7, cy - 6, 14, 14), width=2, border_radius=2)
+        for offset in (-3, 0, 3):
+            pygame.draw.line(self.screen, color, (cx + offset, cy - 4), (cx + offset, cy + 6), 1)
+
     def draw_main(self, mx, my, input):
         # draw game title
         text_rect = self.main_text_surf.get_rect(center=self.title_space.center)
@@ -594,8 +602,7 @@ class Menu:
                     cur_button_color,
                     self.button1_shortR_dimentions
                 )
-                icon_rect = self.images.trash.get_rect(center=self.button1_shortR_dimentions.center)
-                self.screen.blit(self.images.trash, icon_rect)
+                self._draw_trash_icon(self.button1_shortR_dimentions.center)
 
 
 
@@ -621,8 +628,7 @@ class Menu:
                     cur_button_color,
                     self.button2_shortR_dimentions
                 )
-                icon_rect = self.images.trash.get_rect(center=self.button2_shortR_dimentions.center)
-                self.screen.blit(self.images.trash, icon_rect)
+                self._draw_trash_icon(self.button2_shortR_dimentions.center)
 
             # create third option button
             if (self.WORLDS_PER_LOAD_SCREEN * self.load_screen_factor) + 2 < len(self.world_names_list):
@@ -645,8 +651,7 @@ class Menu:
                     cur_button_color,
                     self.button3_shortR_dimentions
                 )
-                icon_rect = self.images.trash.get_rect(center=self.button3_shortR_dimentions.center)
-                self.screen.blit(self.images.trash, icon_rect)
+                self._draw_trash_icon(self.button3_shortR_dimentions.center)
 
             # create "Prev" option button
             if self.button4L_dimentions.collidepoint((mx, my)): cur_button_color = self.button_select_color
