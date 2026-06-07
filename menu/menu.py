@@ -781,7 +781,7 @@ class Menu:
         pygame.event.pump()
 
     def draw_announce_and_return_screen(self, mx, my, input):
-            text_surf = self.small_button_font.render(self.announce_message, True, (160, 165, 170))
+            text_surf = self.medium_font.render(self.announce_message, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
