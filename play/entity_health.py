@@ -169,9 +169,6 @@ class Entity_Health:
         else: # nothing is drawn if it's not survival mode
             return 0
         
-    def is_health_bar_drawn(self):
-        return self.is_survival
-
     def draw(self):
 
         # doesn't draw anything if it is not survival mode
