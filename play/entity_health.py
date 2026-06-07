@@ -1,7 +1,7 @@
 import pygame
 
 class Entity_Health:
-    def __init__(self, screen, max_health, cur_health, max_energy, energy, images):
+    def __init__(self, screen, max_health, cur_health, max_energy, energy, images, is_survival):
         self.max_health = max_health
         self.health = cur_health
 
@@ -13,10 +13,13 @@ class Entity_Health:
         self.screen = screen
         self.images = images
 
+        self.is_survival = is_survival
+
         self.tot_columns = 24
         self.row_width = screen.get_width() // self.tot_columns
 
-        margin = 30
+        self.margin = 30
+        margin = self.margin
         icon_width = 15
         self.health_bar_height = 50
         health_bar_width = self.row_width * 4 + int(icon_width * 1.5)
@@ -99,11 +102,18 @@ class Entity_Health:
 
     def change_health(self, change_in_health):
         """takes the change in the health and applies it"""
+        if not self.is_survival:
+            self.health = self.max_health
+            return
+
         self.health += change_in_health
         self.health = min(self.health, self.max_health)
 
     def change_energy(self, change_in_energy):
         """takes the change in the energy and applies it"""
+        if not self.is_survival:
+            self.energy = self.max_energy
+            return
         self.energy += change_in_energy
         self.energy = min(self.energy, self.max_energy)
 
@@ -117,6 +127,9 @@ class Entity_Health:
         return self.health >= self.max_health
 
     def is_alive(self):
+        if not self.is_survival:
+            return True
+        
         if self.health <= 0:
             return False
         elif self.energy <= 0:
@@ -129,7 +142,6 @@ class Entity_Health:
     def get_energy_missing(self):
         return self.max_energy - self.energy
 
-    
     def reset_health(self):
         self.health = self.max_health
 
@@ -152,10 +164,20 @@ class Entity_Health:
         return self.energy
     
     def get_health_bar_height(self):
-        return self.health_bar_height + self.health_bar_start_y
+        if self.is_survival:
+            return self.health_bar_height + self.health_bar_start_y
+        else: # nothing is drawn if it's not survival mode
+            return 0
+        
+    def is_health_bar_drawn(self):
+        return self.is_survival
 
     def draw(self):
 
+        # doesn't draw anything if it is not survival mode
+        if not self.is_survival:
+            return
+        
         # calculate percentages
         health_percent = max(min(self.health / self.max_health, 1), 0)
         energy_percent = max(min(self.energy / self.max_energy, 1), 0)

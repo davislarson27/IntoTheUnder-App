@@ -40,3 +40,7 @@ class Player(Entity):
                 self.apply_movement_cost_y()
 
         return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+
+    def is_health_bar_drawn(self):
+        return self.health_bar.is_health_bar_drawn()
+    
