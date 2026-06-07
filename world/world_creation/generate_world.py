@@ -257,7 +257,12 @@ class Grid_Superstructure:
             if open_lake_obj.is_valid_lake(): lakes.append(open_lake_obj)
             open_lake_obj = None
 
-        yield 'Generating Grid', 3
+        update_bar_block_marker = self.foreground_grid.width // 32
+
+        yield_reponse = 'Generating Grid'
+        post_scanning_progress = 3
+        total_section_progress = 25 - post_scanning_progress
+        yield yield_reponse, post_scanning_progress
 
         # generate the foreground
         for x in range(self.foreground_grid.width): # this will loop through the grid and let me go x by x
@@ -302,7 +307,17 @@ class Grid_Superstructure:
                         self.foreground_grid.set(x, y, ore)
                 i+=1
 
-        yield 'Generating Background', 25
+            # yield a result periodically to report progress
+            if x != 0 and x % update_bar_block_marker == 0:
+                cur_progress = int((x / self.foreground_grid.width) * total_section_progress)
+                yield yield_reponse, cur_progress + post_scanning_progress
+
+        yield_reponse = 'Generating Background'
+        post_scanning_progress = 25
+        total_section_progress = 40 - post_scanning_progress
+        yield yield_reponse, post_scanning_progress
+
+        # yield 'Generating Background', 25
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
@@ -322,7 +337,12 @@ class Grid_Superstructure:
                 layer_num+=1
             for y in range(cur_depth_down, self.background_grid.height):
                 self.background_grid.set(x, y, biome.sub_layer)
-                
+            
+            # yield a result periodically to report progress
+            if x != 0 and x % update_bar_block_marker == 0:
+                cur_progress = int((x / self.foreground_grid.width) * total_section_progress)
+                yield yield_reponse, cur_progress + post_scanning_progress
+
         yield 'Generating Structures', 40
 
         for x in range(self.foreground_grid.width):
@@ -421,5 +441,5 @@ class Grid_Superstructure:
                 self.background_grid.set(x, y, Border_Block) # sets the bottom block to a border block
 
 
-        return 'Initializing Inventory', 50
+        yield 'Initializing Inventory', 50
     
