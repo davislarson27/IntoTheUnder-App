@@ -57,6 +57,7 @@ update notes:
  - reorganized the crafting recipes menu
  - added enduring chests
  - redesigned the menu and added new world gen settings
+ - added the ability to rename a world
 """
 
 """
