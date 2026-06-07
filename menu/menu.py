@@ -907,7 +907,6 @@ class Menu:
         self._draw_dice_icon(self.cw_dice_btn)
         y += mb_h * 2 + mb_h * 0.5
 
-
     def _draw_world_options_tab(self, mx, my, left, w, top, mb_h):
         y = top
 
@@ -929,7 +928,6 @@ class Menu:
                 pygame.draw.rect(self.screen, self.button_color, r)
             ts = self.button_font.render(label, True, (255, 255, 255))
             self.screen.blit(ts, ts.get_rect(center=r.center))
-
 
     def _draw_gameplay_tab(self, mx, my, left, w, top, mb_h):
         row_h    = mb_h * 2
@@ -967,7 +965,6 @@ class Menu:
                    self.keep_inventory, "cw_keep_inv_on", "cw_keep_inv_off")
         toggle_row(top + mb_h * 5.5, self._draw_book_icon, "Recipe Progression",
                    self.recipe_progression, "cw_recipe_prog_on", "cw_recipe_prog_off")
-
 
     def returnToLast(self):
         if self.return_to is None:
