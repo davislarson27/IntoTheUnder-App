@@ -1,12 +1,14 @@
 import pygame
 from components.blit_letterboxed import blit_letterboxed
+import components.fonts as font_manager
 
 
 class Launch_Load_Screen:
     def __init__(self, screen, window, width_px, height_px):
         self.screen = screen
         self.window = window
-        self.font = pygame.font.Font(None, 30)
+        _f = font_manager.get()
+        self.font = pygame.font.Font(str(_f.PixeloidSans), 22)
         self.background_color = (30, 30, 30)
 
         blocks_width = 28

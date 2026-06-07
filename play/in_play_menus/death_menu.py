@@ -1,5 +1,6 @@
 import pygame
 import random
+import components.fonts as font_manager
 
 class Death_Menu:
     def __init__(self, screen, play):
@@ -36,8 +37,9 @@ class Death_Menu:
         self.menu_block_height = self.screen.get_height() // self.blocks_height
 
         # fonts
-        self.button_font = pygame.font.Font(None, 25)
-        self.title_font = pygame.font.Font(None, 65)
+        _f = font_manager.get()
+        self.button_font = pygame.font.Font(str(_f.PixeloidSans), 18)
+        self.title_font  = pygame.font.Font(str(_f.PixeloidSans_Bold), 60)
 
         # title
         title_column_width = 16
@@ -51,7 +53,7 @@ class Death_Menu:
         self.title_surf = self.title_font.render("You Died", True, self.title_text_color)
 
         # death message
-        self.death_message_font = pygame.font.Font(None, 30)
+        self.death_message_font = pygame.font.Font(str(_f.PixeloidSans), 22)
         self.death_message_surf = self.death_message_font.render(self.death_message, True, self.title_text_color)
         self.death_message_rect = self.death_message_surf.get_rect(center=(self.title_space.centerx, int(self.menu_block_height * 10.25)))
 

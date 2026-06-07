@@ -1,5 +1,5 @@
 import pygame
-
+import components.fonts as font_manager
 from .help_menu import Help_Menu
 
 class Escape_Menu:
@@ -28,8 +28,9 @@ class Escape_Menu:
         self.menu_block_height = self.screen.get_height() // self.blocks_height
 
         # fonts
-        self.button_font = pygame.font.Font(None, 25)
-        self.title_font = pygame.font.Font(None, 65)
+        _f = font_manager.get()
+        self.button_font = pygame.font.Font(str(_f.PixeloidSans), 18)
+        self.title_font  = pygame.font.Font(str(_f.PixeloidSans_Bold), 46)
 
         # title
         title_column_width = 16

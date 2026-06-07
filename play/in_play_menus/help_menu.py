@@ -1,5 +1,6 @@
 import pygame
 from math import floor
+import components.fonts as font_manager
 
 
 class Help_Menu:
@@ -47,7 +48,8 @@ class Help_Menu:
         title_bar_h         = self.gh * 5
         self.title_bar_rect = pygame.Rect(0, 0, W, title_bar_h)
 
-        self.title_font = pygame.font.Font(None, max(14, floor(self.gh * 2.8)))
+        _f = font_manager.get()
+        self.title_font = pygame.font.Font(str(_f.PixeloidSans_Bold), max(14, floor(self.gh * 2.6)))
         self.title_surf = self.title_font.render("How to Play", True, self.title_text_color)
         self.title_rect = self.title_surf.get_rect(center=(W // 2, title_bar_h // 2))
 
@@ -58,7 +60,7 @@ class Help_Menu:
         bottom_bar_h         = self.gh * 4
         self.bottom_bar_rect = pygame.Rect(0, H - bottom_bar_h, W, bottom_bar_h)
 
-        self.hint_font = pygame.font.Font(None, max(11, floor(self.gh * 1.3)))
+        self.hint_font = pygame.font.Font(str(_f.PixeloidSans), max(8, floor(self.gh * 0.95)))
         hint_y         = H - bottom_bar_h + bottom_bar_h // 2
 
         hint1 = self.hint_font.render("[H]  toggle this menu", True, self.hint_text_color)
@@ -96,9 +98,9 @@ class Help_Menu:
         #  fonts                                                             #
         # ------------------------------------------------------------------ #
 
-        self.col_title_font = pygame.font.Font(None, max(11, floor(self.gh * 1.3)))
-        self.kb_key_font    = pygame.font.Font(None, max(11, floor(self.gh * 1.4)))
-        self.kb_desc_font   = pygame.font.Font(None, max(11, floor(self.gh * 1.4)))
+        self.col_title_font = pygame.font.Font(str(_f.PixeloidSans_Bold), max(8, floor(self.gh * 0.95)))
+        self.kb_key_font    = pygame.font.Font(str(_f.PixeloidSans), max(8, floor(self.gh * 1.0)))
+        self.kb_desc_font   = pygame.font.Font(str(_f.PixeloidSans), max(8, floor(self.gh * 1.0)))
 
         # ------------------------------------------------------------------ #
         #  pre-build columns                                                 #
@@ -152,7 +154,7 @@ class Help_Menu:
         )
 
         # --- Back button ---
-        self.back_font = pygame.font.Font(None, max(11, floor(self.gh * 1.6)))
+        self.back_font = pygame.font.Font(str(_f.PixeloidSans), max(8, floor(self.gh * 1.15)))
         back_label     = self.back_font.render("Back", True, self.key_chip_text)
         btn_pad_x      = self.gw * 2
         btn_pad_y      = self.gh

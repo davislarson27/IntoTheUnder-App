@@ -1,4 +1,5 @@
 import pygame
+import components.fonts as font_manager
 
 class Crash_Menu:
     def __init__(self, screen, goToState, comeFromState, message="Sorry... Your Game Crashed", button_message="Return to Menu"):
@@ -29,8 +30,9 @@ class Crash_Menu:
         self.menu_block_height = self.screen.get_height() // self.blocks_height
 
         # fonts
-        self.button_font = pygame.font.Font(None, 25)
-        self.title_font = pygame.font.Font(None, 45)
+        _f = font_manager.get()
+        self.button_font = pygame.font.Font(str(_f.PixeloidSans), 18)
+        self.title_font  = pygame.font.Font(str(_f.PixeloidSans_Bold), 42)
 
         # title
         title_column_width = 16

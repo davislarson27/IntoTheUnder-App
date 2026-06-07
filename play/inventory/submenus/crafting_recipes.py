@@ -1,5 +1,6 @@
 import pygame
 from enum import Enum
+import components.fonts as font_manager
 
 from world.blocks.block_export import *
 from ..inventory_item import Inventory_Item
@@ -694,7 +695,7 @@ class User_Crafting_Recipes_List:
         self.label_gap_y   = int(self.grid_height_px * 0.5)
         self.label_height  = max(12, int(self.grid_height_px * 1.0))
 
-        section_label_height = floor(2.4 * self.grid_height_px)
+        section_label_height = floor(1.8 * self.grid_height_px)
 
         # item frame sizing — matches inventory's 75% rule
         item_percent_of_box         = 0.75
@@ -702,10 +703,11 @@ class User_Crafting_Recipes_List:
         self.full_item_margin       = floor((self.box_width - self.full_item_size) / 2)
 
         # fonts
-        self.full_inventory_font        = pygame.font.Font(None, floor(self.full_item_size * 0.75))
-        self.inventory_item_name_font   = pygame.font.Font(None, 16)
-        self.section_label_font         = pygame.font.Font(None, section_label_height)
-        self.category_font              = pygame.font.Font(None, floor(1.8 * self.grid_height_px))
+        _f = font_manager.get()
+        self.full_inventory_font        = pygame.font.Font(str(_f.PixeloidSans), floor(self.full_item_size * 0.55))
+        self.inventory_item_name_font   = pygame.font.Font(str(_f.PixeloidSans), 12)
+        self.section_label_font         = pygame.font.Font(str(_f.PixeloidSans_Bold), section_label_height)
+        self.category_font              = pygame.font.Font(str(_f.PixeloidSans_Bold), floor(1.35 * self.grid_height_px))
 
         # ── layout measurements ────────────────────────────────────────── #
 

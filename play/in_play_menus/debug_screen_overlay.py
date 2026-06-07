@@ -1,4 +1,5 @@
 import pygame
+import components.fonts as font_manager
 
 class Debug_Overlay:
     def __init__(self, screen, player):
@@ -10,8 +11,9 @@ class Debug_Overlay:
 
         allow_start_y = player.get_health_bar_height()
 
-        self.font_height = 22
-        self.font = pygame.font.Font(None, self.font_height)
+        self.font_height = 16
+        _f = font_manager.get()
+        self.font = pygame.font.Font(str(_f.PixeloidMono), self.font_height)
         self.margin_left = 30
         self.margin_top = 12 + allow_start_y
 

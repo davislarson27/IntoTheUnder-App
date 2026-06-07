@@ -1,4 +1,5 @@
 import pygame
+import components.fonts as font_manager
 
 from world.blocks.block_export import *
 from .inventory_item import Inventory_Item
@@ -67,7 +68,7 @@ class Inventory:
         self.label_gap_y = int(self.grid_height_px * 0.5)
         self.label_height = max(12, int(self.grid_height_px * 1.0))
 
-        section_label_height = floor(2.4 * self.grid_height_px)
+        section_label_height = floor(1.8 * self.grid_height_px)
 
 
         # item frame box details
@@ -76,14 +77,15 @@ class Inventory:
         full_inventory_item_margin = floor((self.box_width - full_inventory_item_size) / 2)
 
         # initalize fonts
-        self.hot_bar_font = pygame.font.Font(None, 36)  # None = default font, 36 = size
-        self.percent_font_of_block_full_inventory = 0.75
-        self.full_inventory_font = pygame.font.Font(None, floor(full_inventory_item_size * self.percent_font_of_block_full_inventory))
+        _f = font_manager.get()
+        self.hot_bar_font = pygame.font.Font(str(_f.PixeloidSans_Bold), 26)
+        self.percent_font_of_block_full_inventory = 0.55
+        self.full_inventory_font = pygame.font.Font(str(_f.PixeloidSans), floor(full_inventory_item_size * self.percent_font_of_block_full_inventory))
 
-        self.inventory_item_name_font = pygame.font.Font(None, 16)
-        self.hot_bar_name_font = pygame.font.Font(None, 15)
-        
-        self.section_label = pygame.font.Font(None, section_label_height)
+        self.inventory_item_name_font = pygame.font.Font(str(_f.PixeloidSans), 10)
+        self.hot_bar_name_font        = pygame.font.Font(str(_f.PixeloidSans), 11)
+
+        self.section_label = pygame.font.Font(str(_f.PixeloidSans_Bold), section_label_height)
 
         # colors
         self.base_box_color = (200, 200, 200)

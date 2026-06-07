@@ -16,7 +16,7 @@ from math import floor
 from world.blocks.block_export import *
 from menu.menu import Menu
 from components.images import Images
-from components.fonts import Fonts
+import components.fonts as Font_Manager
 from components.game_file_reading import *
 from components.input import Input
 from world.world_creation.world_generation_settings import World_Generation_Settings
@@ -99,15 +99,17 @@ window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RES
 screen = pygame.Surface((screen_width_px, screen_height_px))
 pygame.display.set_caption(APP_DISPLAY_NAME)
 
+Font_Manager.init(resource_path(f"game_files/{FONTS_FILE_NAME}"))
+fonts = Font_Manager.get()
+
 launch_load_screen = Launch_Load_Screen(screen, window, screen_width_px, screen_height_px)
 launch_load_screen.draw(0, 'Loading Game Files')
 
 icon_surface = pygame.image.load(resource_path(f"game_files/{IMAGES_FILE_NAME}/{pygame_icon_file}"))
 pygame.display.set_icon(icon_surface)
 
-# load in images & fonts
+# load in images
 images = Images(resource_path(f"game_files/{IMAGES_FILE_NAME}"), BLOCK_WIDTH)
-fonts = Fonts(resource_path(f"game_files/{FONTS_FILE_NAME}"))
 
 launch_load_screen.draw(15, 'Launching Menu')
 
