@@ -1183,7 +1183,7 @@ class Menu:
     # ------------------------ functions interacting with the main loop ------------------------ #
 
     def catch_exception(self): # reboots the menu
-        new_menu = Menu(self.screen, self.window, self.images, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings)
+        new_menu = Menu(self.screen, self.window, self.images, self.fonts, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings)
         return Crash_Menu(self.screen, new_menu, self, "Sorry... The Menu Crashed", "Attempt to Reload")
 
     def finalExceptionHandle(self):
