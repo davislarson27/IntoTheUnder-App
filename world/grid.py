@@ -45,6 +45,12 @@ class Grid:
         chunk_id = global_x // cls.chunk_width
         chunk_x = global_x % cls.chunk_width
         return chunk_id, chunk_x
+    
+    @classmethod
+    def get_chunk_id(cls, global_x):
+        """returns chunk_id"""
+        chunk_id, _ = cls.get_chunk_x(global_x)
+        return chunk_id
 
     def get_chunk(self, global_x, y):
         if not self.in_bounds(global_x, y):

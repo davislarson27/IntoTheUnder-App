@@ -67,7 +67,7 @@ class Play:
         bg_mining_icon_width = 51
         self.bg_mining_icon = Bg_Mining_Icon(screen, screen.get_width() - bg_mining_icon_width - bg_mining_icon_margin, bg_mining_icon_margin, bg_mining_icon_width, bg_mining_icon_width)
 
-        self.debug_overlay = Debug_Overlay(screen, player)
+        self.debug_overlay = Debug_Overlay(screen, grid, player)
 
         self.inventory.set_health_bar(self.player.health_bar)
 
