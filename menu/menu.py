@@ -1004,12 +1004,6 @@ class Menu:
                 self.draw_function = self.draw_create_world_menu
             elif self.button3_dimentions.collidepoint(self.position_on_click) and self.button3_dimentions.collidepoint(position_on_release):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
-            else:
-                # footer links — flag the submenu to open; run() returns it
-                for item in self.footer_items:
-                    if item["rect"].collidepoint(self.position_on_click) and item["rect"].collidepoint(position_on_release):
-                        self.open_submenu = item["target"]
-                        break
 
         # if load world menu is active
         elif self.draw_function.__func__ is self.draw_load_menu.__func__:
@@ -1135,6 +1129,14 @@ class Menu:
                     self.recipe_progression = True
                 elif hit(self.cw_recipe_prog_off):
                     self.recipe_progression = False
+
+        # footer links work on every screen that renders the footer (not create world)
+        if self.draw_function.__func__ is not self.draw_create_world_menu.__func__:
+            for item in self.footer_items:
+                if (item["rect"].collidepoint(self.position_on_click) and
+                        item["rect"].collidepoint(position_on_release)):
+                    self.open_submenu = item["target"]
+                    break
 
     def check_click(self, mouse, mx, my):
         if not self.is_clicked and mouse.get_pressed()[0]: # detect click
