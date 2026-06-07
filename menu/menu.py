@@ -1217,6 +1217,11 @@ class Menu:
                     self.run_game = True
             elif hit(self.wd_cancel_btn):
                 self.wd_name_text_box.is_typing = False
+                new_name = self.wd_name_text_box.get_cur_string().strip()
+                if (new_name and new_name != self.wd_original_clean_name
+                        and new_name not in self.world_names_list
+                        and f"{new_name}{self.string_end_if_corrupted}" not in self.world_names_list):
+                    self._rename_world(self.world_name, new_name)
                 self.draw_function = self.draw_load_menu
                 self.world_name = None
                 self.special_world_reference_index = None
