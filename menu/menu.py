@@ -16,7 +16,6 @@ from play.inventory.inventory import Inventory
 from components.world_details import World_Details
 from components.crash_menu import Crash_Menu
 from play.bg_overlay import BG_Overlay
-from .sub_menus.menu_help import Menu_Help
 from .sub_menus.credits import Credits
 from .sub_menus.settings import Settings
 
@@ -53,7 +52,6 @@ class Menu:
         self.run_game = False
 
         # initialize main menu submenus
-        self.help_menu = Menu_Help(screen, self)
         self.credits = Credits(screen, self)
         self.settings = Settings(screen, self)
 
@@ -326,7 +324,7 @@ class Menu:
         sep_w = self.footer_sep_surf.get_width()
         sep_gap = floor(self.menu_block_width * 0.35)
 
-        footer_link_defs = [("Help", self.help_menu), ("Credits", self.credits), ("Settings", self.settings)]
+        footer_link_defs = [("Reset Menu", Menu), ("Credits", self.credits), ("Settings", self.settings)]
         link_surfs = [self.footer_font.render(lbl, True, self.footer_text_col) for lbl, _ in footer_link_defs]
 
         total_w = sum(s.get_width() for s in link_surfs) + (len(link_surfs) - 1) * (sep_gap * 2 + sep_w)
@@ -1315,6 +1313,8 @@ class Menu:
                 if (item["rect"].collidepoint(self.position_on_click) and
                         item["rect"].collidepoint(position_on_release)):
                     self.open_submenu = item["target"]
+                    if self.open_submenu is Menu: # hyjacks situation where the menu class is reset
+                        self.open_submenu = Menu(self.screen, self.window, self.images, self.fonts, self.width, self.height, self.block_width, self.world_names_list, self.game_files_directory, self.world_generation_settings, self.APP_DISPLAY_NAME)
                     break
 
     def check_click(self, mouse, mx, my):
