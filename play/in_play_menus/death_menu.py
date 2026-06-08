@@ -25,6 +25,7 @@ class Death_Menu:
             'Well that was unpleasant!',
             'Maybe try to press the \'F\' key and heal up next time, alright?',
             'Hint: Don\'t try that move again!',
+            'If these death messages rage bait you... then mission accomplished!'
         ]
         self.death_message = random.choice(possible_death_messages)
 
