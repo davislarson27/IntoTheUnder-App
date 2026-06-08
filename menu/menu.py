@@ -1399,7 +1399,7 @@ class Menu:
         self.draw_loading_world_screen(percent_start, loading_message)
 
         worlds_directory = f"{self.game_files_directory}/{self.world_name}"
-        for grid, percent_complete in Grid.fill_from_file_process(chunks_data, max_chunk_id, foreground_directory, self.screen, self.block_width):
+        for grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, foreground_directory, self.screen, self.block_width):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 
@@ -1418,7 +1418,7 @@ class Menu:
         percent_tot_inc = percent_end - percent_start
         self.draw_loading_world_screen(percent_start, loading_message)
 
-        for bg_grid, percent_complete in Grid.fill_from_file_process(chunks_data, max_chunk_id, background_directory, self.screen, self.block_width):
+        for bg_grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, background_directory, self.screen, self.block_width):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 

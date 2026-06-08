@@ -5,22 +5,20 @@ from .world_details import World_Details
 
 def save_game(directory, player, inventory, grid, background_grid, world_details, start_percent=0, end_percent=100):
 
-    yield start_percent, 'Saving Grid'
-
     inSavePercent = (end_percent - start_percent) / 100
 
-    grid.save()
+    for grid_save_percent in grid.save_show_loading():
+        yield start_percent + int(inSavePercent * 50 * grid_save_percent), 'Saving Foreground'
 
-    yield start_percent + int(inSavePercent * 50), 'Saving Background'
-
-    background_grid.save()
+    for grid_save_percent in background_grid.save_show_loading():
+        yield start_percent + int(inSavePercent * (50 + 46 * grid_save_percent)), 'Saving Background'
 
     yield start_percent + int(inSavePercent * 97), 'Saving Inventory'
 
     player_dictionary = player.to_dict()
     with open(f"{directory}/player_attributes.json", "w") as player_attr_file:
         json.dump(player_dictionary, player_attr_file, indent=3)
-    
+
     inventory_dict = inventory.to_dict()
     with open(f"{directory}/inventory.json", "w") as inventory_file:
         json.dump(inventory_dict, inventory_file, indent=3)
@@ -29,7 +27,7 @@ def save_game(directory, player, inventory, grid, background_grid, world_details
     with open(f"{directory}/world_details.json", "w") as world_details_file:
         json.dump(world_details_dict, world_details_file, indent=3)
 
-    return start_percent + int(inSavePercent * 100), 'Finishing Up'
+    yield start_percent + int(inSavePercent * 100), 'Finishing Up'
 
 
 def get_user_worlds_list(game_files_directory, IMAGES_FILE_NAME, VERSION):

@@ -124,6 +124,31 @@ class Grid:
             # grid_dictionary = grid.to_dict()
             with open(f"{self.save_directory}/chunk_{chunk_id}.json", "w") as grid_file:
                 json.dump(chunk_dictionary, grid_file, indent=3)
+    
+    def save_show_loading(self):
+        chunks_per_update = 20
+        i = 0
+        chunks_updated_count = len(self.chunks_modified)
+        chunks_loaded = 0
+        for chunk_id in self.chunks_modified:
+            chunk = self.chunks[chunk_id]
+            chunk_data = chunk.to_dict()
+
+            chunk_dictionary = {
+                'chunk_id': chunk_id,
+                'chunk_data': chunk_data
+            }
+
+            with open(f"{self.save_directory}/chunk_{chunk_id}.json", "w") as grid_file:
+                json.dump(chunk_dictionary, grid_file, indent=3)
+
+            if chunks_loaded % chunks_per_update == 0:
+                if chunks_loaded == 0:
+                    yield 0
+                else:
+                    yield chunks_loaded / chunks_updated_count
+
+            chunks_loaded += 1
 
     def generate_save_files(self):
         Path(f'{self.save_directory}').mkdir()
@@ -231,7 +256,7 @@ class Grid:
         return chunks_data, max_chunk_id
 
     @classmethod
-    def fill_from_file_process(cls, chunks_data, max_chunk_id, directory, screen, block_width):
+    def fill_from_file_show_loading(cls, chunks_data, max_chunk_id, directory, screen, block_width):
         "fills the grid from a file but uses a generator and required to be run in a loop -> yields grid, percent done (if percent done < 1 then grid = None)"        
         # initialize the grid
         world_width = (max_chunk_id + 1) * cls.chunk_width # assumes only positive chunks
