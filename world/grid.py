@@ -215,3 +215,43 @@ class Grid:
 
         return_grid.set_chunks(chunks)
         return return_grid
+
+    @classmethod
+    def load_chunk_files(cls, directory):
+        """gets the data for a grid in from a direcotyr -> doesn't fill anything out yet"""
+        max_chunk_id = 0
+        chunks_data = {}
+        for file in Path(directory).rglob('*.json'):
+            with open(file, 'r') as f:
+                chunk = json.load(f)
+                chunk_id = chunk['chunk_id']
+                max_chunk_id = max(max_chunk_id, chunk_id)
+                chunks_data[chunk_id] = chunk
+        
+        return chunks_data, max_chunk_id
+
+    @classmethod
+    def fill_from_file_process(cls, chunks_data, max_chunk_id, directory, screen, block_width):
+        "fills the grid from a file but uses a generator and required to be run in a loop -> yields grid, percent done (if percent done < 1 then grid = None)"        
+        # initialize the grid
+        world_width = (max_chunk_id + 1) * cls.chunk_width # assumes only positive chunks
+        world_height = chunks_data[0]['chunk_data']['grid_height']
+        return_grid = Grid(world_width, world_height, block_width, screen, directory)
+
+        # start generator
+        total_chunks_count = len(chunks_data)
+        chunks_per_update = 20
+        chunks = {}
+        i = 0
+        for chunk_id in chunks_data:
+            chunk_data = chunks_data[chunk_id]['chunk_data']
+            global_x_offset = cls.chunk_width * chunk_id
+            chunks[chunk_id] = Chunk.fill_from_dict(chunk_data, screen, block_width, global_x_offset, return_grid)
+            if i < chunks_per_update:
+                i+=1
+            else:
+                i=0
+                yield None, len(chunks) / total_chunks_count
+
+        return_grid.set_chunks(chunks)
+        yield return_grid, 1

@@ -257,7 +257,7 @@ class Grid_Superstructure:
             if open_lake_obj.is_valid_lake(): lakes.append(open_lake_obj)
             open_lake_obj = None
 
-        update_bar_block_marker = self.foreground_grid.width // 32
+        update_bar_block_marker = self.foreground_grid.width // 48
 
         yield_reponse = 'Generating Grid'
         post_scanning_progress = 3

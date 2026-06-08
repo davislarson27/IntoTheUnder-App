@@ -1386,22 +1386,52 @@ class Menu:
         return grid, background_grid, inventory, player, world_details
     
     def load_world_from_file(self):
-        self.draw_loading_world_screen(0, 'Loading Grid')
+        # load in the grid from the files
+        self.draw_loading_world_screen(0, 'Prepping Foreground Blocks')
+        foreground_directory = f"{self.game_files_directory}/{self.world_name}/foreground_grid"
+        chunks_data, max_chunk_id = Grid.load_chunk_files(foreground_directory)
+
+        # initalize the foreground grid
+        loading_message = 'Loading Foreground Blocks'
+        percent_start = 5
+        percent_end = 51
+        percent_tot_inc = percent_end - percent_start
+        self.draw_loading_world_screen(percent_start, loading_message)
 
         worlds_directory = f"{self.game_files_directory}/{self.world_name}"
-        grid = Grid.fill_from_file(f"{self.game_files_directory}/{self.world_name}/foreground_grid", self.screen, self.block_width)
+        for grid, percent_complete in Grid.fill_from_file_process(chunks_data, max_chunk_id, foreground_directory, self.screen, self.block_width):
+            full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
+            self.draw_loading_world_screen(full_process_percent_complete, loading_message)
+
+        if grid is None:
+            raise TypeError('Foreground grid failed to load correctly')
         
-        self.draw_loading_world_screen(50, 'Loading Background')
+        # load in the background grid from the files
+        self.draw_loading_world_screen(percent_end, 'Prepping Foreground Blocks')
+        background_directory = f"{self.game_files_directory}/{self.world_name}/background_grid"
+        chunks_data, max_chunk_id = Grid.load_chunk_files(foreground_directory)
 
-        bg_grid = Grid.fill_from_file(f"{self.game_files_directory}/{self.world_name}/background_grid", self.screen, self.block_width)
+        # initalize the background grid
+        loading_message = 'Loading Background Blocks'
+        percent_start = percent_end + 5
+        percent_end = 94
+        percent_tot_inc = percent_end - percent_start
+        self.draw_loading_world_screen(percent_start, loading_message)
 
-        self.draw_loading_world_screen(90, 'Loading Inventory')
+        for bg_grid, percent_complete in Grid.fill_from_file_process(chunks_data, max_chunk_id, background_directory, self.screen, self.block_width):
+            full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
+            self.draw_loading_world_screen(full_process_percent_complete, loading_message)
+
+        if bg_grid is None:
+            raise TypeError('Background grid failed to load correctly')
+
+        self.draw_loading_world_screen(percent_end, 'Loading Inventory')
 
         with open(f"{worlds_directory}/inventory.json", "r") as inventory_file:
             inventory_dict = json.load(inventory_file)
             inventory = Inventory.fill_from_dict(inventory_dict, self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
 
-        self.draw_loading_world_screen(95, 'Loading World Details')
+        self.draw_loading_world_screen(97, 'Loading World Details')
 
         with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
             world_details_dict = json.load(world_details_file)
