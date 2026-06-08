@@ -1408,7 +1408,7 @@ class Menu:
         # load in the background grid from the files
         self.draw_loading_world_screen(percent_end, 'Prepping Foreground Blocks')
         background_directory = f"{self.game_files_directory}/{self.world_name}/background_grid"
-        chunks_data, max_chunk_id = Grid.load_chunk_files(foreground_directory)
+        chunks_data, max_chunk_id = Grid.load_chunk_files(background_directory)
 
         # initalize the background grid
         loading_message = 'Loading Background Blocks'
