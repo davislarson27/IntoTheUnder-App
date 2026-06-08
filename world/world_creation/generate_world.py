@@ -314,10 +314,8 @@ class Grid_Superstructure:
 
         yield_reponse = 'Generating Background'
         post_scanning_progress = 25
-        total_section_progress = 40 - post_scanning_progress
+        total_section_progress = 45 - post_scanning_progress
         yield yield_reponse, post_scanning_progress
-
-        # yield 'Generating Background', 25
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
@@ -343,7 +341,7 @@ class Grid_Superstructure:
                 cur_progress = int((x / self.foreground_grid.width) * total_section_progress)
                 yield yield_reponse, cur_progress + post_scanning_progress
 
-        yield 'Generating Structures', 40
+        yield 'Generating Structures', 45
 
         for x in range(self.foreground_grid.width):
             for y in range(self.get_terrain_height(x)+2, self.foreground_grid.height):
@@ -355,6 +353,8 @@ class Grid_Superstructure:
                         if self.get_hash_chance(x, y, 'saltpeter') < self.saltpeter_chance:
                             block_set = Saltpeter
                     self.foreground_grid.set(x, y, block_set)
+
+        yield 'Generating Structures', 46
 
         # generate ground level objects & structures for the background
         x = 1 # structures don't generate at x=0
@@ -391,6 +391,7 @@ class Grid_Superstructure:
             
             x += 1
 
+        yield 'Generating Structures', 47
 
         # generate ground level objects & structures
         x = 1 # structures don't generate at x=0
@@ -427,12 +428,16 @@ class Grid_Superstructure:
             
             x += 1
 
+        yield 'Generating Structures', 48
+
         # now generate the border_block layer
         for x in range(self.foreground_grid.width):
             base_y = self.foreground_grid.height - 1
             self.foreground_grid.set(x, base_y, Border_Block) # sets the bottom block to a border block
             for y in range(base_y - self.get_border_block_depth(x), base_y+1):
                 self.foreground_grid.set(x, y, Border_Block) # sets the bottom block to a border block
+
+        yield 'Generating Structures', 49
 
         for x in range(self.background_grid.width):
             base_y = self.background_grid.height - 1
