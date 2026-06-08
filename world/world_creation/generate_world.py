@@ -259,7 +259,7 @@ class Grid_Superstructure:
 
         update_bar_block_marker = self.foreground_grid.width // 48
 
-        yield_reponse = 'Generating Grid'
+        yield_reponse = 'Generating Foreground'
         post_scanning_progress = 3
         total_section_progress = 25 - post_scanning_progress
         yield yield_reponse, post_scanning_progress
