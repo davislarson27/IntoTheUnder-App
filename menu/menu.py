@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 import json
 import random
+import hashlib
 
 from world.world_creation.generate_world import *
 from components.text_box import Text_Box
@@ -1338,9 +1339,7 @@ class Menu:
                 seedValue = int(seed_string)
                 return seedValue
             except ValueError:
-                value = 0
-                for char in seed_string:
-                    value = value * 31 + ord(char)
+                value = int(hashlib.sha256(seed_string.encode()).hexdigest(), 16)
                 return value % self.seed_length
 
         # create directory name
