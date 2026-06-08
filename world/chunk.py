@@ -75,17 +75,11 @@ class Chunk:
             "grid_height": self.height,
             "grid_array": blocks_in_grid
         }
-    
-    def physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0, global_x_offset=0):
-        x_grid_min = max(0, (camera_x // self.BLOCK_WIDTH) - global_x_offset)
-        x_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH - global_x_offset) + 1
-
-        true_height = self.screen.get_height() - INVENTORY_HEIGHT
-        y_grid_min = max(0, (camera_y // self.BLOCK_WIDTH) - 5)
-        y_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 6
-
-        for y in range(y_grid_min, y_grid_max):
-            for x in range(x_grid_min, x_grid_max):
+        
+    def chunked_physics(self, y_min, y_max):
+        """runs physics in whole chunk, [y_min, y_max)"""
+        for y in range(y_min, y_max):
+            for x in range(self.width):
                 obj = self.get(x, y)
                 if(obj != None):
                     obj.physics()

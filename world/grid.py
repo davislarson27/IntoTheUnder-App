@@ -153,16 +153,23 @@ class Grid:
     def generate_save_files(self):
         Path(f'{self.save_directory}').mkdir()
 
-    def physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
+    def chunked_physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
+        chunks_off_screen = 2
+
+        true_height = self.screen.get_height() - INVENTORY_HEIGHT
+        y_grid_min = max(0, (camera_y // self.BLOCK_WIDTH) - 7)
+        y_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 8
+
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
-        min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
-        max_chunk_id, _ = self.get_chunk_x(x_draw_grid_max)
-        
-        for chunk_id in range(min_chunk_id, max_chunk_id+1):
-            global_x_offset = chunk_id * self.chunk_width
-            self.chunks[chunk_id].physics(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
+        cur_screen_min_chunk = self.get_chunk_id(x_draw_grid_min)
+        cur_screen_max_chunk = self.get_chunk_id(x_draw_grid_max)
+
+        min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
+        max_chunk = min(cur_screen_max_chunk + chunks_off_screen + 1, len(self.chunks)) # is used in range so uses a + 1 (len function gets a - 1 + 1)
+        for chunk_id in range(min_chunk, max_chunk):
+            self.chunks[chunk_id].chunked_physics(y_grid_min, y_grid_max)
 
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         """draws the grid on the screen and returns blocks that need to get drawn later"""

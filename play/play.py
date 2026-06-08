@@ -428,8 +428,8 @@ class Play:
             self.set_camera_offset()
 
             # execute physics
-            self.grid.physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
-            self.background_grid.physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
+            self.grid.chunked_physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
+            self.background_grid.chunked_physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
 
             # # get player icon direction using movement direction UNLESS they are actively interacting with a block
             if input.mouse.get_pressed()[0] or input.mouse.get_pressed()[2]: is_interacting = True
