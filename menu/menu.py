@@ -303,6 +303,7 @@ class Menu:
         self.accent_bright = (140, 190, 255)
         self.label_col     = (220, 220, 220)
         self.sublabel_col  = (160, 165, 170)
+        self.error_border  = (160, 75, 75)
 
         # ------------------------------- main menu footer bar ------------------------------- #
 
@@ -1005,13 +1006,19 @@ class Menu:
         y = top
 
         # --- world name ---
+        name_taken = (self.world_name in self.world_names_list
+                      or f"{self.world_name}{self.string_end_if_corrupted}" in self.world_names_list)
         self.screen.blit(self.subscript_font.render("WORLD NAME", True, self.sublabel_col), (left, int(y)))
+        if name_taken:
+            err_surf = self.subscript_font.render("already in use", True, self.error_border)
+            self.screen.blit(err_surf, err_surf.get_rect(midright=(left + w, int(y) + err_surf.get_height() // 2)))
         y += mb_h * 0.9
         self.cw_name_box_rect = pygame.Rect(left, int(y), int(w), int(mb_h * 2))
         active = self.new_world_name_text_box.is_typing
         pygame.draw.rect(self.screen, self.field_fill, self.cw_name_box_rect)
-        pygame.draw.rect(self.screen, self.accent_bright if active else self.card_border,
-                         self.cw_name_box_rect, width=3 if active else 1)
+        name_border = self.error_border if name_taken else (self.accent_bright if active else self.card_border)
+        pygame.draw.rect(self.screen, name_border,
+                         self.cw_name_box_rect, width=3 if (active or name_taken) else 1)
         cursor = self.new_world_name_text_box.get_text_cursor() if active else ""
         ns = self.input_font.render(self.new_world_name_text_box.get_cur_string() + cursor,
                                     True, (235, 235, 235))
