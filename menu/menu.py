@@ -925,7 +925,8 @@ class Menu:
             text_rect = text_surf.get_rect(center=self.button2_dimentions.center)
             self.screen.blit(text_surf, text_rect)
 
-            self.draw_footer(mx, my)
+            if self.prev_draw_func.__func__ is not self.draw_create_world_menu.__func__:
+                self.draw_footer(mx, my)
 
     def draw_create_world_menu(self, mx, my, input):
         self.new_world_name_text_box.take_input(input, self.world_name_length_limit)
