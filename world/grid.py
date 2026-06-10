@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from components.block_queue import Block_Queue
+import components.settings as settings
 
 
 class Grid:
@@ -10,6 +11,8 @@ class Grid:
     chunk_width = 16
 
     def __init__(self, world_width, world_height, BLOCK_WIDTH, screen, save_directory=None, save_as_you_go=False):
+        self.settings = settings.get()
+
         chunks = (world_width + self.chunk_width - 1) // self.chunk_width
         # self.positive_chunks = chunks // 2
         # self.negative_chunks = chunks - self.positive_chunks
@@ -154,7 +157,7 @@ class Grid:
         Path(f'{self.save_directory}').mkdir()
 
     def chunked_physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
-        chunks_off_screen = 2
+        chunks_off_screen = self.settings.physics_chunks_beyond_screen
 
         true_height = self.screen.get_height() - INVENTORY_HEIGHT
         y_grid_min = max(0, (camera_y // self.BLOCK_WIDTH) - 7)

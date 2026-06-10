@@ -1,13 +1,17 @@
 import pygame
 from math import floor
+
+import components.settings as settings
 import components.fonts as font_manager
 
 
-class Settings:
+class Settings_Menu:
     def __init__(self, screen, menu):
         self.screen = screen
         self.menu = menu
         self.is_clicked = False
+
+        self.settings_obj = settings.get()
 
         self.title_col   = (255, 255, 255)
         self.body_col    = (160, 165, 172)

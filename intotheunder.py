@@ -17,6 +17,7 @@ from world.blocks.block_export import *
 from menu.menu import Menu
 from components.images import Images
 import components.fonts as Font_Manager
+import components.settings as Settings_Manager
 from components.game_file_reading import *
 from components.input import Input
 from world.world_creation.world_generation_settings import World_Generation_Settings
@@ -103,6 +104,11 @@ pygame.display.set_caption(APP_DISPLAY_NAME)
 
 Font_Manager.init(resource_path(f"game_files/{FONTS_FILE_NAME}"))
 fonts = Font_Manager.get()
+
+settings_directory = os.path.join(save_path, VERSION_NAME, "settings")
+os.makedirs(settings_directory, exist_ok=True)
+Settings_Manager.init(settings_directory)
+settings = Settings_Manager.get()
 
 launch_load_screen = Launch_Load_Screen(screen, window, screen_width_px, screen_height_px)
 launch_load_screen.draw(0, 'Loading Game Files')

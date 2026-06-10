@@ -18,7 +18,7 @@ from components.world_details import World_Details
 from components.crash_menu import Crash_Menu
 from play.bg_overlay import BG_Overlay
 from .sub_menus.credits import Credits
-from .sub_menus.settings import Settings
+from .sub_menus.settings_menu import Settings_Menu
 
 """
 explanation:
@@ -54,7 +54,7 @@ class Menu:
 
         # initialize main menu submenus
         self.credits = Credits(screen, self)
-        self.settings = Settings(screen, self)
+        self.settings = Settings_Menu(screen, self)
 
         # initialize fonts
         self.button_font               = pygame.font.Font(str(fonts.PixeloidSans), 18)
