@@ -135,4 +135,3 @@ class Escape_Menu:
             text_surf = self.button_font.render(label, True, self.button_text_color)
             text_rect = text_surf.get_rect(center=rect.center)
             self.screen.blit(text_surf, text_rect)
-    

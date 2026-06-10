@@ -13,7 +13,7 @@ class Settings:
                 "physics_chunks_beyond_screen": 2,
             },
             "world_gen_settings": {
-                "default_world_size": 'medium'
+                "default_world_size": 1
             },
             "visual_settings": {
 

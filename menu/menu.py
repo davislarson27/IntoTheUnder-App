@@ -19,6 +19,7 @@ from components.crash_menu import Crash_Menu
 from play.bg_overlay import BG_Overlay
 from .sub_menus.credits import Credits
 from .sub_menus.settings_menu import Settings_Menu
+import components.settings as settings
 
 """
 explanation:
@@ -51,6 +52,7 @@ class Menu:
         self.block_width = BLOCK_WIDTH
         self.APP_DISPLAY_NAME = APP_DISPLAY_NAME
         self.run_game = False
+        self.settings_data = settings.get()
 
         # initialize main menu submenus
         self.credits = Credits(screen, self)
@@ -225,8 +227,8 @@ class Menu:
         # ------------------------------- world creation options ------------------------------- #
 
         self.world_size_options = ["Small", "Medium", "Large"]
-        self.default_selected_world_size = 1 # default to Medium
-        self.selected_world_size = self.default_selected_world_size
+        self.default_selected_world_size = self.settings_data.default_world_size
+        self.selected_world_size = self.settings_data.default_world_size
         self.size_to_width_dict = {
             "Small": 1000,
             "Medium": 5000,
@@ -908,7 +910,7 @@ class Menu:
         pygame.display.flip()
         pygame.event.pump()
 
-    def draw_announce_and_return_screen(self, mx, my, input):
+    def draw_announce_and_return_screen(self, mx, my, input):   
             text_surf = self.medium_font.render(self.announce_message, True, (255, 255, 255))
             text_rect = text_surf.get_rect(center=self.button1_dimentions.center)
             self.screen.blit(text_surf, text_rect)
@@ -1138,6 +1140,11 @@ class Menu:
             if self.button1_dimentions.collidepoint(self.position_on_click) and self.button1_dimentions.collidepoint(position_on_release):
                 self.draw_function = self.draw_load_menu
             elif self.button2_dimentions.collidepoint(self.position_on_click) and self.button2_dimentions.collidepoint(position_on_release):
+                self.custom_seed = self.getRandomSeed()
+                self.selected_world_size = self.settings_data.default_world_size
+                self.keep_inventory = self.default_keep_inventory
+                self.survival_mode = self.default_survival_mode
+                self.recipe_progression = self.default_recipe_progression
                 self.world_name = self.create_world_name()
                 self.new_world_name_text_box.open_text_box(self.world_name)
                 self.world_seed_text_box.open_text_box(self.custom_seed)
@@ -1462,7 +1469,7 @@ class Menu:
         self.run_game = False
         self.return_to_main()
         self.custom_seed = self.getRandomSeed()
-        self.selected_world_size = self.default_selected_world_size
+        self.selected_world_size = self.settings_data.default_world_size
         self.return_to = None
         self.keep_inventory = self.default_keep_inventory
         self.survival_mode = self.default_survival_mode
