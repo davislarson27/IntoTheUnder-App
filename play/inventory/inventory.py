@@ -79,7 +79,7 @@ class Inventory:
         # initalize fonts
         _f = font_manager.get()
         self.hot_bar_font = pygame.font.Font(str(_f.PixeloidSans_Bold), 26)
-        self.percent_font_of_block_full_inventory = 0.55
+        self.percent_font_of_block_full_inventory = 0.48
         self.full_inventory_font = pygame.font.Font(str(_f.PixeloidSans), floor(full_inventory_item_size * self.percent_font_of_block_full_inventory))
 
         self.inventory_item_name_font = pygame.font.Font(str(_f.PixeloidSans), 10)
