@@ -15,8 +15,9 @@ from .inventory.inventory import Inventory
 from .inventory.submenus.crafting import Crafting_Slots
 from .inventory.submenus.fuel import Fuel_Slots
 from .inventory.submenus.chest import Chest_Slots
-from.inventory.submenus.enduring_chest import Enduring_Chest_Slots
+from .inventory.submenus.enduring_chest import Enduring_Chest_Slots
 from .entities.entities_export import *
+from .star_background import Star_Background
 
 
 class Play:
@@ -70,6 +71,8 @@ class Play:
         self.debug_overlay = Debug_Overlay(screen, grid, player)
 
         self.inventory.set_health_bar(self.player.health_bar)
+
+        self.star_bg = Star_Background(screen)
 
     # ------------------------------ helper functions ------------------------------ #
 
@@ -449,7 +452,11 @@ class Play:
 
             # ------------- draw main game ------------- #
 
+            # fill bg
             self.screen.fill(self.background_color)
+
+            # draw stars
+            self.star_bg.draw(self.camera_x, self.cur_camera_y)
 
             # draw background blocks
             self.background_grid.draw(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
