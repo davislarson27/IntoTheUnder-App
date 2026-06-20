@@ -441,14 +441,14 @@ class Play:
             self.player.get_direction(self.player.dx, screen_x, input.virtual_mouse_x, is_interacting)
 
             # ------------------------------------- temp spawn using enter ------------------------------------- #
-            if input.return_keypress:
-                Highly_Motivated_Blob.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, 0, self.world_details)
+            # if input.return_keypress:
+            #     Highly_Motivated_Blob.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, 0, self.world_details)
             # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities
             entities = self.grid.get_entities(self.camera_x)
-            for entity in entities:
-                entity.move(input, self.physics_rules)
+            # for entity in entities:
+            #     entity.move(input, self.physics_rules)
 
             # ------------- draw main game ------------- #
 
@@ -479,8 +479,8 @@ class Play:
                 self.bg_overlay.draw_at(self.affected_x, self.affected_y, self.camera_x, self.cur_camera_y)
 
             self.player.draw(self.camera_x, self.cur_camera_y)
-            for entity in entities:
-                entity.draw(self.camera_x, self.cur_camera_y)
+            # for entity in entities:
+            #     entity.draw(self.camera_x, self.cur_camera_y)
 
             # now draw the rest of the queue
             main_grid_queue.draw(self.camera_x, self.cur_camera_y)
@@ -503,7 +503,7 @@ class Play:
             self.debug_overlay.draw()
 
             # ------------- check entity chunks --------------#
-            self.grid.check_entity_chunks(entities)
+            # self.grid.check_entity_chunks(entities)
 
 
         # check for changing menus in game
