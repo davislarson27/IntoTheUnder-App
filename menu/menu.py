@@ -68,7 +68,7 @@ class Menu:
         self.create_world_title_font   = pygame.font.Font(str(fonts.PixeloidSans_Bold), 32)
         self.subscript_font            = pygame.font.Font(str(fonts.PixeloidSans), 11)
         self.medium_font               = pygame.font.Font(str(fonts.PixeloidSans), 24)
-        self.input_font                = pygame.font.Font(str(fonts.PixeloidMono), 18)
+        self.input_font                = pygame.font.Font(str(fonts.PixeloidSans), 18)
 
         self.camera_x = 0
         self.background_move_speed = 0.2
