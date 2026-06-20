@@ -354,8 +354,7 @@ class Star_Background:
         self.star_bg_surf.blit(self.get_star_sm(self.star_color_warm),   (width*2.62, height*0.67))
         self.star_bg_surf.blit(self.get_star_sm(self.star_color_dim),    (width*2.77, height*0.52))
 
-    def draw(self, camera_x, camera_y):
-        scroll_rate = 10
+    def draw(self, camera_x, camera_y, scroll_rate=10):
         pos_offset = (camera_x // scroll_rate) % self.star_bg_width
         self.screen.blit(self.star_bg_surf, (-pos_offset, 0))
         if pos_offset + self.screen.get_width() > self.star_bg_width:

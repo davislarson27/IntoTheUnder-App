@@ -1128,7 +1128,7 @@ class Menu:
 
     def draw_background(self):
         self.screen.fill((30, 30, 30))
-        self.stars.draw(floor(self.camera_x), 0)
+        self.stars.draw(floor(self.camera_x), 0, scroll_rate=30)
         self.bg_background_grid.draw(floor(self.camera_x), 0)
         self.bg_overlay.draw(floor(self.camera_x), 0, 0)
         self.background_grid.draw(floor(self.camera_x), 0)
