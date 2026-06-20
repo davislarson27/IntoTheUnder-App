@@ -349,7 +349,7 @@ class Menu:
         # ----------------------------------------- generate menu background world ----------------------------------------- #
 
         load_screen_block_width = floor(BLOCK_WIDTH * 1.15) #slightly enlarge the blocks
-        self.width_blocks = (width_px // load_screen_block_width) * 3
+        self.width_blocks = (width_px // load_screen_block_width) * 5
         self.height_blocks = (height_px // load_screen_block_width) + 4
         self.background_world_width_px = floor(self.width_blocks * load_screen_block_width)
 
