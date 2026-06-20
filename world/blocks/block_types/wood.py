@@ -60,7 +60,7 @@ class Leaves(Block):
             for y in range(self.y, self.y + 8):
                 if isinstance(self.grid.get(self.x, y), Tree_Sappling):
                     return None
-            self.grid.set(self.x, self.y, Tree_Sappling)
+            self.grid.set(self.x, self.y, Tree_Sappling, pass_through=True)
         return None
 
     def physics(self):
@@ -447,7 +447,7 @@ class Tree_Sappling(Block):
                     self.ticks_till_physics += 1
                 else: #tick count has reached go time to fall
                     self.grid.set(self.x, self.y, None)
-                    self.grid.set(self.x, self.y+1, Tree_Sappling, False)
+                    self.grid.set(self.x, self.y+1, Tree_Sappling)
                     self.ticks_till_physics = 0
             else: # this means that growing can continue
                 block_below = self.grid.get(self.x, self.y+1)
