@@ -442,7 +442,7 @@ class Play:
 
             # ------------------------------------- temp spawn using enter ------------------------------------- #
             if input.return_keypress:
-                Highly_Motivated_Blob.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, 0)
+                Highly_Motivated_Blob.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, 0, self.world_details)
             # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities

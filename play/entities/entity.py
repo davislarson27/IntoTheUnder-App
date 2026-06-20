@@ -256,9 +256,9 @@ class Entity:
         return global_x // Grid.chunk_width
 
     @classmethod
-    def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px):
+    def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px, world_details=None):
         # step 1: initialize the entity
-        new_entity = cls(grid, screen, player_x_pixel=x_px, player_y_pixel=y_px, BLOCK_WIDTH=BLOCK_WIDTH, player_spawn_x=x_px, player_spawn_y=y_px)
+        new_entity = cls(grid, screen, player_x_pixel=x_px, player_y_pixel=y_px, BLOCK_WIDTH=BLOCK_WIDTH, player_spawn_x=x_px, player_spawn_y=y_px, world_details=world_details)
 
         # step 2: insert the entity into the appropriate chunk
         grid.insert_entity(new_entity)
@@ -311,7 +311,7 @@ class Entity:
 
         prevel = abs(self.y_vel)
         collided = self.is_move_ok_y(int_dy)
-        damage_threshold_velocity = 20
+        damage_threshold_velocity = 21.5
 
         if collided:
             if prevel > damage_threshold_velocity:
