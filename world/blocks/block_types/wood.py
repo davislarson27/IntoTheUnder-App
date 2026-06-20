@@ -64,12 +64,11 @@ class Leaves(Block):
         return None
 
     def physics(self):
-        if self.anchor_x is not None and self.anchor_y is not None:
+        if (self.anchor_x is not None and self.anchor_y is not None) and not isinstance(self.grid.get(self.anchor_x, self.anchor_y), Log):
             if self.ticks_till_physics > self.tick_threshold:
                 self.onDestroy()
             else:
-                if self.grid.get(self.anchor_x, self.anchor_y) is None:
-                    self.ticks_till_physics += 1
+                self.ticks_till_physics += 1
 
     # Fixed speck pattern in normalized tile space (0..1).
     # (u, v, r_frac, is_light)
