@@ -331,6 +331,6 @@ class Star_Background:
 
     def draw(self, camera_x, camera_y):
         pos_offset = (camera_x // 4) % self.star_bg_width
-        self.screen.blit(self.star_bg_surf, (pos_offset,0))
-        if pos_offset > self.screen.get_width():
-            self.screen.blit(self.star_bg_surf, (pos_offset-self.star_bg_width,0))
+        self.screen.blit(self.star_bg_surf, (-pos_offset, 0))
+        if pos_offset + self.screen.get_width() > self.star_bg_width:
+            self.screen.blit(self.star_bg_surf, (-pos_offset + self.star_bg_width, 0))
