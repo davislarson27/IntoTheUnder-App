@@ -9,9 +9,9 @@ class Star_Background:
         self.sm_px = 2
 
         self.star_color_bright = (250, 250, 250)
-        self.star_color_cool = (220, 225, 235)
-        self.star_color_warm = (235, 230, 215)
-        self.star_color_dim = (180, 185, 195)
+        self.star_color_cool = (200, 205, 240)
+        self.star_color_warm = (245, 220, 205)
+        self.star_color_dim = (155, 160, 170)
 
         self.generate_stars()
 
