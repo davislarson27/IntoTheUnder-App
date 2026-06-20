@@ -44,7 +44,7 @@ class Death_Menu:
         # fonts
         _f = font_manager.get()
         self.button_font = pygame.font.Font(str(_f.PixeloidSans), 18)
-        self.title_font  = pygame.font.Font(str(_f.PixeloidSans_Bold), 60)
+        self.title_font  = pygame.font.Font(str(_f.PixeloidSans_Bold), 48)
 
         # title
         title_column_width = 16
