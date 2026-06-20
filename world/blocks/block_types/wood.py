@@ -125,6 +125,127 @@ class Leaves(Block):
         cy = int(py + pad + 0.46 * (block_width - 2 * pad))
         pygame.draw.circle(screen, dark, (cx, cy), 1)
 
+class Spruce_Log(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Spruce Log"
+    ticks_to_mine = 50
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        primary_color = (70, 64, 60) # alt try (82, 74, 68)
+        secondary_color = (20, 14, 10)
+        
+        pygame.draw.rect( # draw base color
+            screen,
+            (primary_color[0] + added_color, primary_color[1] + added_color, primary_color[2] + added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + floor(block_width * 0.15) , y + floor(block_width * 0.25), block_width // 25, block_width // 1.75)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + (block_width // 2) , y + (block_width // 3), block_width // 25, block_width // 1.75)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + floor(block_width * 0.8) , y + floor(block_width * 0.2), block_width // 25, block_width // 1.75)
+        )
+
+class Spruce_Leaves(Block):
+    str_name = "Spruce Leaves"
+    ticks_to_mine = 18
+    sappling_drop_chance = 0.12
+
+    tick_threshold = 60
+
+    def onDestroy(self, inventory=None):
+        self.grid.set(self.x, self.y, None)
+        if random.random() < self.sappling_drop_chance:
+            for y in range(self.y, self.y + 8):
+                if isinstance(self.grid.get(self.x, y), Tree_Sappling):
+                    return None
+            self.grid.set(self.x, self.y, Tree_Sappling, pass_through=True)
+        return None
+
+    def physics(self):
+        if (self.anchor_x is not None and self.anchor_y is not None) and not isinstance(self.grid.get(self.anchor_x, self.anchor_y), Spruce_Log):
+            if self.ticks_till_physics > self.tick_threshold:
+                self.onDestroy()
+            else:
+                self.ticks_till_physics += 1
+
+    # Fixed speck pattern in normalized tile space (0..1).
+    # (u, v, r_frac, is_light)
+    _SPECK_PATTERN = [
+        (0.22, 0.28, 0.07, True),
+        (0.62, 0.24, 0.06, False),
+        (0.76, 0.55, 0.06, True),
+        (0.36, 0.68, 0.05, False),
+        (0.55, 0.78, 0.04, True),
+    ]
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added_color = 20 if being_mined else 0
+
+        # IMPORTANT:
+        # If is_grid_coordinates=True, x/y must be WORLD TILE coords (not screen coords).
+        if is_grid_coordinates:
+            px = x * block_width
+            py = y * block_width
+        else:
+            px = x
+            py = y
+
+        primary_color = (108, 138, 112)
+        base = (primary_color[0] + added_color, primary_color[1] + added_color, primary_color[2] + added_color)
+        pygame.draw.rect(screen, base, (px, py, block_width, block_width))
+
+        # Two close-to-base colors (subtle)
+        dark  = (max(base[0] - 8, 0),  max(base[1] - 8, 0),  max(base[2] - 8, 0))
+        light = (min(base[0] + 6, 255), min(base[1] + 6, 255), min(base[2] + 6, 255))
+
+        # Keep dots away from edges so tiles blend
+        pad = max(1, block_width // 8)
+
+        # Scale radii gently with tile size, clamp small
+        def scale_r(r_frac: float) -> int:
+            return max(1, min(block_width // 10, int(block_width * r_frac)))
+
+        # Use fewer specks on small tiles (optional)
+        specks = Leaves._SPECK_PATTERN
+        if block_width < 24:
+            specks = specks[:4]
+
+        for (u, v, r_frac, is_light) in specks:
+            r = scale_r(r_frac)
+            cx = int(px + pad + u * (block_width - 2 * pad))
+            cy = int(py + pad + v * (block_width - 2 * pad))
+            col = light if is_light else dark
+            pygame.draw.circle(screen, col, (cx, cy), r)
+
+        # Optional tiny “cluster dot” that is ALWAYS in the same place (still not random)
+        # (This mimics your occasional extra dot without RNG.)
+        cx = int(px + pad + 0.48 * (block_width - 2 * pad))
+        cy = int(py + pad + 0.46 * (block_width - 2 * pad))
+        pygame.draw.circle(screen, dark, (cx, cy), 1)
+
 class Wood_Planks(Block):
     str_name = "Wood Planks"
     ticks_to_mine = 38

@@ -186,6 +186,26 @@ class Rain_Forest(Biome):
     ]
 
 
+class Spruce_Forest(Biome):
+    def claim(elevation, temp, humidity, mountain):
+        if humidity >= 0 and temp < -1 and elevation >= 0:
+            return True
+        return False
+    
+    layers = [Layer(Grass, 1, variation_amp=0), Layer(Dirt, 3)]
+    sub_layer = Rock
+
+    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Recipe_Burrow, 0.0002),
+        Structure_Identifier(Spruce_Tree, 0.1),
+        Structure_Identifier(Small_Bush, 0.01),
+        Structure_Identifier(Flowers, 0.028),
+    ]
+    bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Tree, 0.1)
+    ]
+
+
 class Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
         if humidity >= 0 and temp < 0 and elevation >= 0:

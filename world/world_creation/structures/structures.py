@@ -221,6 +221,76 @@ class Tree:
         return [] # trees don't have backgrounds
 
 
+class Spruce_Tree:
+    width = 3
+    start_x_diff = 1 # distance from the origin x that the y elevation should be set to
+    height = 5 # distance above ground
+    depth = 0 # distance below ground
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+    
+    @classmethod
+    def get_x_difference_for_y(cls):
+        """returns the value to add to x to get the corect elevation this object is calcualated for (i.e., for a tree it would be +1)"""
+        return cls.start_x_diff
+
+    @classmethod
+    def get_height(cls):
+        """gets height above the start point"""
+        return cls.height
+
+    @classmethod
+    def get_depth(cls):
+        """gets depth below the start point"""
+        return cls.depth
+
+    @classmethod
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        # determine the height of the tree
+        if random_factor < 0.0001:
+            tree_height = 4
+        elif random_factor < 0.2:
+            tree_height = 1
+        elif random_factor < 0.4:
+            tree_height = 3
+        else:
+            tree_height = 2
+
+        # trunk
+        start_y = ground_y-1
+        for y in range(tree_height):
+            structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Spruce_Log))
+
+        # leaves disappearing time thresholds
+        def get_ticks(x, y):
+            value = int(hashlib.sha256(f"{random_factor}_{x}_{y}".encode()).hexdigest(), 16)
+            normalized = value / (2**256)
+            return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+        # add the leaves to the structure instructions
+        for y in range(3):
+            for x in range(3):
+                ticks = get_ticks(x, y)
+                structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-y-tree_height, Spruce_Leaves(grid, grid.screen, ground_x+x, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+        
+        # return list
+        return structureInstructionsList
+
+    @classmethod
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        return [] # trees don't have backgrounds
+
+
 class Snow_Tree:
     width = 3
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to

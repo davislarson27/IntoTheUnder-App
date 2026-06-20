@@ -38,7 +38,7 @@ class Grid_Superstructure:
 
         self.border_block_seed = make_seed(self.seed, 'border_block_seed')
 
-        self.biome_priority_order = [Volcano, Mountain, Lake, Ravine, Desert, Tundra, Glacier, Rain_Forest, Forest, Montane_Forest, Plains]
+        self.biome_priority_order = [Volcano, Mountain, Lake, Ravine, Desert, Tundra, Glacier, Rain_Forest, Spruce_Forest, Forest, Montane_Forest, Plains]
 
         # amplitutdes of different generators
         self.elevation_amp = 15
