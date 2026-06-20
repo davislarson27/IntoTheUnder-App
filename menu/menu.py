@@ -20,6 +20,7 @@ from play.bg_overlay import BG_Overlay
 from .sub_menus.credits import Credits
 from .sub_menus.settings_menu import Settings_Menu
 import components.settings as settings
+from play.star_background import Star_Background
 
 """
 explanation:
@@ -369,6 +370,8 @@ class Menu:
         self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
 
         self.bg_overlay = BG_Overlay(screen, self.background_grid.BLOCK_WIDTH, self.background_grid, self.bg_background_grid)
+
+        self.stars = Star_Background(screen)
 
     def getRandomSeed(self):
         return str(int(random.random() * self.seed_length))
@@ -1125,6 +1128,7 @@ class Menu:
 
     def draw_background(self):
         self.screen.fill((30, 30, 30))
+        self.stars.draw(floor(self.camera_x), 0)
         self.bg_background_grid.draw(floor(self.camera_x), 0)
         self.bg_overlay.draw(floor(self.camera_x), 0, 0)
         self.background_grid.draw(floor(self.camera_x), 0)
