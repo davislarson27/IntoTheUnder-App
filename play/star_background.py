@@ -7,6 +7,7 @@ class Star_Background:
         self.star_bg_surf = pygame.Surface((self.star_bg_width, screen.get_height()), pygame.SRCALPHA)
 
         self.sm_px = 2
+        self.md_px = 6
 
         self.star_color_bright = (250, 250, 250)
         self.star_color_cool = (200, 205, 240)
@@ -29,6 +30,30 @@ class Star_Background:
         )
         return star_surf
     
+    def get_star_md(self, color):
+        star_surf = pygame.Surface((self.md_px, self.md_px), pygame.SRCALPHA)
+        pygame.draw.rect( # vertical bar
+            star_surf,
+            color,
+            (
+                self.md_px // 3,
+                0,
+                self.md_px // 3,
+                self.md_px
+            )
+        )
+        pygame.draw.rect( # horizontal bar
+            star_surf,
+            color,
+            (
+                0,
+                self.md_px // 3,
+                self.md_px,
+                self.md_px // 3
+            )
+        )
+        return star_surf
+   
     def generate_stars(self):
         width = self.screen.get_width()
         height = self.screen.get_height()
