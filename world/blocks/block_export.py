@@ -95,6 +95,7 @@ def get_blocks_list():
         Forget_Me_Not,
         Tree_Sappling,
         Spruce_Sappling,
+        Mahogany_Sappling,
         Gold_Stone_Bricks,
         Bush,
         Water, # water subclasses after this
