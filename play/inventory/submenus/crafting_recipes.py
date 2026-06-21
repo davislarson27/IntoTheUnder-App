@@ -497,6 +497,15 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Utility
         ),
         Crafting_Recipe(
+            "Mahogany Chest",
+            [
+                Ingredient(Mahogany_Planks, 6), 
+                # Ingredient(Gold_Ingot, 1)
+            ],
+            output=Ingredient(Mahogany_Chest, 1),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
             "Door",
             [
                 Ingredient(Wood_Planks, 3),
