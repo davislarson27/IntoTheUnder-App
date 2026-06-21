@@ -176,14 +176,14 @@ class Rain_Forest(Biome):
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Recipe_Burrow, 0.0002),
-        Structure_Identifier(Mahagony_Tree_Rand_Width, 0.15),
+        Structure_Identifier(Mahogany_Tree_Rand_Width, 0.15),
         Structure_Identifier(Tree, 0.02),
         Structure_Identifier(Small_Bush, 0.02),
         Structure_Identifier(Flowers, 0.01),
         Structure_Identifier(Puddle, 0.01),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Mahagony_Tree_Rand_Width, 0.145),
+        Structure_Identifier(Mahogany_Tree_Rand_Width, 0.145),
         Structure_Identifier(Tree, 0.01),
     ]
 
@@ -222,7 +222,7 @@ class Forest(Biome):
         Structure_Identifier(Tree, 0.1),
         Structure_Identifier(Small_Bush, 0.01),
         Structure_Identifier(Flowers, 0.028),
-        Structure_Identifier(Mahagony_Tree_Rand_Width, 0.00001),
+        Structure_Identifier(Mahogany_Tree_Rand_Width, 0.00001),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)

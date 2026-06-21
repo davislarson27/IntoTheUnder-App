@@ -301,7 +301,7 @@ class Spruce_Tree:
         return [], [] # trees don't have backgrounds
 
 
-class Mahagony_Tree_Rand_Width:
+class Mahogany_Tree_Rand_Width:
     width = 5
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to
     height = 8 # distance above ground
@@ -337,9 +337,9 @@ class Mahagony_Tree_Rand_Width:
 
         tree_style_chance = int(hashlib.sha256(f"{random_factor}_tree_type".encode()).hexdigest(), 16) / (2**256 - 1)
         if tree_style_chance > 0.8: # 2 wide style
-            structureInstructionsList, var_structure_instructions = Mahagony_Tree_Double.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
+            structureInstructionsList, var_structure_instructions = Mahogany_Tree_Double.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
         else:
-            structureInstructionsList, var_structure_instructions = Mahagony_Tree.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
+            structureInstructionsList, var_structure_instructions = Mahogany_Tree.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
 
         # return list
         return structureInstructionsList, var_structure_instructions
@@ -350,7 +350,7 @@ class Mahagony_Tree_Rand_Width:
         return [], [] # trees don't have backgrounds
 
 
-class Mahagony_Tree_Double:
+class Mahogany_Tree_Double:
     width = 6
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to
     height = 7 # distance above ground
@@ -452,7 +452,7 @@ class Mahagony_Tree_Double:
         return [], [] # trees don't have backgrounds
 
 
-class Mahagony_Tree:
+class Mahogany_Tree:
     width = 3
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to
     height = 8 # distance above ground
