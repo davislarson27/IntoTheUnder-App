@@ -170,7 +170,7 @@ class Spruce_Log(Block):
 class Spruce_Leaves(Block):
     str_name = "Spruce Leaves"
     ticks_to_mine = 18
-    sappling_drop_chance = 0.12
+    sappling_drop_chance = 0.16
 
     tick_threshold = 60
 
@@ -704,9 +704,9 @@ class Spruce_Sappling(Block):
             instruct.setBlock(self.grid)
 
     def special_init(self):
-        max_tree_height = 4 # includes leaves
+        max_tree_height = 5 # includes leaves
         self.tree_height = max_tree_height + 3
-        self.full_tree_height = self.tree_height + 3 # includes the height of the leaves
+        self.full_tree_height = self.tree_height + 4 # includes the height of the leaves
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
