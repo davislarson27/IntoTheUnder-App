@@ -170,7 +170,7 @@ class Spruce_Log(Block):
 class Spruce_Leaves(Block):
     str_name = "Spruce Leaves"
     ticks_to_mine = 18
-    sappling_drop_chance = 0.16
+    sappling_drop_chance = 0.18
 
     tick_threshold = 60
 
