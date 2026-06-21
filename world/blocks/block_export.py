@@ -42,6 +42,8 @@ def get_blocks_list():
         Leaves,
         Spruce_Log,
         Spruce_Leaves,
+        Mahogany_Log,
+        Mahogany_Leaves,
         Snow_Leaves,
         Snow_Leaves_Top,
         Sand,

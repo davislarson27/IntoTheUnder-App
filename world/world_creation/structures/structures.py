@@ -224,7 +224,7 @@ class Tree:
 class Spruce_Tree:
     width = 3
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to
-    height = 5 # distance above ground
+    height = 9 # distance above ground
     depth = 0 # distance below ground
 
     def __init__(self):
@@ -291,6 +291,240 @@ class Spruce_Tree:
         x = 1
         ticks = get_ticks(x, y)
         structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Spruce_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        # return list
+        return structureInstructionsList
+
+    @classmethod
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        return [] # trees don't have backgrounds
+
+
+class Mahagony_Tree_Rand_Width:
+    width = 5
+    start_x_diff = 1 # distance from the origin x that the y elevation should be set to
+    height = 8 # distance above ground
+    depth = 0 # distance below ground
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+    
+    @classmethod
+    def get_x_difference_for_y(cls):
+        """returns the value to add to x to get the corect elevation this object is calcualated for (i.e., for a tree it would be +1)"""
+        return cls.start_x_diff
+
+    @classmethod
+    def get_height(cls):
+        """gets height above the start point"""
+        return cls.height
+
+    @classmethod
+    def get_depth(cls):
+        """gets depth below the start point"""
+        return cls.depth
+
+    @classmethod
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        tree_style_chance = int(hashlib.sha256(f"{random_factor}_tree_type".encode()).hexdigest(), 16) / (2**256 - 1)
+        if tree_style_chance > 0.8: # 2 wide style
+            structureInstructionsList = Mahagony_Tree_Double.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
+        else:
+            structureInstructionsList = Mahagony_Tree.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
+
+        # return list
+        return structureInstructionsList
+
+    @classmethod
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        return [] # trees don't have backgrounds
+
+
+class Mahagony_Tree_Double:
+    width = 6
+    start_x_diff = 1 # distance from the origin x that the y elevation should be set to
+    height = 7 # distance above ground
+    depth = 0 # distance below ground
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+    
+    @classmethod
+    def get_x_difference_for_y(cls):
+        """returns the value to add to x to get the corect elevation this object is calcualated for (i.e., for a tree it would be +1)"""
+        return cls.start_x_diff
+
+    @classmethod
+    def get_height(cls):
+        """gets height above the start point"""
+        return cls.height
+
+    @classmethod
+    def get_depth(cls):
+        """gets depth below the start point"""
+        return cls.depth
+
+    @classmethod
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        # leaves disappearing time thresholds
+        def get_ticks(x, y):
+            value = int(hashlib.sha256(f"{random_factor}_{x}_{y}".encode()).hexdigest(), 16)
+            normalized = value / (2**256)
+            return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+        # determine the height of the tree
+        if random_factor < 0.1:
+            tree_height = 6
+        elif random_factor < 0.4:
+            tree_height = 4
+        else:
+            tree_height = 5
+
+        # trunk
+        start_y = ground_y-1
+        for y in range(tree_height):
+            for x in range(2):
+                structureInstructionsList.append(Structure_Instruction(ground_x+x+2, start_y-y, Mahogany_Log))
+        
+        # add the leaves to the structure instructions
+        y = ground_y - tree_height - 1
+        for x in range(6):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        y = ground_y - tree_height - 2
+        for x in range(1, 5):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        y = ground_y - tree_height - 3
+        for x in range(2, 4):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        # add a branched off leaf
+        extra_leaf_odds = int(hashlib.sha256(f"{random_factor}_extra_leaf_odds".encode()).hexdigest(), 16) / (2**256 - 1)
+        if extra_leaf_odds < 0.35:
+            x = 1
+            y_diff = 1
+        elif extra_leaf_odds < 0.7:
+            x = 1
+            y_diff = 1
+        elif extra_leaf_odds < 0.85:
+            x = 4
+            y_diff = 2
+        else:
+            x = 4
+            y_diff = 2
+        y = ground_y - tree_height + y_diff
+        ticks = get_ticks(x, y)
+        structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        # return list
+        return structureInstructionsList
+
+    @classmethod
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        return [] # trees don't have backgrounds
+
+
+class Mahagony_Tree:
+    width = 3
+    start_x_diff = 1 # distance from the origin x that the y elevation should be set to
+    height = 8 # distance above ground
+    depth = 0 # distance below ground
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+    
+    @classmethod
+    def get_x_difference_for_y(cls):
+        """returns the value to add to x to get the corect elevation this object is calcualated for (i.e., for a tree it would be +1)"""
+        return cls.start_x_diff
+
+    @classmethod
+    def get_height(cls):
+        """gets height above the start point"""
+        return cls.height
+
+    @classmethod
+    def get_depth(cls):
+        """gets depth below the start point"""
+        return cls.depth
+
+    @classmethod
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        # leaves disappearing time thresholds
+        def get_ticks(x, y):
+            value = int(hashlib.sha256(f"{random_factor}_{x}_{y}".encode()).hexdigest(), 16)
+            normalized = value / (2**256)
+            return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+        # determine the height of the tree
+        if random_factor < 0.1:
+            tree_height = 3
+        elif random_factor < 0.35:
+            tree_height = 5
+        else:
+            tree_height = 4
+
+        # trunk
+        start_y = ground_y-1
+        for y in range(tree_height):
+            structureInstructionsList.append(Structure_Instruction(ground_x+2, start_y-y, Mahogany_Log))
+        
+        # add the leaves to the structure instructions
+        y = ground_y - tree_height - 1
+        for x in range(5):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        y = ground_y - tree_height - 2
+        for x in range(1, 4):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        # add a branched off leaf
+        extra_leaf_odds = int(hashlib.sha256(f"{random_factor}_extra_leaf_odds".encode()).hexdigest(), 16) / (2**256 - 1)
+        add_branched_leaf = True
+        if extra_leaf_odds < 0.35:
+            x = 1
+        elif extra_leaf_odds < 0.7:
+            x = 3
+        else:
+            add_branched_leaf = False
+        
+        if add_branched_leaf:
+            y = ground_y - tree_height + 1
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
         return structureInstructionsList
