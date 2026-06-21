@@ -422,21 +422,26 @@ class Mahagony_Tree_Double:
 
         # add a branched off leaf
         extra_leaf_odds = int(hashlib.sha256(f"{random_factor}_extra_leaf_odds".encode()).hexdigest(), 16) / (2**256 - 1)
+        add_branched_leaf = True
         if extra_leaf_odds < 0.35:
             x = 1
             y_diff = 1
         elif extra_leaf_odds < 0.7:
             x = 1
             y_diff = 1
-        elif extra_leaf_odds < 0.85:
+        elif extra_leaf_odds < 0.84:
+            x = 4
+            y_diff = 2
+        elif extra_leaf_odds < 0.98:
             x = 4
             y_diff = 2
         else:
-            x = 4
-            y_diff = 2
-        y = ground_y - tree_height + y_diff
-        ticks = get_ticks(x, y)
-        structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            add_branched_leaf = False
+            
+        if add_branched_leaf:
+            y = ground_y - tree_height + y_diff
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
         return structureInstructionsList
