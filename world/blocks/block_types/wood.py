@@ -510,10 +510,10 @@ class Mahogany_Planks(Block):
             y *= block_width
 
         # --- palette (red mahogany) ---
-        base = (158 + added,  78 + added,  52 + added)
-        seam = (128 + added,  54 + added,  32 + added)
-        grain = (143 + added,  65 + added,  42 + added)
-        highlight = (172 + added,  94 + added,  65 + added)
+        base = (154 + added,  86 + added,  60 + added)
+        seam = (128 + added,  62 + added,  40 + added)
+        grain = (143 + added,  73 + added,  50 + added)
+        highlight = (172 + added, 101 + added,  73 + added)
 
         # Fill background
         pygame.draw.rect(screen, base, (x, y, block_width, block_width))
