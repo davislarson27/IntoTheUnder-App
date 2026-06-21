@@ -752,7 +752,7 @@ class Small_Bush:
         # initialize list
         structureInstructionsList = []
 
-        structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Leaves(grid, grid.screen, ground_x, ground_y-1, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
+        structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Bush))
 
         # return list
         return structureInstructionsList, []

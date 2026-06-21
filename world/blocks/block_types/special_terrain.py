@@ -300,3 +300,68 @@ class Border_Block(Block):
         # dark outline on each chunk
         for chunk in [c1, c2, c3, c4]:
             pygame.draw.polygon(screen, dark, chunk, max(1, int(block_width * 0.04)))
+
+class Bush(Block):
+    str_name = "Bush"
+    ticks_to_mine = 18
+    sappling_drop_chance = 0.12
+
+    pass_through = True
+
+    tick_threshold = 60
+    
+    # Fixed speck pattern in normalized tile space (0..1).
+    # (u, v, r_frac, is_light)
+    _SPECK_PATTERN = [
+        (0.22, 0.28, 0.07, True),
+        (0.62, 0.24, 0.06, False),
+        (0.76, 0.55, 0.06, True),
+        (0.36, 0.68, 0.05, False),
+        (0.55, 0.78, 0.04, True),
+    ]
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added_color = 20 if being_mined else 0
+
+        # IMPORTANT:
+        # If is_grid_coordinates=True, x/y must be WORLD TILE coords (not screen coords).
+        if is_grid_coordinates:
+            px = x * block_width
+            py = y * block_width
+        else:
+            px = x
+            py = y
+
+        base = (120 + added_color, 155 + added_color, 110 + added_color)
+        pygame.draw.rect(screen, base, (px, py, block_width, block_width))
+
+        # Two close-to-base colors (subtle)
+        dark  = (max(base[0] - 8, 0),  max(base[1] - 8, 0),  max(base[2] - 8, 0))
+        light = (min(base[0] + 6, 255), min(base[1] + 6, 255), min(base[2] + 6, 255))
+
+        # Keep dots away from edges so tiles blend
+        pad = max(1, block_width // 8)
+
+        # Scale radii gently with tile size, clamp small
+        def scale_r(r_frac: float) -> int:
+            return max(1, min(block_width // 10, int(block_width * r_frac)))
+
+        # Use fewer specks on small tiles (optional)
+        specks = Bush._SPECK_PATTERN
+        if block_width < 24:
+            specks = specks[:4]
+
+        for (u, v, r_frac, is_light) in specks:
+            r = scale_r(r_frac)
+            cx = int(px + pad + u * (block_width - 2 * pad))
+            cy = int(py + pad + v * (block_width - 2 * pad))
+            col = light if is_light else dark
+            pygame.draw.circle(screen, col, (cx, cy), r)
+
+        # Optional tiny “cluster dot” that is ALWAYS in the same place (still not random)
+        # (This mimics your occasional extra dot without RNG.)
+        cx = int(px + pad + 0.48 * (block_width - 2 * pad))
+        cy = int(py + pad + 0.46 * (block_width - 2 * pad))
+        pygame.draw.circle(screen, dark, (cx, cy), 1)
+

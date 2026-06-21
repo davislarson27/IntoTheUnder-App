@@ -95,6 +95,7 @@ def get_blocks_list():
         Tree_Sappling,
         Spruce_Sappling,
         Gold_Stone_Bricks,
+        Bush,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,
