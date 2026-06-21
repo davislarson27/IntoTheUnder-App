@@ -60,7 +60,7 @@ update notes:
  - redesigned the menu and added new world gen settings
  - added the ability to rename a world
  - added spruce wood blocks
- - added mohagany wood blocks
+ - added mahogany wood blocks
  - added stars to the far background
 """
 
