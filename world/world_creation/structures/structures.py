@@ -2,7 +2,7 @@ from math import floor
 import hashlib
 
 from world.blocks.block_export import *
-from .structure_instruction import Structure_Instruction
+from .structure_instruction import Structure_Instruction, Var_Structure_Instruction
 from play.inventory.submenus.crafting_recipes import User_Crafting_Recipes_List
 
 class Recipe_Burrow:
@@ -93,7 +93,7 @@ class Recipe_Burrow:
         structureInstructionsList.append(Structure_Instruction(recipeFrame_x, recipeFrame_y, recipeFrameBlock, blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
@@ -148,7 +148,7 @@ class Recipe_Burrow:
         structureInstructionsList.append(Structure_Instruction(recipeFrame_x, recipeFrame_y, Wood_Planks))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
 
 class Tree:
@@ -213,12 +213,12 @@ class Tree:
                 structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-y-tree_height, Leaves(grid, grid.screen, ground_x+x, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
         
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Spruce_Tree:
@@ -293,12 +293,12 @@ class Spruce_Tree:
         structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Spruce_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Mahagony_Tree_Rand_Width:
@@ -337,17 +337,17 @@ class Mahagony_Tree_Rand_Width:
 
         tree_style_chance = int(hashlib.sha256(f"{random_factor}_tree_type".encode()).hexdigest(), 16) / (2**256 - 1)
         if tree_style_chance > 0.8: # 2 wide style
-            structureInstructionsList = Mahagony_Tree_Double.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
+            structureInstructionsList, var_structure_instructions = Mahagony_Tree_Double.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
         else:
-            structureInstructionsList = Mahagony_Tree.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
+            structureInstructionsList, var_structure_instructions = Mahagony_Tree.getStructureInstructions(ground_x, ground_y, grid, random_factor, biome_name)
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, var_structure_instructions
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Mahagony_Tree_Double:
@@ -408,17 +408,17 @@ class Mahagony_Tree_Double:
         y = ground_y - tree_height - 1
         for x in range(6):
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         y = ground_y - tree_height - 2
         for x in range(1, 5):
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         y = ground_y - tree_height - 3
         for x in range(2, 4):
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # add a branched off leaf
         extra_leaf_odds = int(hashlib.sha256(f"{random_factor}_extra_leaf_odds".encode()).hexdigest(), 16) / (2**256 - 1)
@@ -437,19 +437,19 @@ class Mahagony_Tree_Double:
             y_diff = 2
         else:
             add_branched_leaf = False
-            
+
         if add_branched_leaf:
             y = ground_y - tree_height + y_diff
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, [Var_Structure_Instruction(ground_x + 2, ground_y, Mahogany_Log, None, 1), Var_Structure_Instruction(ground_x + 3, ground_y, Mahogany_Log, None, 1)]
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Mahagony_Tree:
@@ -509,12 +509,12 @@ class Mahagony_Tree:
         y = ground_y - tree_height - 1
         for x in range(5):
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         y = ground_y - tree_height - 2
         for x in range(1, 4):
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # add a branched off leaf
         extra_leaf_odds = int(hashlib.sha256(f"{random_factor}_extra_leaf_odds".encode()).hexdigest(), 16) / (2**256 - 1)
@@ -529,15 +529,15 @@ class Mahagony_Tree:
         if add_branched_leaf:
             y = ground_y - tree_height + 1
             ticks = get_ticks(x, y)
-            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Mahogany_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+2, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, [Var_Structure_Instruction(ground_x + 2, ground_y, Mahogany_Log, None, 1)]
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Snow_Tree:
@@ -606,12 +606,12 @@ class Snow_Tree:
             structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-2-tree_height, Snow_Leaves_Top(grid, grid.screen, ground_x+x, start_y-2-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Cactus_Structure:
@@ -664,12 +664,12 @@ class Cactus_Structure:
             structureInstructionsList.append(Structure_Instruction(ground_x, start_y-y, Cactus))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Snow_Man_Structure:
@@ -710,12 +710,12 @@ class Snow_Man_Structure:
         structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-2, Snow_Man_Head))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Small_Bush:
@@ -755,12 +755,12 @@ class Small_Bush:
         structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Leaves(grid, grid.screen, ground_x, ground_y-1, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Flowers:
@@ -815,12 +815,12 @@ class Flowers:
         structureInstructionsList.append(Structure_Instruction(ground_x, ground_y-1, Flower(grid, grid.screen, ground_x, ground_y-1, grid.BLOCK_WIDTH, pass_through=True), blockIsInitialized=True))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 
 
 class Puddle:
@@ -860,10 +860,10 @@ class Puddle:
         structureInstructionsList.append(Structure_Instruction(ground_x, ground_y, Water))
 
         # return list
-        return structureInstructionsList
+        return structureInstructionsList, []
 
     @classmethod
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
-        return [] # trees don't have backgrounds
+        return [], [] # trees don't have backgrounds
 

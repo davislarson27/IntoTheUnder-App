@@ -776,7 +776,7 @@ class Tree_Sappling(Block):
 
     def grow_tree(self):
         from world.world_creation.structures.structures import Tree
-        tree_instructions = Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
+        tree_instructions, tree_var_instructions = Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
         for instruct in tree_instructions:
             instruct.setBlock(self.grid)
 
@@ -885,7 +885,7 @@ class Spruce_Sappling(Block):
 
     def grow_tree(self):
         from world.world_creation.structures.structures import Spruce_Tree
-        tree_instructions = Spruce_Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
+        tree_instructions, tree_var_instructions = Spruce_Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
         for instruct in tree_instructions:
             instruct.setBlock(self.grid)
 
