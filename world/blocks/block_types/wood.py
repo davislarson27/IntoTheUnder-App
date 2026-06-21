@@ -143,8 +143,8 @@ class Spruce_Log(Block):
             x *= block_width
             y *= block_width
 
-        primary_color = (70, 64, 60) # alt try (82, 74, 68)
-        secondary_color = (20, 14, 10)
+        primary_color = (82, 72, 62)
+        secondary_color = (46, 38, 30)
         
         pygame.draw.rect( # draw base color
             screen,
@@ -178,9 +178,9 @@ class Spruce_Leaves(Block):
         self.grid.set(self.x, self.y, None)
         if random.random() < self.sappling_drop_chance:
             for y in range(self.y, self.y + 8):
-                if isinstance(self.grid.get(self.x, y), Tree_Sappling):
+                if isinstance(self.grid.get(self.x, y), Spruce_Sappling):
                     return None
-            self.grid.set(self.x, self.y, Tree_Sappling, pass_through=True)
+            self.grid.set(self.x, self.y, Spruce_Sappling, pass_through=True)
         return None
 
     def physics(self):
@@ -213,13 +213,13 @@ class Spruce_Leaves(Block):
             px = x
             py = y
 
-        primary_color = (108, 138, 112)
+        primary_color = (86, 112, 92)
         base = (primary_color[0] + added_color, primary_color[1] + added_color, primary_color[2] + added_color)
         pygame.draw.rect(screen, base, (px, py, block_width, block_width))
 
         # Two close-to-base colors (subtle)
-        dark  = (max(base[0] - 8, 0),  max(base[1] - 8, 0),  max(base[2] - 8, 0))
-        light = (min(base[0] + 6, 255), min(base[1] + 6, 255), min(base[2] + 6, 255))
+        dark  = (max(base[0] - 10, 0),  max(base[1] - 10, 0),  max(base[2] - 10, 0))
+        light = (min(base[0] + 8, 255), min(base[1] + 8, 255), min(base[2] + 8, 255))
 
         # Keep dots away from edges so tiles blend
         pad = max(1, block_width // 8)
@@ -618,6 +618,115 @@ class Tree_Sappling(Block):
         leaf_base = c((120, 155, 110))
         leaf_dark = c((112, 147, 102))
         leaf_hi   = c((126, 161, 116))
+
+        mid_x = x + bw // 2
+
+        # Trunk — runs bottom 60% of tile
+        trunk_w = max(3, int(bw * 0.13))
+        trunk_x = mid_x - trunk_w // 2
+        trunk_top = y + int(bw * 0.40)
+        pygame.draw.rect(screen, bark, (trunk_x, trunk_top, trunk_w, bw - int(bw * 0.40)))
+        pygame.draw.rect(screen, bark_dark, (trunk_x, trunk_top, max(1, trunk_w // 3), bw - int(bw * 0.40)))
+
+        # Short side branches
+        branch_y = y + int(bw * 0.44)
+        branch_h = max(2, int(bw * 0.05))
+        branch_len = int(bw * 0.18)
+        pygame.draw.rect(screen, bark, (trunk_x - branch_len, branch_y, branch_len, branch_h))
+        pygame.draw.rect(screen, bark, (trunk_x + trunk_w, branch_y, branch_len, branch_h))
+
+        def leaf_cluster(rx, ry, rw, rh):
+            pygame.draw.rect(screen, leaf_dark, (rx, ry, rw, rh))
+            pygame.draw.rect(screen, leaf_base, (rx + int(bw * 0.03), ry + int(bw * 0.03), max(1, rw - int(bw * 0.06)), max(1, rh - int(bw * 0.06))))
+            pygame.draw.rect(screen, leaf_hi,   (rx + int(bw * 0.05), ry + int(bw * 0.03), max(1, rw - int(bw * 0.10)), max(1, int(bw * 0.05))))
+
+        # Leaf clusters at branch ends
+        cluster_w = int(bw * 0.28)
+        cluster_h = int(bw * 0.24)
+        cluster_y = branch_y - int(bw * 0.16)
+        for ox in (trunk_x - branch_len - cluster_w // 2, trunk_x + trunk_w + branch_len - cluster_w // 2):
+            leaf_cluster(ox, cluster_y, cluster_w, cluster_h)
+
+        # Top canopy sitting above the trunk
+        top_w = int(bw * 0.40)
+        top_h = int(bw * 0.24)
+        top_y = y + int(bw * 0.07)
+        top_x = x + (bw - top_w) // 2 + 1
+        leaf_cluster(top_x, top_y, top_w, top_h)
+
+class Spruce_Sappling(Block):
+
+    str_name = "Spruce Sapling"
+    ticks_to_mine = 12
+    pass_through = True
+    draw_background = True
+    ignore_shading_from = {
+        (0, 1): True,
+        (0, -1): True,
+        (1, 0): True,
+        (-1, 0): True
+    }
+    tick_threshold = 2
+    grow_tick_threshold = 4000
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1):
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time to fall
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, Spruce_Sappling)
+                    self.ticks_till_physics = 0
+            else: # this means that growing can continue
+                block_below = self.grid.get(self.x, self.y+1)
+                if not isinstance(block_below, Grass) and not isinstance(block_below, Dirt):
+                        self.ticks_till_physics = 0
+                        return
+                if not (self.grid.in_bounds(self.x-1, self.y-self.full_tree_height+1) and self.grid.in_bounds(self.x+1, self.y-self.full_tree_height+1)):
+                    self.ticks_till_physics = 0
+                    return
+                for y in range(self.y - self.full_tree_height + 1, self.y):
+                    for x in range(self.x - 1, self.x + 2):
+                        if self.grid.get(x, y) is not None:
+                            self.ticks_till_physics = 0
+                            return
+                    
+                if self.ticks_till_physics > self.grow_tick_threshold:
+                    self.grow_tree()
+                else:
+                    self.ticks_till_physics += 1
+
+    def grow_tree(self):
+        from world.world_creation.structures.structures import Spruce_Tree
+        tree_instructions = Spruce_Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
+        for instruct in tree_instructions:
+            instruct.setBlock(self.grid)
+
+    def special_init(self):
+        max_tree_height = 4 # includes leaves
+        self.tree_height = max_tree_height + 3
+        self.full_tree_height = self.tree_height + 3 # includes the height of the leaves
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added = 25 if being_mined else 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        bw = block_width
+
+        def c(rgb):
+            return (min(255, rgb[0] + added), min(255, rgb[1] + added), min(255, rgb[2] + added))
+
+        bark      = c((82, 72, 62))
+        bark_dark = c((46, 38, 30))
+        # Match the actual Spruce_Leaves block palette
+        leaf_base = c((86, 112, 92))
+        leaf_dark = c((76, 102, 82))
+        leaf_hi   = c((94, 120, 100))
 
         mid_x = x + bw // 2
 

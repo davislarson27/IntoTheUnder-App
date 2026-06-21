@@ -256,20 +256,20 @@ class Spruce_Tree:
         structureInstructionsList = []
 
         # determine the height of the tree
-        if random_factor < 0.0001:
-            tree_height = 4
-        elif random_factor < 0.2:
-            tree_height = 1
+        if random_factor < 0.1:
+            tree_height = 5
         elif random_factor < 0.4:
             tree_height = 3
         else:
-            tree_height = 2
+            tree_height = 4
 
         # trunk
         start_y = ground_y-1
         for y in range(tree_height):
             structureInstructionsList.append(Structure_Instruction(ground_x+1, start_y-y, Spruce_Log))
-
+        extra_log_y = ground_y - tree_height - 2
+        structureInstructionsList.append(Structure_Instruction(ground_x+1, extra_log_y, Spruce_Log))
+        
         # leaves disappearing time thresholds
         def get_ticks(x, y):
             value = int(hashlib.sha256(f"{random_factor}_{x}_{y}".encode()).hexdigest(), 16)
@@ -277,11 +277,21 @@ class Spruce_Tree:
             return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
         # add the leaves to the structure instructions
-        for y in range(3):
-            for x in range(3):
-                ticks = get_ticks(x, y)
-                structureInstructionsList.append(Structure_Instruction(ground_x+x, start_y-y-tree_height, Spruce_Leaves(grid, grid.screen, ground_x+x, start_y-y-tree_height, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
-        
+        y = ground_y - tree_height - 1
+        for x in range(3):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Spruce_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        y = ground_y - tree_height - 3
+        for x in range(3):
+            ticks = get_ticks(x, y)
+            structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Spruce_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
+        y = ground_y - tree_height - 4
+        x = 1
+        ticks = get_ticks(x, y)
+        structureInstructionsList.append(Structure_Instruction(ground_x+x, y, Spruce_Leaves(grid, grid.screen, ground_x+x, y, grid.BLOCK_WIDTH, pass_through=True, anchor_x=ground_x+1, anchor_y=start_y, tick_threshold=ticks), blockIsInitialized=True))
+
         # return list
         return structureInstructionsList
 

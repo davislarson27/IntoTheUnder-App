@@ -40,6 +40,8 @@ def get_blocks_list():
         Grass,
         Log,
         Leaves,
+        Spruce_Log,
+        Spruce_Leaves,
         Snow_Leaves,
         Snow_Leaves_Top,
         Sand,
@@ -84,6 +86,7 @@ def get_blocks_list():
         White_Lily,
         Forget_Me_Not,
         Tree_Sappling,
+        Spruce_Sappling,
         Gold_Stone_Bricks,
         Water, # water subclasses after this
             Water_R1,
