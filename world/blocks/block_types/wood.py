@@ -1078,7 +1078,7 @@ class Mahogany_Sappling(Block):
         max_tree_height = 4 # includes leaves
         self.tree_height = max_tree_height + 3
         self.full_tree_height = self.tree_height + 3 # includes the height of the leaves
-    
+
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         added = 25 if being_mined else 0
@@ -1092,9 +1092,9 @@ class Mahogany_Sappling(Block):
         def c(rgb):
             return (min(255, rgb[0] + added), min(255, rgb[1] + added), min(255, rgb[2] + added))
 
-        bark      = c((88, 65, 42))
-        bark_dark = c((60, 42, 24))
-        # Match the actual Leaves block palette
+        bark      = c((139, 90, 71))
+        bark_dark = c((108, 57, 29))
+        # Match the actual Mahogany_Leaves block palette
         leaf_base = c((120, 155, 110))
         leaf_dark = c((112, 147, 102))
         leaf_hi   = c((126, 161, 116))
