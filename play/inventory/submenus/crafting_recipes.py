@@ -164,6 +164,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Spruce Planks",
+            [
+                Ingredient(Spruce_Log, 1),
+            ],
+            output=Ingredient(Spruce_Planks, 3),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Glass",
             [
                 Ingredient(Sand, 1),
@@ -477,6 +485,14 @@ class User_Crafting_Recipes_List:
                 Ingredient(Wood_Planks, 3),
             ],
             output=Ingredient(Door, 2),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
+            "Spruce Door",
+            [
+                Ingredient(Spruce_Planks, 3),
+            ],
+            output=Ingredient(Spruce_Door, 2),
             category=Recipe_Category.Utility
         ),
         Crafting_Recipe(
