@@ -113,6 +113,7 @@ def get_block_refuel_dict():
         Coal_Block: 120,
         Log: 30,
         Spruce_Log: 30,
+        Mahogany_Log: 30,
         Wood_Planks: 10,
         Spruce_Planks: 10,
         Wood_Ladder: 5,
@@ -122,7 +123,8 @@ def get_block_refuel_dict():
         Spruce_Chest: 30,
         Gunpowder: 50,
         Recipe_Frame: 10,
-        Rose: 5
+        Rose: 5,
+        Bush: 1
     }
 
 def get_block_repair_dict():
