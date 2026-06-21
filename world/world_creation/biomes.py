@@ -221,7 +221,7 @@ class Forest(Biome):
         Structure_Identifier(Tree, 0.1),
         Structure_Identifier(Small_Bush, 0.01),
         Structure_Identifier(Flowers, 0.028),
-        Structure_Identifier(Mahagony_Tree_Rand_Width, 0.0001),
+        Structure_Identifier(Mahagony_Tree_Rand_Width, 0.00001),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
