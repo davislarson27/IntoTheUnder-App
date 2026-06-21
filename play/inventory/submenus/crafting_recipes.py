@@ -480,6 +480,15 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Utility
         ),
         Crafting_Recipe(
+            "Spruce Chest",
+            [
+                Ingredient(Spruce_Planks, 6), 
+                Ingredient(Gold_Ingot, 1)
+            ],
+            output=Ingredient(Spruce_Chest, 1),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
             "Door",
             [
                 Ingredient(Wood_Planks, 3),

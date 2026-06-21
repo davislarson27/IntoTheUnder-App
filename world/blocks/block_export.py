@@ -54,6 +54,7 @@ def get_blocks_list():
         Packed_Ice,
         Frozen_Rock,
         Chest,
+        Spruce_Chest,
         Enduring_Chest,
         Door,
         Door_Top,
@@ -115,6 +116,7 @@ def get_block_refuel_dict():
         Door: 5,
         Spruce_Door: 5,
         Chest: 30,
+        Spruce_Chest: 30,
         Gunpowder: 50,
         Recipe_Frame: 10,
         Rose: 5
