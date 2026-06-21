@@ -172,6 +172,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Building
         ),
         Crafting_Recipe(
+            "Mahogany Planks",
+            [
+                Ingredient(Mahogany_Log, 1),
+            ],
+            output=Ingredient(Mahogany_Planks, 3),
+            category=Recipe_Category.Building
+        ),
+        Crafting_Recipe(
             "Glass",
             [
                 Ingredient(Sand, 1),

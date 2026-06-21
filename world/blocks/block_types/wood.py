@@ -498,6 +498,72 @@ class Spruce_Planks(Block):
         # Bottom seam to frame the tile slightly (optional but helps readability)
         pygame.draw.rect(screen, seam, (x, y + block_width - 1, block_width, 1))
 
+class Mahogany_Planks(Block):
+    str_name = "Mahogany Planks"
+    ticks_to_mine = 38
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added = 20 if being_mined else 0
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        # --- palette (red mahogany) ---
+        base = (158 + added,  78 + added,  52 + added)
+        seam = (128 + added,  54 + added,  32 + added)
+        grain = (143 + added,  65 + added,  42 + added)
+        highlight = (172 + added,  94 + added,  65 + added)
+        
+        # Fill background
+        pygame.draw.rect(screen, base, (x, y, block_width, block_width))
+
+        # Choose plank count (4 reads best at small sizes)
+        planks = 4
+        plank_h = block_width // planks
+        remainder = block_width - plank_h * planks  # distribute leftover pixels
+
+        # Deterministic offsets so blocks look consistent and tile nicely
+        # (uses tile position only if you're passing grid coords in; otherwise it's still stable)
+        gx = (x // block_width) if is_grid_coordinates else 0
+        gy = (y // block_width) if is_grid_coordinates else 0
+        seed = (gx * 73856093) ^ (gy * 19349663)
+
+        cur_y = y
+        for i in range(planks):
+            h = plank_h + (1 if i < remainder else 0)
+
+            # Slight alternating tone per plank
+            tone = 6 if (i % 2 == 0) else -6
+            plank_color = (min(255, base[0] + tone), min(255, base[1] + tone), min(255, base[2] + tone))
+            pygame.draw.rect(screen, plank_color, (x, cur_y, block_width, h))
+
+            # Seam line at the top of each plank (except first)
+            if i != 0:
+                pygame.draw.rect(screen, seam, (x, cur_y, block_width, 1))
+
+            # Grain line (one per plank) with varying offset/length
+            # offsets are deterministic but “random-ish”
+            off = ((seed >> (i * 3)) & 0x7)  # 0..7
+            start_x = x + max(2, block_width // 10) + off
+            length = int(block_width * 0.65) - off
+            grain_y = cur_y + h // 2
+
+            # Keep grain line inside plank bounds
+            length = max(6, min(length, block_width - (start_x - x) - 2))
+            pygame.draw.rect(screen, grain, (start_x, grain_y, length, 1))
+
+            # Small highlight notch near left edge (subtle “wood sheen”)
+            notch_w = max(3, block_width // 8)
+            notch_x = x + max(2, block_width // 14) + (off // 2)
+            notch_y = cur_y + max(1, h // 3)
+            pygame.draw.rect(screen, highlight, (notch_x, notch_y, notch_w, 1))
+
+            cur_y += h
+
+        # Bottom seam to frame the tile slightly (optional but helps readability)
+        pygame.draw.rect(screen, seam, (x, y + block_width - 1, block_width, 1))
+
 class Iron_Ladder(Block):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
