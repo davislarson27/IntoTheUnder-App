@@ -182,7 +182,7 @@ class Mabelite_Block(Block):
     # remember to update the blocks_list for loading when you add a new type of block :)
 
     str_name = "Mabelite Block"
-    ticks_to_mine = 80
+    ticks_to_mine = 120
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

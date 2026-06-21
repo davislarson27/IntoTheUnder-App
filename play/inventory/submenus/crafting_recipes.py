@@ -530,6 +530,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Utility
         ),
         Crafting_Recipe(
+            "Iron Door",
+            [
+                Ingredient(Iron_Ingot, 12),
+            ],
+            output=Ingredient(Iron_Door, 1),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
             "Iron Ladder",
             [
                 Ingredient(Wood_Planks, 3),

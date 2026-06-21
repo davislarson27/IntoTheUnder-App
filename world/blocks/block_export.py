@@ -102,6 +102,9 @@ def get_blocks_list():
         Mahogany_Sappling,
         Gold_Stone_Bricks,
         Bush,
+        Iron_Door,
+        Iron_Door_Top,
+        Iron_Door_Bottom,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,
