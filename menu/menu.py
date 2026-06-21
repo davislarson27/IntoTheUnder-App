@@ -841,7 +841,7 @@ class Menu:
         self.screen.blit(self.button_font.render(f"Size:  {self.wd_world_size}", True, self.label_col),
                          (int(content_left + mb_w * 0.5), int(y)))
 
-        # bottom buttons: Cancel (left) | Open World (right)
+        # bottom buttons: Back (left) | Open World (right)
         btn_h = int(mb_h * 2)
         btn_y = card.bottom - int(mb_h) - btn_h
         gap = int(mb_w * 0.5)
@@ -851,7 +851,7 @@ class Menu:
         cancel_hov = self.wd_cancel_btn.collidepoint((mx, my))
         pygame.draw.rect(self.screen, self.button_select_color if cancel_hov else self.button_color,
                          self.wd_cancel_btn, border_radius=4)
-        ds = self.button_font.render("Cancel", True, (255, 255, 255))
+        ds = self.button_font.render("Back", True, (255, 255, 255))
         self.screen.blit(ds, ds.get_rect(center=self.wd_cancel_btn.center))
 
         self.wd_open_btn = pygame.Rect(content_left + half_w + gap, btn_y, half_w, btn_h)
