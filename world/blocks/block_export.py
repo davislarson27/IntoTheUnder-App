@@ -2,7 +2,7 @@ from .block_types._base import *
 
 from .block_types.explosives import *
 from .block_types.ingots import *
-from .block_types.multiblocks import *
+from .block_types.doors import *
 from .block_types.gems import *
 from .block_types.ores import *
 from .block_types.powders import *
@@ -64,6 +64,9 @@ def get_blocks_list():
         Spruce_Door,
         Spruce_Door_Top,
         Spruce_Door_Bottom,
+        Mahogany_Door,
+        Mahogany_Door_Top,
+        Mahogany_Door_Bottom,
         Wood_Planks,
         Spruce_Planks,
         Mahogany_Planks,
@@ -122,6 +125,7 @@ def get_block_refuel_dict():
         Wood_Ladder: 5,
         Door: 5,
         Spruce_Door: 5,
+        Mahogany_Door: 5,
         Chest: 30,
         Spruce_Chest: 30,
         Gunpowder: 50,

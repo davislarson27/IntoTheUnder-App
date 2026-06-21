@@ -513,6 +513,14 @@ class User_Crafting_Recipes_List:
             category=Recipe_Category.Utility
         ),
         Crafting_Recipe(
+            "Mahogany Door",
+            [
+                Ingredient(Mahogany_Planks, 3),
+            ],
+            output=Ingredient(Mahogany_Door, 2),
+            category=Recipe_Category.Utility
+        ),
+        Crafting_Recipe(
             "Iron Ladder",
             [
                 Ingredient(Wood_Planks, 3),
