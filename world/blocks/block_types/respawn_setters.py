@@ -23,7 +23,7 @@ class Respawn_Setter(Block):
             self.ticks_till_physics = 0
 
     def set_spawn_point(self, player):
-        pass
+        player.player_spawn_x = self.grid.get_block_to_px(self.x)
     
     def drawDependentDetails(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         if is_grid_coordinates:

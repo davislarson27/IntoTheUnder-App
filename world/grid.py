@@ -98,6 +98,9 @@ class Grid:
     def is_filled(self, x, y):
         return self.get(x, y) is not None
 
+    def get_block_to_px(self, block_x):
+        return block_x * self.BLOCK_WIDTH
+
     def mark_modified(self, global_x, y):
         """block methods should use this when changing things like block.pass_through to let the chunk know that it needs to be saved"""
         if not self.in_bounds(global_x, y):
