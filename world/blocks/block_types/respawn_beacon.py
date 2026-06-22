@@ -118,8 +118,8 @@ class Respawn_Beacon(Block):
             screen,
             (bg_color[0]+added_color, bg_color[1]+added_color, bg_color[2]+added_color), 
             (
-                0,
-                0,
+                x,
+                y,
                 block_width,
                 block_width
             )
@@ -128,8 +128,8 @@ class Respawn_Beacon(Block):
             screen,
             (bg_outline_color_mid[0]+added_color, bg_outline_color_mid[1]+added_color, bg_outline_color_mid[2]+added_color), 
             (
-                0,
-                0,
+                x,
+                y,
                 block_width,
                 block_width
             ),
@@ -139,8 +139,8 @@ class Respawn_Beacon(Block):
             screen,
             (bg_outline_color[0]+added_color, bg_outline_color[1]+added_color, bg_outline_color[2]+added_color), 
             (
-                0,
-                0,
+                x,
+                y,
                 block_width,
                 block_width
             ),
@@ -150,10 +150,10 @@ class Respawn_Beacon(Block):
         center_detail_width = block_width // 2
         center_detail_offset = (block_width - center_detail_width) // 2
         points = [ # points in the gem
-            (center_detail_width//2 + center_detail_offset, center_detail_offset), # top point
-            (center_detail_width + center_detail_offset, center_detail_width//2 + center_detail_offset), # right point
-            (center_detail_width//2 + center_detail_offset, center_detail_width + center_detail_offset), # bottom point
-            (center_detail_offset, center_detail_width//2 + center_detail_offset) # bottom left point
+            (x+(center_detail_width//2)+center_detail_offset, y+center_detail_offset), # top point
+            (x+center_detail_width+center_detail_offset, y+(center_detail_width//2)+center_detail_offset), # right point
+            (x+(center_detail_width//2)+center_detail_offset, y+center_detail_width+center_detail_offset), # bottom point
+            (x+center_detail_offset, y+(center_detail_width//2)+center_detail_offset) # bottom left point
         ]
 
         pygame.draw.polygon( # draw the diamond shape
