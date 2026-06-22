@@ -481,7 +481,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Chest",
             [
-                Ingredient(Wood_Planks, 2), 
+                Ingredient(Wood_Planks, 3), 
                 Ingredient(Iron_Ingot, 1)
             ],
             output=Ingredient(Chest, 1),
@@ -490,7 +490,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Spruce Chest",
             [
-                Ingredient(Spruce_Planks, 2), 
+                Ingredient(Spruce_Planks, 3), 
                 Ingredient(Gold_Ingot, 1)
             ],
             output=Ingredient(Spruce_Chest, 1),
@@ -499,7 +499,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Mahogany Chest",
             [
-                Ingredient(Mahogany_Planks, 2), 
+                Ingredient(Mahogany_Planks, 3), 
                 Ingredient(Iron_Ingot, 1)
             ],
             output=Ingredient(Mahogany_Chest, 1),
