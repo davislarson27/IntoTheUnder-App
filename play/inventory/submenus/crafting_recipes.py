@@ -500,7 +500,7 @@ class User_Crafting_Recipes_List:
             "Mahogany Chest",
             [
                 Ingredient(Mahogany_Planks, 6), 
-                # Ingredient(Gold_Ingot, 1)
+                Ingredient(Iron_Ingot, 1)
             ],
             output=Ingredient(Mahogany_Chest, 1),
             category=Recipe_Category.Utility
