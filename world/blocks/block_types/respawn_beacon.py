@@ -6,7 +6,7 @@ class Respawn_Beacon(Block):
     
     # remember to update the blocks_list for loading when you add a new type of block :)
 
-    str_name = "Respawn Setter"
+    str_name = "Respawn Beacon"
     ticks_to_mine = 85
     tick_threshold = 20
     
