@@ -577,7 +577,7 @@ class User_Crafting_Recipes_List:
         Crafting_Recipe(
             "Enduring Chest",
             [
-                Ingredient(Wood_Planks, 6), 
+                Ingredient(Wood_Planks, 3), 
                 Ingredient(Mabelite, 1)
             ],
             output=Ingredient(Enduring_Chest, 1),
