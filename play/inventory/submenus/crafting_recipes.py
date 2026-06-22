@@ -554,15 +554,6 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Wood_Ladder, 4),
             category=Recipe_Category.Utility
         ),
-        Crafting_Recipe(
-            "Respawn Setter",
-            [
-                Ingredient(Dirt, 1),
-            ],
-            output=Ingredient(Respawn_Beacon, 4),
-            category=Recipe_Category.Utility
-        ),
-
     ]
 
     basic_additional_possible_recipes = [
@@ -582,6 +573,15 @@ class User_Crafting_Recipes_List:
         # ---------------------------------- resources ---------------------------------- #
 
         # ---------------------------------- utility ---------------------------------- #
+        Crafting_Recipe(
+            "Respawn Setter",
+            [
+                Ingredient(Rock, 5),
+                Ingredient(Emerald, 2)
+            ],
+            output=Ingredient(Respawn_Beacon, 1),
+            category=Recipe_Category.Utility
+        ),
         Crafting_Recipe(
             "Enduring Chest",
             [
