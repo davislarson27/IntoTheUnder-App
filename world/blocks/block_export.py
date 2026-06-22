@@ -15,7 +15,7 @@ from .block_types.resource_blocks import *
 from .block_types.bricks import *
 from .block_types.glass import *
 from .block_types.flowers import *
-from .block_types.respawn_setters import *
+from .block_types.respawn_beacon import *
 
 """
 make sure ot add each block to the get_str_to_block() function and add any new files to the import list
@@ -106,7 +106,7 @@ def get_blocks_list():
         Iron_Door,
         Iron_Door_Top,
         Iron_Door_Bottom,
-        Respawn_Setter,
+        Respawn_Beacon,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

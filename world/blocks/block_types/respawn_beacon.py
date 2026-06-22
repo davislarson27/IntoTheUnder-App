@@ -2,7 +2,7 @@ import pygame
 from math import cos, sin, pi
 from world.blocks.block_types._base import Block
 
-class Respawn_Setter(Block):
+class Respawn_Beacon(Block):
     
     # remember to update the blocks_list for loading when you add a new type of block :)
 

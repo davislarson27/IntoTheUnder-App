@@ -559,7 +559,7 @@ class User_Crafting_Recipes_List:
             [
                 Ingredient(Dirt, 1),
             ],
-            output=Ingredient(Respawn_Setter, 4),
+            output=Ingredient(Respawn_Beacon, 4),
             category=Recipe_Category.Utility
         ),
 
