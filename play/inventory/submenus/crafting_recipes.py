@@ -554,6 +554,14 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Wood_Ladder, 4),
             category=Recipe_Category.Utility
         ),
+        Crafting_Recipe(
+            "Respawn Setter",
+            [
+                Ingredient(Dirt, 1),
+            ],
+            output=Ingredient(Respawn_Setter, 4),
+            category=Recipe_Category.Utility
+        ),
 
     ]
 

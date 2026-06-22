@@ -9,9 +9,9 @@ class TNT(Explosives):
     blast_power = 400
     blast_radius = 3
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         if self.ticks_till_physics == 0: self.ticks_till_physics = 1
-        self.inventory = inventory
+        self.player = player
         return True
         
     def physics(self):

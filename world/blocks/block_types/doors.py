@@ -391,7 +391,7 @@ class Door_Top(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y + 1
         bottom_half = self.grid.get(self.x, top_y)
         if not isinstance(bottom_half, Door_Bottom):
@@ -513,7 +513,7 @@ class Door_Bottom(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y - 1
         top_half = self.grid.get(self.x, top_y)
         if not isinstance(top_half, Door_Top):
@@ -617,7 +617,7 @@ class Spruce_Door_Top(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Spruce_Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y + 1
         bottom_half = self.grid.get(self.x, top_y)
         if not isinstance(bottom_half, Spruce_Door_Bottom):
@@ -739,7 +739,7 @@ class Spruce_Door_Bottom(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Spruce_Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y - 1
         top_half = self.grid.get(self.x, top_y)
         if not isinstance(top_half, Spruce_Door_Top):
@@ -843,7 +843,7 @@ class Mahogany_Door_Top(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Mahogany_Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y + 1
         bottom_half = self.grid.get(self.x, top_y)
         if not isinstance(bottom_half, Mahogany_Door_Bottom):
@@ -965,7 +965,7 @@ class Mahogany_Door_Bottom(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Mahogany_Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y - 1
         top_half = self.grid.get(self.x, top_y)
         if not isinstance(top_half, Mahogany_Door_Top):
@@ -1069,7 +1069,7 @@ class Iron_Door_Top(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Iron_Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y + 1
         bottom_half = self.grid.get(self.x, top_y)
         if not isinstance(bottom_half, Iron_Door_Bottom):
@@ -1191,7 +1191,7 @@ class Iron_Door_Bottom(SubMultiBlock):
             self.grid.set(self.x, y_other_half, None)
         return Iron_Door
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         top_y = self.y - 1
         top_half = self.grid.get(self.x, top_y)
         if not isinstance(top_half, Iron_Door_Top):

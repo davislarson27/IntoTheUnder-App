@@ -61,7 +61,7 @@ class Block:
         
         cls.surfaces[(cls, block_width, being_mined, use_alt_drawing)] = surface
 
-    def interaction(self, inventory):
+    def interaction(self, player):
         return False
     
     def get_stored_inventory_items(self):
@@ -383,12 +383,12 @@ class Explosives(Block): # this is a container for all blocks that explode (help
                     selected_block = self.grid.get(x + self.x, y + self.y)                        
                     if selected_block is not None:
                         if issubclass(type(selected_block), Explosives):
-                            selected_block.interaction(self.inventory) # triggers explosives in the blast radius
+                            selected_block.interaction(self.player) # triggers explosives in the blast radius
                             selected_block.ticks_till_physics = selected_block.tick_threshold - 5
                         else:
-                            destroyed_block = selected_block.onDestroy(self.inventory)
+                            destroyed_block = selected_block.onDestroy(self.player.inventory)
                             if destroyed_block is not None:
-                                self.inventory.add_item(destroyed_block)
+                                self.player.inventory.add_item(destroyed_block)
     
     def draw(self, being_mined=False, camera_x=0, camera_y=0): # resets the draw function so that it can flash while about to explode
         pixel_self_x = self.x * self.block_width

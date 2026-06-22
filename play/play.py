@@ -25,6 +25,7 @@ class Play:
     def __init__(self, screen, BLOCK_WIDTH, grid, background_grid, inventory, player, world_details, menu):
         # set details
         self.grid, self.inventory, self.player, self.world_details = grid, inventory, player, world_details
+        self.player.inventory = inventory
         self.background_grid = background_grid
         self.menu = menu
         self.screen = screen
@@ -173,7 +174,7 @@ class Play:
 
             if grid.get(grid_x, grid_y) is not None and not issubclass(type(grid.get(grid_x, grid_y)), Water):
                 if acknowledge_interactions:
-                    if grid.get(grid_x, grid_y).interaction(inventory):
+                    if grid.get(grid_x, grid_y).interaction(player):
                         return None, None
                     else:
                         x_place_spot = floor((start_x + ux*(step - d_step)) / grid.BLOCK_WIDTH)

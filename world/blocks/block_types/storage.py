@@ -11,10 +11,10 @@ class Chest(Block):
 
     can_store_items = True
     
-    def interaction(self, inventory):
-        inventory.open_chest(self.stored_inventory_items)
+    def interaction(self, player):
+        player.inventory.open_chest(self.stored_inventory_items)
         return True
-    
+
     def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
         for item in self.stored_inventory_items:
             if item is not None:
@@ -27,7 +27,7 @@ class Chest(Block):
 
 
     @staticmethod
-    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False): 
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         if being_mined:
             added_color = 20
         else:
@@ -36,7 +36,7 @@ class Chest(Block):
         if is_grid_coordinates:
             x *= block_width
             y *= block_width
-        
+
         primary_bg_color = (220, 175, 138)
         outline_color = (85, 70, 55)
         latch_color = (140, 140, 140)
@@ -72,10 +72,10 @@ class Spruce_Chest(Block):
 
     can_store_items = True
     
-    def interaction(self, inventory):
-        inventory.open_chest(self.stored_inventory_items)
+    def interaction(self, player):
+        player.inventory.open_chest(self.stored_inventory_items)
         return True
-    
+
     def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
         for item in self.stored_inventory_items:
             if item is not None:
@@ -133,8 +133,8 @@ class Mahogany_Chest(Block):
 
     can_store_items = True
 
-    def interaction(self, inventory):
-        inventory.open_chest(self.stored_inventory_items)
+    def interaction(self, player):
+        player.inventory.open_chest(self.stored_inventory_items)
         return True
 
     def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
@@ -194,8 +194,8 @@ class Enduring_Chest(Block):
 
     can_store_items = True
     
-    def interaction(self, inventory):
-        inventory.open_enduring_chest(self.stored_inventory_items)
+    def interaction(self, player):
+        player.inventory.open_enduring_chest(self.stored_inventory_items)
         return True
 
     @staticmethod
@@ -267,10 +267,10 @@ class Recipe_Frame(Block):
             return True
         return False
     
-    def interaction(self, inventory):
+    def interaction(self, player):
         if self.hasCraftingRecipe():
             self.ticks_till_physics = 1
-            self.inventory = inventory
+            self.inventory = player.inventory
             return True
         else:
             return False
