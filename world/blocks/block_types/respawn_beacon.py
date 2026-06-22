@@ -64,7 +64,7 @@ class Respawn_Beacon(Block):
             )
 
         # set ray color
-        rayColor = (245, 225, 140)
+        rayColor = (160, 240, 185) # diamond color
 
         # calculate ray length
         maxRayLength = int(block_width * 0.6)
@@ -107,48 +107,70 @@ class Respawn_Beacon(Block):
             x *= block_width
             y *= block_width
 
-        paper_color = (
-            min(255, 225 + added_color),
-            min(255, 205 + added_color),
-            min(255, 170 + added_color)
+        bg_color = (95, 100, 102)
+        bg_outline_color_mid = (80, 85, 91)
+        bg_outline_color = (65, 73, 80)
+        gem_color = (160, 240, 185)
+        gem_inner_outline_color = (90, 210, 130)
+        gem_outline_color = (160, 240, 185)
+
+        pygame.draw.rect( # draw the background
+            screen,
+            (bg_color[0]+added_color, bg_color[1]+added_color, bg_color[2]+added_color), 
+            (
+                0,
+                0,
+                block_width,
+                block_width
+            )
         )
-        border_color = (
-            min(255, 120 + added_color),
-            min(255, 100 + added_color),
-            min(255, 80 + added_color)
+        pygame.draw.rect( # draw the background
+            screen,
+            (bg_outline_color_mid[0]+added_color, bg_outline_color_mid[1]+added_color, bg_outline_color_mid[2]+added_color), 
+            (
+                0,
+                0,
+                block_width,
+                block_width
+            ),
+            width=3
         )
-        line_color = (
-            min(255, 160 + added_color),
-            min(255, 140 + added_color),
-            min(255, 110 + added_color)
+        pygame.draw.rect( # outline the block
+            screen,
+            (bg_outline_color[0]+added_color, bg_outline_color[1]+added_color, bg_outline_color[2]+added_color), 
+            (
+                0,
+                0,
+                block_width,
+                block_width
+            ),
+            width=1
         )
 
-        # base
-        pygame.draw.rect(screen, paper_color, (x, y, block_width, block_width))
+        center_detail_width = block_width // 2
+        center_detail_offset = (block_width - center_detail_width) // 2
+        points = [ # points in the gem
+            (center_detail_width//2 + center_detail_offset, center_detail_offset), # top point
+            (center_detail_width + center_detail_offset, center_detail_width//2 + center_detail_offset), # right point
+            (center_detail_width//2 + center_detail_offset, center_detail_width + center_detail_offset), # bottom point
+            (center_detail_offset, center_detail_width//2 + center_detail_offset) # bottom left point
+        ]
 
-        # border
-        border_thickness = max(1, block_width // 10)
-        pygame.draw.rect(screen, border_color, (x, y, block_width, block_width), border_thickness)
-
-        # inner frame
-        margin = max(2, block_width // 6)
-        inner_x = x + margin
-        inner_y = y + margin
-        inner_w = block_width - margin * 2
-        inner_h = block_width - margin * 2
-
-        if inner_w > 4 and inner_h > 4:
-            pygame.draw.rect(screen, border_color, (inner_x, inner_y, inner_w, inner_h), 1)
-
-            # two simple horizontal lines
-            line1_y = inner_y + inner_h // 3
-            line2_y = inner_y + (inner_h * 2) // 3
-
-            pygame.draw.line(screen, line_color, (inner_x + 2, line1_y), (inner_x + inner_w - 3, line1_y), 1)
-            pygame.draw.line(screen, line_color, (inner_x + 2, line2_y), (inner_x + inner_w - 3, line2_y), 1)
-
-            # tiny center mark
-            mark_size = max(2, block_width // 8)
-            mark_x = x + (block_width - mark_size) // 2
-            mark_y = y + (block_width - mark_size) // 2
-            pygame.draw.rect(screen, border_color, (mark_x, mark_y, mark_size, mark_size), 1)
+        pygame.draw.polygon( # draw the diamond shape
+            screen,
+            (min(gem_color[0]+added_color, 255), min(gem_color[1]+added_color, 255), min(gem_color[2]+added_color, 255)), 
+            points
+        )
+        pygame.draw.polygon( # draw the diamond shape outline
+            screen,
+            (min(gem_inner_outline_color[0]+added_color, 255), min(gem_inner_outline_color[1]+added_color, 255), min(gem_inner_outline_color[2]+added_color, 255)), 
+            points,
+            width=4
+        )
+        pygame.draw.polygon( # draw the diamond shape outline
+            screen,
+            (min(gem_outline_color[0]+added_color, 255), min(gem_outline_color[1]+added_color, 255), min(gem_outline_color[2]+added_color, 255)), 
+            points,
+            width=2
+        )
+        
