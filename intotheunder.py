@@ -62,6 +62,7 @@ update notes:
  - added spruce wood blocks
  - added mahogany wood blocks
  - added stars to the far background
+ - added respawn beacons to reset a user's spawn point
 """
 
 """
