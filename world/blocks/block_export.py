@@ -107,6 +107,7 @@ def get_blocks_list():
         Iron_Door_Top,
         Iron_Door_Bottom,
         Respawn_Beacon,
+        Watermellon,
         Water, # water subclasses after this
             Water_R1,
             Water_L1,

@@ -365,3 +365,56 @@ class Bush(Block):
         cy = int(py + pad + 0.46 * (block_width - 2 * pad))
         pygame.draw.circle(screen, dark, (cx, cy), 1)
 
+class Watermellon(Block):
+
+    # remember to update the blocks_list for loading when you add a new type of block :)
+
+    str_name = "Watermellon"
+    ticks_to_mine = 30
+
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        if being_mined:
+            added_color = 20
+        else:
+            added_color = 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+        
+        primary_color = (95, 120, 85)
+        secondary_color = (55, 95, 55)
+        tertiary_color = (105, 135, 95)
+
+        pygame.draw.rect( # draw base color
+            screen,
+            (primary_color[0] + added_color, primary_color[1] + added_color, primary_color[2] + added_color),
+            (x, y, block_width, block_width)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + floor(block_width * 0.15) , y + floor(block_width * 0.25), block_width // 25, block_width // 1.75)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + (block_width // 2) , y + (block_width // 3), block_width // 25, block_width // 1.75)
+        )
+        pygame.draw.rect(
+            screen,
+            (secondary_color[0] + added_color, secondary_color[1] + added_color, secondary_color[2] + added_color),
+            ((x) + floor(block_width * 0.8) , y + floor(block_width * 0.2), block_width // 25, block_width // 1.75)
+        )
+        pygame.draw.rect(
+            screen,
+            (tertiary_color[0] + added_color, tertiary_color[1] + added_color, tertiary_color[2] + added_color),
+            ((x) + floor(block_width * 0.32) , y + floor(block_width * 0.15), block_width // 25, block_width // 1.75)
+        )
+        pygame.draw.rect(
+            screen,
+            (tertiary_color[0] + added_color, tertiary_color[1] + added_color, tertiary_color[2] + added_color),
+            ((x) + floor(block_width * 0.63) , y + floor(block_width * 0.28), block_width // 25, block_width // 1.75)
+        )
+
