@@ -20,7 +20,7 @@ if __name__ == '__main__':
     blocks_allowed_list = [Dirt, Grass, Gravel, Coal_Ore_Block, Iron_Ore_Block, Gold_Ore_Block, Emerald_Ore_Block, Diamond_Ore_Block, Mabelite_Ore_Block, Sulfur_Flakes_Block, Saltpeter, Recipe_Frame]
 
     # files for printing
-    output_file_name = 'testing/results.txt'
+    output_file_name = 'testing/results/results.txt'
 
     # initialize object to hold results
     foreground_block_counter = {}
@@ -148,5 +148,6 @@ if __name__ == '__main__':
                 avg_blocks_per_world = foreground_block_counter[block] / count_of_tests / grid_width * 1000
 
                 output.write(f'{block.str_name}: {avg_blocks_per_world:.1f}\n')
+    
     print('finished!')
     
