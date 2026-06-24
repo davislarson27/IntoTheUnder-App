@@ -1,0 +1,79 @@
+Results compiled from 20 grids with a width of 5000
+
+Foreground Results
+
+Recipe Frame
+   avg blocks: 4.2
+   in world: 100%
+   avg depth: 50 (32-58)
+Grass
+   avg blocks: 2253.1
+   in world: 100%
+   avg depth: 50 (30-67)
+Dirt
+   avg blocks: 13573.1
+   in world: 100%
+   avg depth: 73 (31-148)
+Gravel
+   avg blocks: 5807.2
+   in world: 100%
+   avg depth: 99 (15-148)
+Saltpeter
+   avg blocks: 76.3
+   in world: 100%
+   avg depth: 100 (36-148)
+Coal Ore
+   avg blocks: 1607.4
+   in world: 100%
+   avg depth: 105 (33-148)
+Iron Ore
+   avg blocks: 975.5
+   in world: 100%
+   avg depth: 121 (63-148)
+Gold Ore
+   avg blocks: 51.2
+   in world: 100%
+   avg depth: 142 (109-148)
+Sulfur Flakes
+   avg blocks: 5.8
+   in world: 65%
+   avg depth: 53 (30-103)
+Emerald Ore
+   avg blocks: 0.1
+   in world: 5%
+   avg depth: 86 (86-86)
+Diamond Ore
+   avg blocks: 3.8
+   in world: 70%
+   avg depth: 143 (125-148)
+
+
+Background Results
+
+Grass
+   avg blocks: 2264.9
+   in world: 100%
+   avg depth: 49 (32-68)
+Dirt
+   avg blocks: 7716.9
+   in world: 100%
+   avg depth: 51 (33-72)
+Gravel
+   avg blocks: 203.8
+   in world: 100%
+   avg depth: 51 (37-70)
+
+
+Foreground Blocks Per Thousand
+
+Recipe Frame: 0.8
+Grass: 450.6
+Dirt: 2714.6
+Gravel: 1161.4
+Saltpeter: 15.3
+Coal Ore: 321.5
+Iron Ore: 195.1
+Gold Ore: 10.2
+Sulfur Flakes: 1.2
+Emerald Ore: 0.0
+Diamond Ore: 0.8
