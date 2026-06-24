@@ -50,6 +50,7 @@ class Volcano(Biome):
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.007),
+        Structure_Identifier(Recipe_Burrow, 0.00001),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
