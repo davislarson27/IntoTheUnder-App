@@ -11,12 +11,12 @@ from world.blocks.block_export import *
 
 if __name__ == '__main__':
     # set values for testing
-    count_of_tests = 30
-    grid_width = 15000
+    count_of_tests = 50
+    grid_width = 5000
     grid_height = 150
     ground_level = 50
 
-    random.seed(54)
+    random.seed(55)
 
     # test for blocks, None = all
     blocks_allowed_list = [Dirt, Grass, Gravel, Coal_Ore_Block, Iron_Ore_Block, Gold_Ore_Block, Emerald_Ore_Block, Diamond_Ore_Block, Mabelite_Ore_Block, Sulfur_Flakes_Block, Saltpeter, Recipe_Frame]

@@ -110,10 +110,10 @@ class Grid_Superstructure:
                 max_depth_threshold=0.745
             ),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, grid_height,
-                scale=0.17,
-                min_depth_threshold=0.798,
+                scale=0.19,
+                min_depth_threshold=0.797,
                 min_depth=105,
-                max_depth_threshold=0.7745
+                max_depth_threshold=0.7742
             ),
             Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, grid_height,
                 scale=0.18,
