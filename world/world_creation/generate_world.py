@@ -80,46 +80,46 @@ class Grid_Superstructure:
             ),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, grid_height,
                 scale=0.11,
-                min_depth_threshold=0.584,
+                min_depth_threshold=0.574,
                 min_depth=15,
-                max_depth_threshold=0.591
+                max_depth_threshold=0.6
             ),
             Iron_Ore_Block: Ore(self.seed, Iron_Ore_Block, grid_height,
                 scale=0.17,
-                min_depth_threshold=0.599,
+                min_depth_threshold=0.596,
                 min_depth=45,
-                max_depth_threshold=0.592
+                max_depth_threshold=0.59
             ),
             Gold_Ore_Block: Ore(self.seed, Gold_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.705,
+                min_depth_threshold=0.685,
                 min_depth=88,
-                max_depth_threshold=0.672
+                max_depth_threshold=0.659
             ),
             Emerald_Ore_Block: Ore(self.seed, Emerald_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.742,
-                min_depth=25,
-                max_depth_threshold=1,
+                min_depth_threshold=0.72,
+                min_depth=35,
+                max_depth_threshold=0.77,
                 max_depth=95
             ),
             Diamond_Ore_Block: Ore(self.seed, Diamond_Ore_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.785,
+                min_depth_threshold=0.779,
                 min_depth=95,
-                max_depth_threshold=0.77
+                max_depth_threshold=0.745
             ),
             Mabelite_Ore_Block: Ore(self.seed, Mabelite_Ore_Block, grid_height,
                 scale=0.17,
-                min_depth_threshold=0.814,
-                min_depth=110,
-                max_depth_threshold=0.8
+                min_depth_threshold=0.798,
+                min_depth=105,
+                max_depth_threshold=0.7745
             ),
             Sulfur_Flakes_Block: Ore(self.seed, Sulfur_Flakes_Block, grid_height,
                 scale=0.18,
-                min_depth_threshold=0.667,
+                min_depth_threshold=0.665,
                 min_depth=10,
-                max_depth_threshold=1,
+                max_depth_threshold=0.71,
                 max_depth=80
             ),
         }
@@ -298,15 +298,15 @@ class Grid_Superstructure:
                 self.foreground_grid.set(x, y, biome.sub_layer)
 
             # generate ores at this level
-            i = 1
             for y in range(ground_elevation, self.foreground_grid.height):
                 for ore in self.ores:
                     ore_noise = self.ores[ore]
-                    if i < ore_noise.min_depth:
+                    if y < ore_noise.min_depth:
+                        continue
+                    if y >= ore_noise.max_depth:
                         continue
                     if ore_noise.find(x, y, biome.biome_ore_modifier[ore]): # returns True if this ore should be here
                         self.foreground_grid.set(x, y, ore)
-                i+=1
 
             # yield a result periodically to report progress
             if x != 0 and x % update_bar_block_marker == 0:

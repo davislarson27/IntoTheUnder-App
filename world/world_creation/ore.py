@@ -14,6 +14,7 @@ class Ore:
 
         if max_depth is None: max_depth = world_height # adjust the max depth if it is not set to be the true max depth
         self.delta_treshold = (max_depth_threshold - min_depth_threshold) / (max_depth - min_depth)# change in threshold per one block of additional depth
+        self.max_depth = max_depth
 
     def find(self, x, y, biome_multiplier=1):
         ore_noise = pnoise2(x * self.scale, y * self.scale,  base=(self.seed) % 256)
