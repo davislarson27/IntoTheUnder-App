@@ -721,7 +721,7 @@ class User_Crafting_Recipes_List:
         elif biome_name == 'Desert':
             return [recipe for recipe in cls.basic_additional_possible_recipes if recipe.name != 'Snowman Head']
         elif biome_name == 'Montane_Forest':
-            return cls.basic_additional_possible_recipes + [cls.getRecipeFromString('Rose')]
+            return (cls.basic_additional_possible_recipes * 4) + [cls.getRecipeFromString('Rose')]
         return cls.basic_additional_possible_recipes
 
     @classmethod

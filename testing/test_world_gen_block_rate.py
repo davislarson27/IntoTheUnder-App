@@ -11,18 +11,18 @@ from world.blocks.block_export import *
 
 if __name__ == '__main__':
     # set values for testing
-    count_of_tests = 50
-    grid_width = 1000
+    count_of_tests = 30
+    grid_width = 15000
     grid_height = 150
     ground_level = 50
 
-    random.seed(52)
+    random.seed(54)
 
     # test for blocks, None = all
     blocks_allowed_list = [Dirt, Grass, Gravel, Coal_Ore_Block, Iron_Ore_Block, Gold_Ore_Block, Emerald_Ore_Block, Diamond_Ore_Block, Mabelite_Ore_Block, Sulfur_Flakes_Block, Saltpeter, Recipe_Frame]
 
     # files for printing
-    output_file_name = 'testing/results/results.txt'
+    output_file_name = f'testing/results/results_t{count_of_tests}_w{grid_width}.txt'
 
     # initialize object to hold results
     foreground_block_counter = {}
@@ -40,6 +40,8 @@ if __name__ == '__main__':
     foreground_tot_depth = {}
     background_tot_depth = {}
 
+    recipe_counter_global = {}
+
     for testNum in range(count_of_tests):
         print(f'running test {testNum+1} of {count_of_tests}')
         world_seed = int(random.random() * 100000000)
@@ -51,29 +53,34 @@ if __name__ == '__main__':
 
         fg_block_in_cur_iter = set()
         bg_block_in_cur_iter = set()
+        recipe_counter = set()
+
 
         for y in range(grid_height):
             for x in range(grid_width):
                 # process foreground
                 block = foreground_grid.get(x, y)
                 if block is not None:
-                    block = type(block)
+                    block_type = type(block)
 
-                    if block not in foreground_block_counter:
-                        foreground_block_counter[block] = 1
+                    if block_type not in foreground_block_counter:
+                        foreground_block_counter[block_type] = 1
                     else:
-                        foreground_block_counter[block] += 1
+                        foreground_block_counter[block_type] += 1
                     
-                    fg_block_in_cur_iter.add(block)
+                    fg_block_in_cur_iter.add(block_type)
 
-                    if block not in foreground_tot_depth:
-                        foreground_tot_depth[block] = y
-                        foreground_max_depth[block] = y
-                        foreground_min_depth[block] = y
+                    if block_type not in foreground_tot_depth:
+                        foreground_tot_depth[block_type] = y
+                        foreground_max_depth[block_type] = y
+                        foreground_min_depth[block_type] = y
                     else:
-                        foreground_tot_depth[block] += y
-                        foreground_max_depth[block] = max(foreground_max_depth[block], y)
-                        foreground_min_depth[block] = min(foreground_min_depth[block], y)
+                        foreground_tot_depth[block_type] += y
+                        foreground_max_depth[block_type] = max(foreground_max_depth[block_type], y)
+                        foreground_min_depth[block_type] = min(foreground_min_depth[block_type], y)
+
+                    if isinstance(block, Recipe_Frame):
+                        recipe_counter.add(block.stored_inventory_items[0].name)
 
 
                 # process background
@@ -110,6 +117,13 @@ if __name__ == '__main__':
                 background_worlds_with_block[block] += 1
             else:
                 background_worlds_with_block[block] = 1
+        
+        # finish processing recipes
+        for recipe_name in recipe_counter:
+            if recipe_name in recipe_counter_global:
+                recipe_counter_global[recipe_name] += 1
+            else:
+                recipe_counter_global[recipe_name] = 1
         
     print('writing results...')
 
@@ -151,5 +165,11 @@ if __name__ == '__main__':
 
                 output.write(f'{block.str_name}: {avg_blocks_per_world:.1f}\n')
     
+        output.write('\n\n')
+        output.write('Recipes In World\n\n')
+        for recipe_name, occurences in recipe_counter_global.items():
+                percent_in_world = occurences / count_of_tests * 100
+                output.write(f'{recipe_name}: {percent_in_world:.1f}%\n')
+
     print('finished!')
     
