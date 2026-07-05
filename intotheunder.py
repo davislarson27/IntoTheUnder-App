@@ -82,7 +82,7 @@ INVENTORY_HEIGHT = HEALTH_BAR_HEIGHT + (grid_height_px * 7) # this is so hard co
 
 
 APP_NAME = "Into The Under"
-APP_DISPLAY_NAME = "Into The Under v1.7.0-Beta"
+APP_DISPLAY_NAME = "Into The Under v1.7.0"
 VERSION_NAME = "intotheunder1.7.0"
 VERSION = 1.7 # primary version - ex 1.3.1 becomes 1.3
 GAME_FILE_FOLDER_NAME = "game_files"
