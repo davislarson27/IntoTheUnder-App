@@ -63,6 +63,7 @@ update notes:
  - added mahogany wood blocks
  - added stars to the far background
  - added respawn beacons to reset a user's spawn point
+ - added naturally spawning (but rate) packed dirt
 """
 
 """

@@ -19,6 +19,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
 
     biome_ore_modifier = {
         Dirt: 1,
+        Packed_Dirt: 1,
         Gravel: 1,
         Iron_Ore_Block: 1,
         Coal_Ore_Block: 1,

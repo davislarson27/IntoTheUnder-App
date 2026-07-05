@@ -72,6 +72,13 @@ class Grid_Superstructure:
                 min_depth=10,
                 max_depth_threshold=0.51,
             ),
+            Packed_Dirt: Ore(self.seed, Packed_Dirt, grid_height, 
+                scale=0.11,
+                min_depth_threshold=0.753,
+                min_depth=35,
+                max_depth_threshold=0.811,
+                max_depth=60
+            ),
             Gravel: Ore(self.seed, Gravel, grid_height,
                 scale=0.11,
                 min_depth_threshold=0.5,
