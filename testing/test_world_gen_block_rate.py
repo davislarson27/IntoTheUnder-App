@@ -11,7 +11,7 @@ from world.blocks.block_export import *
 
 if __name__ == '__main__':
     # set values for testing
-    count_of_tests = 8
+    count_of_tests = 1
     grid_width = 5000
     grid_height = 150
     ground_level = 50

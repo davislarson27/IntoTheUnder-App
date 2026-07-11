@@ -3,7 +3,7 @@ from noise import pnoise2
 import hashlib
 
 class Ore:
-    def __init__(self, world_seed, ore, world_height, scale, min_depth_threshold, min_depth, max_depth_threshold, max_depth=None):
+    def __init__(self, world_seed, ore, world_height, scale, min_depth_threshold, min_depth, max_depth_threshold, max_depth=None, allow_fill_from=[Rock]): # default allow fill is just from rock
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)
 
@@ -16,10 +16,19 @@ class Ore:
         self.delta_treshold = (max_depth_threshold - min_depth_threshold) / (max_depth - min_depth)# change in threshold per one block of additional depth
         self.max_depth = max_depth
 
+        self.allow_fill_from = allow_fill_from
+
     def find(self, x, y, biome_multiplier=1):
         ore_noise = pnoise2(x * self.scale, y * self.scale,  base=(self.seed) % 256)
         if ore_noise > (self.min_depth_threshold + ((y - self.min_depth) * self.delta_treshold)) / biome_multiplier:
             return True
         else:
             return False
+        
+    def allow_replace(self, preexisting_block):
+        if preexisting_block is None:
+            preexisting_block_type = None
+        else:
+            preexisting_block_type = type(preexisting_block)
+        return preexisting_block_type in self.allow_fill_from
     

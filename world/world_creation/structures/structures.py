@@ -151,6 +151,120 @@ class Recipe_Burrow:
         return structureInstructionsList, []
 
 
+class Recipe_Cave:
+    width = 6
+    start_x_diff = -1 # distance from the origin x that the y elevation should be set to
+    height = 5
+    depth = 0
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+    
+    @classmethod
+    def get_x_difference_for_y(cls):
+        """returns the value to add to x to get the corect elevation this object is calcualated for (i.e., for a tree it would be +1)"""
+        return cls.start_x_diff
+    
+    @classmethod
+    def get_height(cls):
+        """gets height above the start point"""
+        return cls.height
+
+    @classmethod
+    def get_depth(cls):
+        """gets depth below the start point"""
+        return cls.depth
+
+    @classmethod
+    def getStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None):
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        # get the depth
+        min_depth = 20
+        max_depth = grid.height
+
+        chance = int(hashlib.sha256(f"{random_factor}_depth".encode()).hexdigest(), 16) / (2**256 - 1)
+        adjusted_ground_y = ground_y + min_depth + int(chance * (grid.height - ground_y))
+
+        if adjusted_ground_y > grid.height:
+            return structureInstructionsList, []
+
+        # shift start_y up to true start
+        start_x = ground_x
+        start_y = adjusted_ground_y - cls.height
+
+        # top level
+        y = 0
+        for x in range(6):
+            structureInstructionsList.append(Structure_Instruction(start_x + x, start_y + y, Stone_Bricks))
+
+        # fill in the middle section
+        for y in range(1, 4):
+            x = 0
+            structureInstructionsList.append(Structure_Instruction(start_x + x, start_y + y, Stone_Bricks))
+            x = 5
+            structureInstructionsList.append(Structure_Instruction(start_x + x, start_y + y, Stone_Bricks))
+            for x in range(1, 5):
+                structureInstructionsList.append(Structure_Instruction(start_x + x, start_y + y, None))
+
+
+        # bottom level
+        y = 4
+        for x in range(6):
+            structureInstructionsList.append(Structure_Instruction(start_x + x, start_y + y, Stone_Bricks))
+
+        # now add the recipe frame block
+        recipeFrame_x, recipeFrame_y = start_x + 3, start_y + 3
+        recipeFrameBlock = Recipe_Frame(grid, grid.screen, recipeFrame_x, recipeFrame_y, grid.BLOCK_WIDTH)
+
+        recipeList = User_Crafting_Recipes_List.getBiomeWeightedFindableRecipesList(biome_name)
+
+        index = int(random_factor * len(recipeList)) % len(recipeList)
+        randomRecipe = recipeList[index]
+        recipeFrameBlock.stored_inventory_items.append(randomRecipe)
+        structureInstructionsList.append(Structure_Instruction(recipeFrame_x, recipeFrame_y, recipeFrameBlock, blockIsInitialized=True))
+
+        chest_x, chest_y = recipeFrame_x - 1, recipeFrame_y
+        chest_block = Spruce_Chest(grid, grid.screen, chest_x, chest_y, grid.BLOCK_WIDTH)
+        structureInstructionsList.append(Structure_Instruction(chest_x, chest_y, chest_block, blockIsInitialized=True))
+
+        # return list
+        return structureInstructionsList, []
+
+    @classmethod
+    def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
+        """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
+        # initialize list
+        structureInstructionsList = []
+
+        # get the depth
+        min_depth = 20
+        max_depth = grid.height
+
+        chance = int(hashlib.sha256(f"{random_factor}_depth".encode()).hexdigest(), 16) / (2**256 - 1)
+        adjusted_ground_y = ground_y + min_depth + int(chance * (grid.height - ground_y))
+
+        if adjusted_ground_y > grid.height:
+            return structureInstructionsList, []
+
+        # shift start_y up to true start
+        start_x = ground_x
+        start_y = adjusted_ground_y - cls.height
+
+        for y in range(0, cls.height):
+            for x in range(0, cls.width):
+                structureInstructionsList.append(Structure_Instruction(start_x + x, start_y + y, Spruce_Planks))
+
+        # return list
+        return structureInstructionsList, []
+
+
 class Tree:
     width = 3
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to

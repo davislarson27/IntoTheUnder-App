@@ -68,9 +68,9 @@ class Grid_Superstructure:
         self.ores = { # higher scale = smaller veins, higher threshold = less common
             Dirt: Ore(self.seed, Dirt, grid_height, 
                 scale=0.11,
-                min_depth_threshold=0.5,
+                min_depth_threshold=0.51,
                 min_depth=10,
-                max_depth_threshold=0.51,
+                max_depth_threshold=0.52,
             ),
             Packed_Dirt: Ore(self.seed, Packed_Dirt, grid_height, 
                 scale=0.11,
@@ -81,9 +81,10 @@ class Grid_Superstructure:
             ),
             Gravel: Ore(self.seed, Gravel, grid_height,
                 scale=0.11,
-                min_depth_threshold=0.5,
+                min_depth_threshold=0.525,
                 min_depth=10,
-                max_depth_threshold=0.52
+                max_depth_threshold=0.545,
+                allow_fill_from=[Rock, Ice, Snow_Block, Dirt, Grass, Frozen_Rock]
             ),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, grid_height,
                 scale=0.11,
@@ -239,6 +240,19 @@ class Grid_Superstructure:
         depth  = pnoise1(x * (1 / self.border_block_freq),  base=(self.border_block_seed) % 256) * self.border_block_amp
         return abs(int(depth))
 
+    def generate_ores_at_x(self, x, biome, ground_elevation, grid):
+        for y in range(ground_elevation, self.foreground_grid.height):
+            for ore in self.ores:
+                ore_spawn_attributes = self.ores[ore]
+                if y < ore_spawn_attributes.min_depth:
+                    continue
+                if y >= ore_spawn_attributes.max_depth:
+                    continue
+
+                if ore_spawn_attributes.find(x, y, biome.biome_ore_modifier[ore]): # returns True if this ore should be here
+                    if ore_spawn_attributes.allow_replace(grid.get(x, y)):
+                        self.foreground_grid.set(x, y, ore)
+
     def generate_world(self):
         """generates the world without progress update yields"""
         for _ in self._generate_world():
@@ -304,16 +318,8 @@ class Grid_Superstructure:
             for y in range(cur_depth_down, self.foreground_grid.height):
                 self.foreground_grid.set(x, y, biome.sub_layer)
 
-            # generate ores at this level
-            for y in range(ground_elevation, self.foreground_grid.height):
-                for ore in self.ores:
-                    ore_noise = self.ores[ore]
-                    if y < ore_noise.min_depth:
-                        continue
-                    if y >= ore_noise.max_depth:
-                        continue
-                    if ore_noise.find(x, y, biome.biome_ore_modifier[ore]): # returns True if this ore should be here
-                        self.foreground_grid.set(x, y, ore)
+            # generate ores at cur x
+            self.generate_ores_at_x(x, biome, ground_elevation, self.foreground_grid)
 
             # yield a result periodically to report progress
             if x != 0 and x % update_bar_block_marker == 0:
@@ -349,8 +355,10 @@ class Grid_Superstructure:
                 cur_progress = int((x / self.foreground_grid.width) * total_section_progress)
                 yield yield_reponse, cur_progress + post_scanning_progress
 
-        yield 'Generating Structures', 45
+        status_message = 'Generating Structures'
+        yield status_message, 45
 
+        # generate caves
         for x in range(self.foreground_grid.width):
             for y in range(self.get_terrain_height(x)+2, self.foreground_grid.height):
                 if type(self.foreground_grid.get(x, y)) is Water:
@@ -362,7 +370,7 @@ class Grid_Superstructure:
                             block_set = Saltpeter
                     self.foreground_grid.set(x, y, block_set)
 
-        yield 'Generating Structures', 46
+        yield status_message, 46
 
         # generate ground level objects & structures for the background
         x = 1 # structures don't generate at x=0
@@ -401,7 +409,7 @@ class Grid_Superstructure:
             
             x += 1
 
-        yield 'Generating Structures', 47
+        yield status_message, 47
 
         # generate ground level objects & structures
         x = 1 # structures don't generate at x=0
@@ -442,7 +450,7 @@ class Grid_Superstructure:
             
             x += 1
 
-        yield 'Generating Structures', 48
+        yield status_message, 48
 
         # now generate the border_block layer
         for x in range(self.foreground_grid.width):
@@ -451,7 +459,7 @@ class Grid_Superstructure:
             for y in range(base_y - self.get_border_block_depth(x), base_y+1):
                 self.foreground_grid.set(x, y, Border_Block) # sets the bottom block to a border block
 
-        yield 'Generating Structures', 49
+        yield status_message, 49
 
         for x in range(self.background_grid.width):
             base_y = self.background_grid.height - 1
