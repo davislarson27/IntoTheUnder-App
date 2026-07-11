@@ -1377,7 +1377,7 @@ class Menu:
 
         # initialize grid and terrain
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, world_details, new_directory_path, world_seed, world_spawn_x)
-        for GenerationText, percentComplete in grid_superstructure._generate_world():
+        for GenerationText, percentComplete in grid_superstructure.iter_generate_world():
             self.draw_loading_world_screen(percentComplete, GenerationText)
         grid, background_grid = grid_superstructure.get_grids()
 
