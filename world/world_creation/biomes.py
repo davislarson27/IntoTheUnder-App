@@ -38,6 +38,9 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
     ]
+    underground_fg_structures = [
+        Structure_Identifier(Recipe_Cave, 0.0002),
+    ]
 
 
 # elev checks for ultra high/low areas
@@ -53,7 +56,6 @@ class Volcano(Biome):
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.007),
         Structure_Identifier(Recipe_Burrow, 0.00001),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -75,7 +77,6 @@ class Mountain(Biome):
         Structure_Identifier(Snow_Tree, 0.01),
         Structure_Identifier(Snow_Man_Structure, 0.0001),
         Structure_Identifier(Watermellon_Patch, 0.00005),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -93,7 +94,6 @@ class Lake(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -112,7 +112,6 @@ class Ravine(Biome):
         Structure_Identifier(Tree, 0.01),
         Structure_Identifier(Flowers, 0.018),
         Structure_Identifier(Watermellon_Patch, 0.00005),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -131,7 +130,6 @@ class Desert(Biome):
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Cactus_Structure, 0.05),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Cactus_Structure, 0.015)
@@ -152,7 +150,6 @@ class Tundra(Biome):
         Structure_Identifier(Small_Bush, 0.02),
         Structure_Identifier(Flowers, 0.015),
         Structure_Identifier(Watermellon_Patch, 0.025),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -171,7 +168,6 @@ class Glacier(Biome):
         Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Snow_Man_Structure, 0.006),
         Structure_Identifier(Flowers, 0.001),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
@@ -195,7 +191,6 @@ class Rain_Forest(Biome):
         Structure_Identifier(Flowers, 0.01),
         Structure_Identifier(Puddle, 0.01),
         Structure_Identifier(Watermellon_Patch, 0.02),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Mahogany_Tree_Rand_Width, 0.17),
@@ -217,7 +212,6 @@ class Spruce_Forest(Biome):
         Structure_Identifier(Spruce_Tree, 0.07),
         Structure_Identifier(Small_Bush, 0.01),
         Structure_Identifier(Flowers, 0.028),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Spruce_Tree, 0.065)
@@ -239,7 +233,6 @@ class Forest(Biome):
         Structure_Identifier(Small_Bush, 0.01),
         Structure_Identifier(Flowers, 0.028),
         Structure_Identifier(Mahogany_Tree_Rand_Width, 0.00001),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
@@ -263,7 +256,6 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
         Structure_Identifier(Flowers, 0.028),
         Structure_Identifier(Puddle, 0.012),
         Structure_Identifier(Spruce_Tree, 0.0003),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.019)
@@ -284,7 +276,6 @@ class Plains(Biome):
         Structure_Identifier(Tree, 0.02),
         Structure_Identifier(Small_Bush, 0.03),
         Structure_Identifier(Flowers, 0.25),
-        Structure_Identifier(Recipe_Cave, 0.0002),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.02)

@@ -274,36 +274,39 @@ class Grid_Superstructure:
                         if ore_spawn_attributes.allow_replace(grid.get(x, y)):
                             self.foreground_grid.set(x, y, ore)
 
-        def _generate_foreground_structures():
+        def _generate_structure(structure_list_attr_value, fg_grid, bg_grid):
             x = 1 # structures don't generate at x=0
-            while x < self.foreground_grid.width:
+            while x < fg_grid.width:
                 # get biome
                 biome = self.get_biome(x)
 
                 # get seed based random number (hashed based on x)
-                hash = int(hashlib.sha256(f"{self.seed}_struct_{x}".encode()).hexdigest(), 16)
-                structure_odds = (hash % 1000) / 1000.0  # value 0.0–1.0
+                hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_fg_struct_{x}".encode()).hexdigest(), 16)
+                structure_odds = (hash % 1000) / 1000.0
 
-                subStructure_hash = int(hashlib.sha256(f"{self.seed}_sub_struct_{x}".encode()).hexdigest(), 16)
-                instruction_variance_chance = (subStructure_hash % 1000) / 1000.0  # value 0.0–1.0
+                subStructure_hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_sub_struct_{x}".encode()).hexdigest(), 16)
+                instruction_variance_chance = (subStructure_hash % 1000) / 1000.0
 
                 # get structure to generate based on biome
                 running_odds_total = 0
-                for structureIdentifier in biome.structures:
+                for structureIdentifier in getattr(biome, structure_list_attr_value):
                     if structureIdentifier.odds + running_odds_total > structure_odds:
                         # build structure
                         structure = structureIdentifier.structure
                         y = self.get_terrain_height(x + structure.get_x_difference_for_y())
-                        buildInstructions, var_structure_instructions = structure.getStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance, biome.__name__)
+                        
+                        buildInstructions, var_structure_instructions = structure.getStructureInstructions(x, y, fg_grid, instruction_variance_chance, biome.__name__)
                         for instruction in buildInstructions:
-                            instruction.setBlock(self.foreground_grid)
+                            instruction.setBlock(fg_grid)
                         for instruction in var_structure_instructions:
-                            instruction.modify_surrounding_grid(self.foreground_grid)
-                        bg_build_instructions, var_structure_instructions = structure.getBgStructureInstructions(x, y, self.foreground_grid, instruction_variance_chance, biome.__name__)
-                        for instruction in bg_build_instructions:
-                            instruction.setBlock(self.background_grid)
-                        for instruction in var_structure_instructions:
-                            instruction.modify_surrounding_grid(self.background_grid)
+                            instruction.modify_surrounding_grid(fg_grid)
+                        
+                        if bg_grid is not None:
+                            bg_build_instructions, var_structure_instructions = structure.getBgStructureInstructions(x, y, fg_grid, instruction_variance_chance, biome.__name__)
+                            for instruction in bg_build_instructions:
+                                instruction.setBlock(bg_grid)
+                            for instruction in var_structure_instructions:
+                                instruction.modify_surrounding_grid(bg_grid)
 
                         # jump x past the end of the structure
                         x += structure.get_width()
@@ -312,43 +315,15 @@ class Grid_Superstructure:
                     running_odds_total += structureIdentifier.odds
                 
                 x += 1
+
+        def _generate_foreground_structures():
+            _generate_structure("structures", self.foreground_grid, self.background_grid)
 
         def _generate_bg_exclusive_structures():
-            x = 1 # structures don't generate at x=0
-            while x < self.background_grid.width:
-                # get biome
-                biome = self.get_biome(x)
+            _generate_structure("bg_structures", self.foreground_grid, self.background_grid)
 
-                # get seed based random number (hashed based on x)
-                hash = int(hashlib.sha256(f"{self.seed}_bg_struct_{x}".encode()).hexdigest(), 16)
-                structure_odds = (hash % 1000) / 1000.0  # value 0.0–1.0
-
-                subStructure_hash = int(hashlib.sha256(f"{self.seed}_bg_sub_struct_{x}".encode()).hexdigest(), 16)
-                instruction_variance_chance = (subStructure_hash % 1000) / 1000.0  # value 0.0–1.0
-
-                # get structure to generate based on biome
-                running_odds_total = 0
-                for structureIdentifier in biome.bg_structures:
-                    if structureIdentifier.odds + running_odds_total > structure_odds:
-                        # build structure
-                        structure = structureIdentifier.structure
-                        y = self.get_bg_terrain_height(x + structure.get_x_difference_for_y())
-                        foreground_height = self.get_terrain_height(x + structure.get_x_difference_for_y())
-                        if y > foreground_height: # no structures can generate in the background if it is below the surface
-                            break
-                        buildInstructions, var_structure_instructions = structure.getStructureInstructions(x, y, self.background_grid, instruction_variance_chance, biome.__name__)
-                        for instruction in buildInstructions:
-                            instruction.setBlock(self.background_grid)
-                        for instruction in var_structure_instructions:
-                            instruction.modify_surrounding_grid(self.background_grid)
-
-                        # jump x past the end of the structure
-                        x += structure.get_width()
-
-                        break
-                    running_odds_total += structureIdentifier.odds
-                
-                x += 1
+        def _generate_underground_foreground_structures():
+            _generate_structure("underground_fg_structures", self.foreground_grid, self.background_grid)
 
         def _generate_border_blocks():
             for x in range(self.foreground_grid.width):
@@ -466,11 +441,14 @@ class Grid_Superstructure:
         yield status_message, 45
         _generate_caves()
 
-        yield status_message, 47
+        yield status_message, 46
         _generate_foreground_structures()
 
-        yield status_message, 48
+        yield status_message, 47
         _generate_bg_exclusive_structures()
+
+        yield status_message, 48
+        _generate_underground_foreground_structures()
 
         yield status_message, 49
         _generate_border_blocks()
