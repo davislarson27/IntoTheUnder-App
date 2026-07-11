@@ -514,9 +514,9 @@ class Inventory:
 
         # --------------------------------------- chest side pannel logic --------------------------------------- #
 
-        chest_cols = 3
-        chest_rows = 4
-        count_chest_slots = chest_cols * chest_rows
+        chest_cols = Chest.chest_cols
+        chest_rows = Chest.chest_rows
+        count_chest_slots = Chest.chest_slots_count
 
         self.chest_side_pannel = Chest_Slots(count_chest_slots)
 

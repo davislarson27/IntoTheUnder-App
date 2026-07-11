@@ -10,7 +10,10 @@ class Chest(Block):
     ticks_to_mine = 60
 
     can_store_items = True
-    
+    chest_cols = 3 # the number for how many chest slots exist and their layout exists here
+    chest_rows = 4 # the number for how many chest slots exist and their layout exists here
+    chest_slots_count = chest_cols * chest_rows
+
     def interaction(self, player):
         player.inventory.open_chest(self.stored_inventory_items)
         return True
@@ -63,7 +66,7 @@ class Chest(Block):
             (x + floor(block_width * 0.42), y + floor(block_width * 0.3),floor(block_width * 0.18), floor(block_width * 0.24))
         )
 
-class Spruce_Chest(Block):
+class Spruce_Chest(Chest):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
 
@@ -124,7 +127,7 @@ class Spruce_Chest(Block):
             (x + floor(block_width * 0.42), y + floor(block_width * 0.3),floor(block_width * 0.18), floor(block_width * 0.24))
         )
 
-class Mahogany_Chest(Block):
+class Mahogany_Chest(Chest):
 
     # remember to update the blocks_list for loading when you add a new type of block :)
 

@@ -4,6 +4,7 @@ import hashlib
 from world.blocks.block_export import *
 from .structure_instruction import Structure_Instruction, Var_Structure_Instruction
 from play.inventory.submenus.crafting_recipes import User_Crafting_Recipes_List
+from .chest_loot import Chest_Loot, Loot_Odds
 
 class Recipe_Burrow:
     width = 8
@@ -157,6 +158,18 @@ class Recipe_Cave:
     height = 5
     depth = 0
 
+    chest_loot = Chest_Loot([
+        Loot_Odds(Rose, 3, 0.025),
+        Loot_Odds(White_Lily, 3, 0.025),
+        Loot_Odds(Packed_Ice, 15, 0.06),
+        Loot_Odds(Spruce_Planks, 15, 0.06),
+        Loot_Odds(Spruce_Log, 4, 0.02),
+        Loot_Odds(Gravel, 15, 0.06),
+        Loot_Odds(Gold_Ingot, 4, 0.0008),
+        Loot_Odds(Iron_Ingot, 4, 0.0008),
+        Loot_Odds(Diamond, 2, 0.00045),
+    ])
+
     def __init__(self):
         pass
 
@@ -232,6 +245,9 @@ class Recipe_Cave:
 
         chest_x, chest_y = recipeFrame_x - 1, recipeFrame_y
         chest_block = Spruce_Chest(grid, grid.screen, chest_x, chest_y, grid.BLOCK_WIDTH)
+        for chest_slot_num in range(chest_block.chest_slots_count):
+            chest_loot_random_factor = int(hashlib.sha256(f"{random_factor}_{chest_slot_num}".encode()).hexdigest(), 16) / (2**256 - 1)
+            chest_block.stored_inventory_items.append(cls.chest_loot.get_slot(chest_loot_random_factor))
         structureInstructionsList.append(Structure_Instruction(chest_x, chest_y, chest_block, blockIsInitialized=True))
 
         # return list
