@@ -346,7 +346,7 @@ class Grid_Superstructure:
             _generate_structure("structures", self.foreground_grid, self.background_grid)
 
         def _generate_bg_exclusive_structures():
-            _generate_structure("bg_structures", self.foreground_grid, self.background_grid)
+            _generate_structure("bg_structures", self.background_grid, None)
 
         def _generate_underground_foreground_structures():
             _generate_structure("underground_fg_structures", self.foreground_grid, self.background_grid)
