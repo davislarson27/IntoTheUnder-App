@@ -431,7 +431,7 @@ class Spruce_Tree:
 
 
 class Mahogany_Tree_Rand_Width:
-    width = 5
+    width = 6
     start_x_diff = 1 # distance from the origin x that the y elevation should be set to
     height = 8 # distance above ground
     depth = 0 # distance below ground
