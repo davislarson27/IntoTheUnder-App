@@ -200,10 +200,9 @@ class Recipe_Cave:
 
         # get the depth
         min_depth = 20
-        max_depth = grid.height
 
         chance = int(hashlib.sha256(f"{random_factor}_depth".encode()).hexdigest(), 16) / (2**256 - 1)
-        adjusted_ground_y = ground_y + min_depth + int(chance * (grid.height - ground_y))
+        adjusted_ground_y = ground_y + min_depth + int(chance * (grid.height - ground_y - 2))
 
         if adjusted_ground_y > grid.height:
             return structureInstructionsList, []
@@ -264,7 +263,7 @@ class Recipe_Cave:
         max_depth = grid.height
 
         chance = int(hashlib.sha256(f"{random_factor}_depth".encode()).hexdigest(), 16) / (2**256 - 1)
-        adjusted_ground_y = ground_y + min_depth + int(chance * (grid.height - ground_y))
+        adjusted_ground_y = ground_y + min_depth + int(chance * (grid.height - ground_y - 2))
 
         if adjusted_ground_y > grid.height:
             return structureInstructionsList, []
