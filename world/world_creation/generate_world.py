@@ -15,6 +15,9 @@ class Grid_Superstructure:
         
         grid_height = self.foreground_grid.height
 
+        self.terrain_heights_by_x = []
+        self.biomes_by_x = []
+
         # set seeds
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)
@@ -240,6 +243,17 @@ class Grid_Superstructure:
         depth  = pnoise1(x * (1 / self.border_block_freq),  base=(self.border_block_seed) % 256) * self.border_block_amp
         return abs(int(depth))
 
+    def get_biome_pregen(self, x):
+        if x < len(self.biomes_by_x):
+            return self.biomes_by_x[x]
+        return self.get_biome(x)
+    
+    def get_terrain_height_pregen(self, x):
+        if x < len(self.terrain_heights_by_x):
+            return self.terrain_heights_by_x[x]
+        return self.get_terrain_height(x)
+        
+
     def generate_world(self):
         """generates the world without progress update yields"""
         for _ in self.iter_generate_world():
@@ -249,9 +263,21 @@ class Grid_Superstructure:
 
         # --------------------------------------------- helper methods --------------------------------------------- #
 
+        def _get_terrain_heights():
+            terrain_heights = []
+            for x in range(self.foreground_grid.width):
+                terrain_heights.append(self.get_terrain_height(x))
+            return terrain_heights
+
+        def _get_biomes():
+            biomes = []
+            for x in range(self.foreground_grid.width):
+                biomes.append(self.get_biome(x))
+            return biomes
+
         def _generate_caves():
             for x in range(self.foreground_grid.width):
-                for y in range(self.get_terrain_height(x)+2, self.foreground_grid.height):
+                for y in range(self.get_terrain_height_pregen(x)+2, self.foreground_grid.height):
                     if type(self.foreground_grid.get(x, y)) is Water:
                         continue
                     if self.is_cave(x, y):
@@ -278,7 +304,7 @@ class Grid_Superstructure:
             x = 1 # structures don't generate at x=0
             while x < fg_grid.width:
                 # get biome
-                biome = self.get_biome(x)
+                biome = self.get_biome_pregen(x)
 
                 # get seed based random number (hashed based on x)
                 hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_fg_struct_{x}".encode()).hexdigest(), 16)
@@ -293,7 +319,7 @@ class Grid_Superstructure:
                     if structureIdentifier.odds + running_odds_total > structure_odds:
                         # build structure
                         structure = structureIdentifier.structure
-                        y = self.get_terrain_height(x + structure.get_x_difference_for_y())
+                        y = self.get_terrain_height_pregen(x + structure.get_x_difference_for_y())
                         
                         buildInstructions, var_structure_instructions = structure.getStructureInstructions(x, y, fg_grid, instruction_variance_chance, biome.__name__)
                         for instruction in buildInstructions:
@@ -342,14 +368,17 @@ class Grid_Superstructure:
 
         yield 'Pre-Scanning Grid', 0
 
+        self.terrain_heights_by_x = _get_terrain_heights()
+        self.biomes_by_x = _get_biomes()
+
         # identify lakes and create lake objects
         lakes = [] 
         open_lake_obj = None
         for x in range(self.foreground_grid.width):
-            if open_lake_obj is not None and self.get_biome(x) is Lake:
-                open_lake_obj.extend_x(x, self.get_terrain_height(x))
-            elif open_lake_obj is None and self.get_biome(x) is Lake:
-                open_lake_obj = LakePreFill(x, self.get_terrain_height(x))
+            if open_lake_obj is not None and self.get_biome_pregen(x) is Lake:
+                open_lake_obj.extend_x(x, self.get_terrain_height_pregen(x))
+            elif open_lake_obj is None and self.get_biome_pregen(x) is Lake:
+                open_lake_obj = LakePreFill(x, self.get_terrain_height_pregen(x))
             elif open_lake_obj is not None:
                 open_lake_obj.calculate_lake()
                 if open_lake_obj.is_valid_lake(): lakes.append(open_lake_obj)
@@ -376,8 +405,8 @@ class Grid_Superstructure:
                 if lake.is_end_of_lake(x):
                     lakes.pop(0)
             else:
-                biome = self.get_biome(x)
-                ground_elevation = self.get_terrain_height(x)
+                biome = self.get_biome_pregen(x)
+                ground_elevation = self.get_terrain_height_pregen(x)
                 water_level = None
 
             if water_level is not None:
@@ -413,7 +442,7 @@ class Grid_Superstructure:
 
         # generate the background
         for x in range(self.background_grid.width): # this will loop through the grid and let me go x by x
-            biome = self.get_biome(x)
+            biome = self.get_biome_pregen(x)
             ground_elevation = self.get_bg_terrain_height(x)
 
             cur_depth_down = ground_elevation

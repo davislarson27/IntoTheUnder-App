@@ -31,15 +31,14 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
-        Structure_Identifier(Recipe_Cave, 0.0002),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.1),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.1)
     ]
     underground_fg_structures = [
-        Structure_Identifier(Recipe_Cave, 0.2),
+        Structure_Identifier(Recipe_Cave, 0.0018),
     ]
 
 
@@ -128,7 +127,7 @@ class Desert(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Cactus_Structure, 0.05),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
@@ -146,7 +145,7 @@ class Tundra(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Small_Bush, 0.02),
         Structure_Identifier(Flowers, 0.015),
         Structure_Identifier(Watermellon_Patch, 0.025),
@@ -165,7 +164,7 @@ class Glacier(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Snow_Man_Structure, 0.006),
         Structure_Identifier(Flowers, 0.001),
     ]
@@ -184,7 +183,7 @@ class Rain_Forest(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Mahogany_Tree_Rand_Width, 0.12),
         Structure_Identifier(Tree, 0.02),
         Structure_Identifier(Small_Bush, 0.02),
@@ -208,7 +207,7 @@ class Spruce_Forest(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Spruce_Tree, 0.07),
         Structure_Identifier(Small_Bush, 0.01),
         Structure_Identifier(Flowers, 0.028),
@@ -228,7 +227,7 @@ class Forest(Biome):
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.1),
         Structure_Identifier(Small_Bush, 0.01),
         Structure_Identifier(Flowers, 0.028),
@@ -249,7 +248,7 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
     sub_layer = Rock
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.028),
         Structure_Identifier(Snow_Tree, 0.002),
         Structure_Identifier(Small_Bush, 0.025),
@@ -272,7 +271,7 @@ class Plains(Biome):
     sub_layer = Rock
     
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Recipe_Burrow, 0.00015),
+        Structure_Identifier(Recipe_Burrow, 0.0002),
         Structure_Identifier(Tree, 0.02),
         Structure_Identifier(Small_Bush, 0.03),
         Structure_Identifier(Flowers, 0.25),
