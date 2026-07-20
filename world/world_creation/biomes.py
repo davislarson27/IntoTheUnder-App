@@ -38,7 +38,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         Structure_Identifier(Tree, 0.1)
     ]
     underground_fg_structures = [
-        Structure_Identifier(Recipe_Cave, 0.0018),
+        Structure_Identifier(Recipe_Cave, 0.0015),
     ]
 
 
