@@ -16,6 +16,7 @@ class Grid_Superstructure:
         grid_height = self.foreground_grid.height
 
         self.terrain_heights_by_x = []
+        self.bg_terrain_heights_by_x = []
         self.biomes_by_x = []
 
         # set seeds
@@ -267,6 +268,11 @@ class Grid_Superstructure:
         if x < len(self.terrain_heights_by_x):
             return self.terrain_heights_by_x[x]
         return self.get_terrain_height(x)
+    
+    def get_bg_terrain_height_pregen(self, x):
+        if x < len(self.bg_terrain_heights_by_x):
+            return self.bg_terrain_heights_by_x[x]
+        return self.get_bg_terrain_height(x)
         
 
     def generate_world(self):
@@ -282,6 +288,12 @@ class Grid_Superstructure:
             terrain_heights = []
             for x in range(self.foreground_grid.width):
                 terrain_heights.append(self.get_terrain_height(x))
+            return terrain_heights
+
+        def _get_bg_terrain_heights():
+            terrain_heights = []
+            for x in range(self.background_grid.width):
+                terrain_heights.append(self.get_bg_terrain_height(x))
             return terrain_heights
 
         def _get_biomes():
@@ -317,7 +329,7 @@ class Grid_Superstructure:
                         if ore_spawn_attributes.allow_replace(grid.get(x, y)):
                             self.foreground_grid.set(x, y, ore)
 
-        def _generate_structure(structure_list_attr_value, fg_grid, bg_grid):
+        def _generate_structure(structure_list_attr_value, get_terrain_height_pregen, fg_grid, bg_grid):
             x = 1 # structures don't generate at x=0
             while x < fg_grid.width:
                 # get biome
@@ -336,7 +348,7 @@ class Grid_Superstructure:
                     if structureIdentifier.odds + running_odds_total > structure_odds:
                         # build structure
                         structure = structureIdentifier.structure
-                        y = self.get_terrain_height_pregen(x + structure.get_x_difference_for_y())
+                        y = get_terrain_height_pregen(x + structure.get_x_difference_for_y())
                         
                         buildInstructions, var_structure_instructions = structure.getStructureInstructions(x, y, fg_grid, instruction_variance_chance, biome.__name__)
                         for instruction in buildInstructions:
@@ -360,13 +372,13 @@ class Grid_Superstructure:
                 x += 1
 
         def _generate_foreground_structures():
-            _generate_structure("structures", self.foreground_grid, self.background_grid)
+            _generate_structure("structures", self.get_terrain_height_pregen, self.foreground_grid, self.background_grid)
 
         def _generate_bg_exclusive_structures():
-            _generate_structure("bg_structures", self.background_grid, None)
+            _generate_structure("bg_structures", self.get_bg_terrain_height_pregen, self.background_grid, None)
 
         def _generate_underground_foreground_structures():
-            _generate_structure("underground_fg_structures", self.foreground_grid, self.background_grid)
+            _generate_structure("underground_fg_structures", self.get_terrain_height_pregen, self.foreground_grid, self.background_grid)
 
         def _generate_border_blocks():
             for x in range(self.foreground_grid.width):
@@ -386,6 +398,7 @@ class Grid_Superstructure:
         yield 'Pre-Scanning Grid', 0
 
         self.terrain_heights_by_x = _get_terrain_heights()
+        self.bg_terrain_heights_by_x = _get_bg_terrain_heights()
         self.biomes_by_x = _get_biomes()
 
         # identify lakes and create lake objects
