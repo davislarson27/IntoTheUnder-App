@@ -3,7 +3,7 @@ from noise import pnoise2
 import hashlib
 
 class Ore:
-    def __init__(self, world_seed, ore, world_height, scale, min_depth_threshold, min_depth, max_depth_threshold, max_depth=None, allow_fill_from=[Rock]): # default allow fill is just from rock
+    def __init__(self, world_seed, ore, world_height, scale, min_depth_threshold, min_depth, max_depth_threshold, max_depth=None, allow_fill_from=[Rock], biome_limiter=None): # default allow fill is just from rock
         def make_seed(base, label):
             return int(hashlib.sha256(f"{base}_{label}".encode()).hexdigest(), 16)
 
@@ -17,6 +17,7 @@ class Ore:
         self.max_depth = max_depth
 
         self.allow_fill_from = allow_fill_from
+        self.biome_limiter = biome_limiter
 
     def find(self, x, y, biome_multiplier=1):
         ore_noise = pnoise2(x * self.scale, y * self.scale,  base=(self.seed) % 256)
@@ -32,3 +33,7 @@ class Ore:
             preexisting_block_type = type(preexisting_block)
         return preexisting_block_type in self.allow_fill_from
     
+    def is_valid_biome(self, cur_biome):
+        if self.biome_limiter is None:
+            return True
+        return cur_biome in self.biome_limiter

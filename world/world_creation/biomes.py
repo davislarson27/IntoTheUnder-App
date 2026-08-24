@@ -21,13 +21,15 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         Dirt: 1,
         Packed_Dirt: 1,
         Gravel: 1,
+        Ice: 1,
+        Frozen_Rock: 1,
         Iron_Ore_Block: 1,
         Coal_Ore_Block: 1,
         Gold_Ore_Block: 1,
         Emerald_Ore_Block: 1,
         Diamond_Ore_Block: 1,
         Mabelite_Ore_Block: 1,
-        Sulfur_Flakes_Block: 1
+        Sulfur_Flakes_Block: 1,
     }
 
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered

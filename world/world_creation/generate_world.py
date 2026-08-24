@@ -89,6 +89,21 @@ class Grid_Superstructure:
                 max_depth_threshold=0.545,
                 allow_fill_from=[Rock, Ice, Snow_Block, Dirt, Grass, Frozen_Rock]
             ),
+            Ice: Ore(self.seed, Ice, grid_height,
+                scale=0.11,
+                min_depth_threshold=0.51,
+                min_depth=10,
+                max_depth_threshold=0.58,
+                allow_fill_from=[Rock, Frozen_Rock],
+                biome_limiter=[Glacier]
+            ),
+            Frozen_Rock: Ore(self.seed, Frozen_Rock, grid_height,
+                scale=0.12,
+                min_depth_threshold=0.57,
+                min_depth=10,
+                max_depth_threshold=0.54,
+                biome_limiter=[Glacier, Montane_Forest]
+            ),
             Coal_Ore_Block: Ore(self.seed, Coal_Ore_Block, grid_height,
                 scale=0.11,
                 min_depth_threshold=0.574,
@@ -288,9 +303,11 @@ class Grid_Superstructure:
                         self.foreground_grid.set(x, y, block_set)
 
         def _generate_ores_at_x(x, biome, ground_elevation, grid):
-            for y in range(ground_elevation, self.foreground_grid.height):
-                for ore in self.ores:
-                    ore_spawn_attributes = self.ores[ore]
+            for ore in self.ores:
+                ore_spawn_attributes = self.ores[ore]
+                if not ore_spawn_attributes.is_valid_biome(biome):
+                    continue
+                for y in range(ground_elevation, self.foreground_grid.height):
                     if y < ore_spawn_attributes.min_depth:
                         continue
                     if y >= ore_spawn_attributes.max_depth:
