@@ -3,7 +3,7 @@ from math import floor
 import random
 
 from world.blocks.block_types._base import Block
-from world.blocks.block_types.terrain import Grass, Dirt
+from world.blocks.block_types.terrain import Grass, Dirt, Packed_Dirt
 
 class Log(Block):
 
@@ -812,6 +812,8 @@ class Tree_Sappling(Block):
     tick_threshold = 2
     grow_tick_threshold = 4000
 
+    can_grow_on = [Grass, Dirt, Packed_Dirt]
+
     def physics(self):
         if self.grid.in_bounds(self.x, self.y + 1):
             if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty
@@ -822,10 +824,6 @@ class Tree_Sappling(Block):
                     self.grid.set(self.x, self.y+1, type(self))
                     self.ticks_till_physics = 0
             else: # this means that growing can continue
-                block_below = self.grid.get(self.x, self.y+1)
-                if not isinstance(block_below, Grass) and not isinstance(block_below, Dirt):
-                        self.ticks_till_physics = 0
-                        return
                 if not (self.grid.in_bounds(self.x-1, self.y-self.full_tree_height+1) and self.grid.in_bounds(self.x+1, self.y-self.full_tree_height+1)):
                     self.ticks_till_physics = 0
                     return
@@ -836,7 +834,11 @@ class Tree_Sappling(Block):
                             return
                     
                 if self.ticks_till_physics > self.grow_tick_threshold:
-                    self.grow_tree()
+                    block_below = self.grid.get(self.x, self.y+1)
+                    if type(block_below) in self.can_grow_on:
+                        self.grow_tree()
+                    else:
+                        self.kill_tree()
                 else:
                     self.ticks_till_physics += 1
 
@@ -845,6 +847,9 @@ class Tree_Sappling(Block):
         tree_instructions, tree_var_instructions = Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
         for instruct in tree_instructions:
             instruct.setBlock(self.grid)
+
+    def kill_tree(self):
+        self.grid.set(self.x, self.y, Dead_Sappling)
 
     def special_init(self):
         max_tree_height = 4 # includes leaves
@@ -921,6 +926,8 @@ class Spruce_Sappling(Block):
     tick_threshold = 2
     grow_tick_threshold = 4000
 
+    can_grow_on = [Grass, Dirt, Packed_Dirt]
+
     def physics(self):
         if self.grid.in_bounds(self.x, self.y + 1):
             if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty
@@ -931,10 +938,6 @@ class Spruce_Sappling(Block):
                     self.grid.set(self.x, self.y+1, type(self))
                     self.ticks_till_physics = 0
             else: # this means that growing can continue
-                block_below = self.grid.get(self.x, self.y+1)
-                if not isinstance(block_below, Grass) and not isinstance(block_below, Dirt):
-                        self.ticks_till_physics = 0
-                        return
                 if not (self.grid.in_bounds(self.x-1, self.y-self.full_tree_height+1) and self.grid.in_bounds(self.x+1, self.y-self.full_tree_height+1)):
                     self.ticks_till_physics = 0
                     return
@@ -945,7 +948,11 @@ class Spruce_Sappling(Block):
                             return
                     
                 if self.ticks_till_physics > self.grow_tick_threshold:
-                    self.grow_tree()
+                    block_below = self.grid.get(self.x, self.y+1)
+                    if type(block_below) in self.can_grow_on:
+                        self.grow_tree()
+                    else:
+                        self.kill_tree()
                 else:
                     self.ticks_till_physics += 1
 
@@ -954,6 +961,9 @@ class Spruce_Sappling(Block):
         tree_instructions, tree_var_instructions = Spruce_Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
         for instruct in tree_instructions:
             instruct.setBlock(self.grid)
+
+    def kill_tree(self):
+        self.grid.set(self.x, self.y, Dead_Sappling)
 
     def special_init(self):
         max_tree_height = 5 # includes leaves
@@ -1030,6 +1040,8 @@ class Mahogany_Sappling(Block):
     tick_threshold = 2
     grow_tick_threshold = 4000
 
+    can_grow_on = [Grass, Dirt, Packed_Dirt]
+
     def physics(self):
         if self.grid.in_bounds(self.x, self.y + 1):
             if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty
@@ -1040,10 +1052,6 @@ class Mahogany_Sappling(Block):
                     self.grid.set(self.x, self.y+1, type(self))
                     self.ticks_till_physics = 0
             else: # this means that growing can continue
-                block_below = self.grid.get(self.x, self.y+1)
-                if not isinstance(block_below, Grass) and not isinstance(block_below, Dirt):
-                        self.ticks_till_physics = 0
-                        return
                 if not (self.grid.in_bounds(self.x-1, self.y-self.full_tree_height+1) and self.grid.in_bounds(self.x+1, self.y-self.full_tree_height+1)):
                     self.ticks_till_physics = 0
                     return
@@ -1054,7 +1062,11 @@ class Mahogany_Sappling(Block):
                             return
                     
                 if self.ticks_till_physics > self.grow_tick_threshold:
-                    self.grow_tree()
+                    block_below = self.grid.get(self.x, self.y+1)
+                    if type(block_below) in self.can_grow_on:
+                        self.grow_tree()
+                    else:
+                        self.kill_tree()
                 else:
                     self.ticks_till_physics += 1
 
@@ -1073,6 +1085,9 @@ class Mahogany_Sappling(Block):
         tree_instructions, tree_var_instructions = Mahogany_Tree.getStructureInstructions(self.x-offset, self.y+1, self.grid, random.random())
         for instruct in tree_instructions:
             instruct.setBlock(self.grid)
+
+    def kill_tree(self):
+        self.grid.set(self.x, self.y, Dead_Sappling)
 
     def special_init(self):
         max_tree_height = 4 # includes leaves
@@ -1133,3 +1148,64 @@ class Mahogany_Sappling(Block):
         top_y = y + int(bw * 0.07)
         top_x = x + (bw - top_w) // 2 + 1
         leaf_cluster(top_x, top_y, top_w, top_h)
+
+class Dead_Sappling(Block):
+    str_name = "Dead Sapling"
+    ticks_to_mine = 12
+    pass_through = True
+    draw_background = True
+    ignore_shading_from = {
+        (0, 1): True,
+        (0, -1): True,
+        (1, 0): True,
+        (-1, 0): True
+    }
+    tick_threshold = 2
+    grow_tick_threshold = 4000
+    
+    @staticmethod
+    def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
+        added = 25 if being_mined else 0
+
+        if is_grid_coordinates:
+            x *= block_width
+            y *= block_width
+
+        bw = block_width
+
+        def c(rgb):
+            return (min(255, rgb[0] + added), min(255, rgb[1] + added), min(255, rgb[2] + added))
+
+        bark      = c((102, 89, 72))
+        bark_dark = c((65, 54, 43))
+
+        mid_x = x + bw // 2
+
+        # Trunk — runs bottom 60% of tile
+        trunk_w = max(3, int(bw * 0.13))
+        trunk_x = mid_x - trunk_w // 2
+        trunk_top = y + int(bw * 0.40)
+        pygame.draw.rect(screen, bark, (trunk_x, trunk_top, trunk_w, bw - int(bw * 0.40)))
+        pygame.draw.rect(screen, bark_dark, (trunk_x, trunk_top, max(1, trunk_w // 3), bw - int(bw * 0.40)))
+
+        # Bare, dead branches sticking out from the top of the trunk — no leaves
+        branch_w = max(1, int(bw * 0.045))
+        top_x = trunk_x + trunk_w // 2
+        top_y = trunk_top
+
+        branches = [
+            # (start_frac_x, start_frac_y, end_frac_x, end_frac_y), relative to top_x/top_y, in units of bw
+            (0.0, 0.0, -0.28, -0.22),
+            (0.0, 0.0, -0.14, -0.36),
+            (0.0, 0.03, 0.24, -0.20),
+            (0.0, 0.05, 0.12, -0.34),
+            (0.0, 0.10, -0.20, -0.02),
+            (0.0, 0.12, 0.20, -0.04),
+        ]
+
+        for sx_f, sy_f, ex_f, ey_f in branches:
+            sx = top_x + int(sx_f * bw)
+            sy = top_y + int(sy_f * bw)
+            ex = top_x + int(ex_f * bw)
+            ey = top_y + int(ey_f * bw)
+            pygame.draw.line(screen, bark_dark, (sx, sy), (ex, ey), branch_w)

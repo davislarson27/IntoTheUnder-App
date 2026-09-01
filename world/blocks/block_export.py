@@ -101,6 +101,7 @@ def get_blocks_list():
         Tree_Sappling,
         Spruce_Sappling,
         Mahogany_Sappling,
+        Dead_Sappling,
         Gold_Stone_Bricks,
         Bush,
         Iron_Door,
@@ -139,7 +140,8 @@ def get_block_refuel_dict():
         Gunpowder: 50,
         Recipe_Frame: 10,
         Rose: 5,
-        Bush: 1
+        Bush: 1,
+        Dead_Sappling: 2,
     }
 
 def get_block_repair_dict():
@@ -150,7 +152,7 @@ def get_block_repair_dict():
         Diamond_Block: 560,
         Mabelite: 100,
         Mabelite_Block: 800,
-        Rose: 5
+        Rose: 5,
     }
     
 def get_block_refuel_values(block_type):
