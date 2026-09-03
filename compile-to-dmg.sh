@@ -56,6 +56,10 @@ ENTRYPOINT="${ENTRYPOINT:-itu-mac.py}"
 ADD_DATA_SRC_REL="${ADD_DATA_SRC_REL:-game_files}"
 ADD_DATA_DEST="${ADD_DATA_DEST:-game_files}"
 
+# Folder (relative to ITU-App root) holding the production LICENSE.txt/README.txt
+# that get bundled into the DMG.
+PROD_DOCS_DIR="${PROD_DOCS_DIR:-prod_licence_and_readme}"
+
 # Signing identity:
 #  - "-" = ad-hoc signature (what you’re doing today)
 #  - Or set to something like: "Developer ID Application: Your Name (TEAMID)"
@@ -130,6 +134,8 @@ need_cmd rsync
 [[ -f "$SOURCE_VERSION_DIR/$ENTRYPOINT" ]] || die "Entry point not found: $SOURCE_VERSION_DIR/$ENTRYPOINT"
 [[ -f "$SOURCE_VERSION_DIR/$ICON_REL_PATH" ]] || die "Icon not found: $SOURCE_VERSION_DIR/$ICON_REL_PATH"
 [[ -d "$SOURCE_VERSION_DIR/$ADD_DATA_SRC_REL" ]] || die "Data folder not found: $SOURCE_VERSION_DIR/$ADD_DATA_SRC_REL"
+[[ -f "$SOURCE_VERSION_DIR/$PROD_DOCS_DIR/LICENSE.txt" ]] || die "LICENSE.txt not found: $SOURCE_VERSION_DIR/$PROD_DOCS_DIR/LICENSE.txt"
+[[ -f "$SOURCE_VERSION_DIR/$PROD_DOCS_DIR/README.txt" ]] || die "README.txt not found: $SOURCE_VERSION_DIR/$PROD_DOCS_DIR/README.txt"
 
 mkdir -p "$SIGNING_WORK_DIR"
 mkdir -p "$OUTPUT_DIR"
@@ -222,8 +228,8 @@ ditto "$DIST_DIR/$APP_BUNDLE" "$STAGING_DIR/$APP_BUNDLE"
 log "Adding /Applications shortcut inside DMG…"
 ln -s /Applications "$STAGING_DIR/Applications"
 
-cp "$SCRIPT_DIR/LICENCE.md" "$STAGING_DIR/LICENCE.md"
-cp "$SCRIPT_DIR/README.md" "$STAGING_DIR/README.md"
+cp "$SCRIPT_DIR/$PROD_DOCS_DIR/LICENSE.txt" "$STAGING_DIR/LICENSE.txt"
+cp "$SCRIPT_DIR/$PROD_DOCS_DIR/README.txt" "$STAGING_DIR/README.txt"
 
 # ----------------------------
 # Step 7: Create DMG with hdiutil
