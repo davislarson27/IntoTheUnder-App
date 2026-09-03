@@ -47,6 +47,8 @@ class Entity:
 
         self.entity_chunk = self.compute_chunk_id()
 
+        self.world_details = world_details
+
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
         if(self.grid.in_bounds(x, y) and (self.grid.get(x, y) is None or self.grid.get(x, y).pass_through)):

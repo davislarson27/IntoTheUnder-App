@@ -1406,6 +1406,21 @@ class Menu:
     def load_world_from_file(self):
         # load in the grid from the files
         self.draw_loading_world_screen(0, 'Prepping Foreground')
+
+        worlds_directory = f"{self.game_files_directory}/{self.world_name}"
+
+        with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
+            world_details_dict = json.load(world_details_file)
+            world_details = World_Details.fill_from_dict(world_details_dict)
+
+        with open(f"{worlds_directory}/player_attributes.json", "r") as player_attr_file:
+            player_attr_dict = json.load(player_attr_file)
+            player_attr_dict["screen"] = self.screen
+            player_attr_dict["grid"] = None
+            player_attr_dict["inventory_bar_height"] = self.world_generation_settings.inventory_height
+            player_attr_dict["health_bar_height"] = self.world_generation_settings.health_bar_height
+            player = Player(**{**player_attr_dict, "images": self.images, "world_details": world_details})
+
         foreground_directory = f"{self.game_files_directory}/{self.world_name}/foreground_grid"
         chunks_data, max_chunk_id = Grid.load_chunk_files(foreground_directory)
 
@@ -1416,8 +1431,7 @@ class Menu:
         percent_tot_inc = percent_end - percent_start
         self.draw_loading_world_screen(percent_start, loading_message)
 
-        worlds_directory = f"{self.game_files_directory}/{self.world_name}"
-        for grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, foreground_directory, self.screen, self.block_width):
+        for grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, foreground_directory, self.screen, self.block_width, player):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 
@@ -1436,7 +1450,7 @@ class Menu:
         percent_tot_inc = percent_end - percent_start
         self.draw_loading_world_screen(percent_start, loading_message)
 
-        for bg_grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, background_directory, self.screen, self.block_width):
+        for bg_grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, background_directory, self.screen, self.block_width, player):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 
@@ -1451,17 +1465,7 @@ class Menu:
 
         self.draw_loading_world_screen(97, 'Loading World Details')
 
-        with open(f"{worlds_directory}/world_details.json", "r") as world_details_file:
-            world_details_dict = json.load(world_details_file)
-            world_details = World_Details.fill_from_dict(world_details_dict)
-
-        with open(f"{worlds_directory}/player_attributes.json", "r") as player_attr_file:
-            player_attr_dict = json.load(player_attr_file)
-            player_attr_dict["screen"] = self.screen
-            player_attr_dict["grid"] = grid
-            player_attr_dict["inventory_bar_height"] = self.world_generation_settings.inventory_height
-            player_attr_dict["health_bar_height"] = self.world_generation_settings.health_bar_height
-            player = Player(**{**player_attr_dict, "images": self.images, "world_details": world_details})
+        player.grid = grid
 
         self.draw_loading_world_screen(99, 'Finishing Up')
 
