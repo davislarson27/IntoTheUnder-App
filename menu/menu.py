@@ -1422,7 +1422,7 @@ class Menu:
             player = Player(**{**player_attr_dict, "images": self.images, "world_details": world_details})
 
         foreground_directory = f"{self.game_files_directory}/{self.world_name}/foreground_grid"
-        chunks_data, max_chunk_id = Grid.load_chunk_files(foreground_directory)
+        # chunks_data, max_chunk_id = Grid.load_chunk_files(foreground_directory)
 
         # initalize the foreground grid
         loading_message = 'Loading Foreground'
@@ -1431,7 +1431,7 @@ class Menu:
         percent_tot_inc = percent_end - percent_start
         self.draw_loading_world_screen(percent_start, loading_message)
 
-        for grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, foreground_directory, self.screen, self.block_width, player):
+        for grid, percent_complete in Grid.preinitialize_local_grid(foreground_directory, self.screen, self.block_width, player):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 
@@ -1441,7 +1441,7 @@ class Menu:
         # load in the background grid from the files
         self.draw_loading_world_screen(percent_end, 'Prepping Background')
         background_directory = f"{self.game_files_directory}/{self.world_name}/background_grid"
-        chunks_data, max_chunk_id = Grid.load_chunk_files(background_directory)
+        # chunks_data, max_chunk_id = Grid.load_chunk_files(background_directory)
 
         # initalize the background grid
         loading_message = 'Loading Background'
@@ -1450,7 +1450,7 @@ class Menu:
         percent_tot_inc = percent_end - percent_start
         self.draw_loading_world_screen(percent_start, loading_message)
 
-        for bg_grid, percent_complete in Grid.fill_from_file_show_loading(chunks_data, max_chunk_id, background_directory, self.screen, self.block_width, player):
+        for bg_grid, percent_complete in Grid.preinitialize_local_grid(background_directory, self.screen, self.block_width, player):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 

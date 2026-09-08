@@ -10,7 +10,7 @@ class Grid:
     
     chunk_width = 16
 
-    def __init__(self, world_width, world_height, BLOCK_WIDTH, screen, save_directory=None, save_as_you_go=False):
+    def __init__(self, world_width, world_height, BLOCK_WIDTH, screen, save_directory=None, save_as_you_go=False, initialize_empty_chunks=True):
         self.settings = settings.get()
 
         chunks = (world_width + self.chunk_width - 1) // self.chunk_width
@@ -24,14 +24,17 @@ class Grid:
         self.save_directory = save_directory
         self.height = world_height
 
+        self.MAX_WORLD_CHUNKS = 50000
+
         self.chunks_modified = {}
 
         self.chunks_loading = set()
 
         # fill in self.chunks
         self.chunks = { }
-        for chunk in range(-self.negative_chunks, self.positive_chunks):
-            self.chunks[chunk] = Chunk(self.chunk_width, world_height, BLOCK_WIDTH, screen)
+        if initialize_empty_chunks:
+            for chunk in range(-self.negative_chunks, self.positive_chunks):
+                self.chunks[chunk] = Chunk(self.chunk_width, world_height, BLOCK_WIDTH, screen)
 
         self.width = len(self.chunks) * self.chunk_width
 
@@ -73,6 +76,8 @@ class Grid:
         if not self.in_bounds(global_x, y):
             return
         chunk_id, x = self.get_chunk_x(global_x)
+        if not self.is_chunk_loaded(chunk_id):
+            return
         set_block = None
         if block is not None:
             if pass_through is None:
@@ -89,12 +94,12 @@ class Grid:
         self.chunks[chunk_id].set_manual(x, y, block)
         self.chunks_modified[chunk_id] = True
 
+    def is_chunk_loaded(self, chunk_id):
+        return chunk_id in self.chunks
+
     def in_bounds(self, global_x, y):
         chunk_id, x = self.get_chunk_x(global_x)
-
-        if chunk_id > self.positive_chunks - 1 or chunk_id < -self.negative_chunks:
-            return False
-        if chunk_id not in self.chunks:
+        if not self.is_chunk_loaded(chunk_id):
             return False
         if self.chunks[chunk_id].in_bounds(x,y):
             return True
@@ -164,6 +169,21 @@ class Grid:
     def generate_save_files(self):
         Path(f'{self.save_directory}').mkdir()
 
+    def manage_chunks(self, camera_x, ignore_width=False):
+        chunks_off_screen = self.settings.physics_chunks_beyond_screen + 2
+
+        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        if ignore_width: x_draw_grid_max = (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH
+        else: x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
+
+        cur_screen_min_chunk = self.get_chunk_id(x_draw_grid_min)
+        cur_screen_max_chunk = self.get_chunk_id(x_draw_grid_max)
+
+        min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
+        max_chunk = cur_screen_max_chunk + chunks_off_screen
+        for chunk_id in range(min_chunk, max_chunk):
+            if not self.is_chunk_loaded(chunk_id): self.load_chunk(chunk_id)
+
     def chunked_physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         chunks_off_screen = self.settings.physics_chunks_beyond_screen
 
@@ -177,36 +197,32 @@ class Grid:
         cur_screen_min_chunk = self.get_chunk_id(x_draw_grid_min)
         cur_screen_max_chunk = self.get_chunk_id(x_draw_grid_max)
 
-        self.attempt_chunk_loading(cur_screen_min_chunk, cur_screen_max_chunk)
-
         min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
-        max_chunk = min(cur_screen_max_chunk + chunks_off_screen + 1, len(self.chunks)) # is used in range so uses a + 1 (len function gets a - 1 + 1)
+        max_chunk = min(cur_screen_max_chunk + chunks_off_screen + 1, self.width // self.chunk_width) # is used in range so uses a + 1 (len function gets a - 1 + 1)
         for chunk_id in range(min_chunk, max_chunk):
-            self.chunks[chunk_id].chunked_physics(y_grid_min, y_grid_max)
-
-    def attempt_chunk_loading(self, min_physics_chunk, max_physics_chunk):
-        COUNT_CHUNKS_LOADED_BEFORE_PHYSICS = 2
-
-        left_chunk_id = max(min_physics_chunk - COUNT_CHUNKS_LOADED_BEFORE_PHYSICS, 0) # for now this stops loading negative chunks
-        right_chunk_id = max_physics_chunk + COUNT_CHUNKS_LOADED_BEFORE_PHYSICS # nothing is stopping this from trying to access chunks that do not exist
-
-        if left_chunk_id not in self.chunks: self.load_chunk(left_chunk_id)
-        if right_chunk_id not in self.chunks: self.load_chunk(right_chunk_id)
+            if chunk_id in self.chunks: self.chunks[chunk_id].chunked_physics(y_grid_min, y_grid_max)
 
     def load_chunk(self, chunk_id):
-        print(f'loading chunk {chunk_id}')
         chunk_file_name = Path(self.save_directory) / f'chunk_{chunk_id}.json'
-        if not chunk_file_name.is_file():
+        if not chunk_file_name.is_file() and chunk_id not in self.chunks_loading:
             self.generate_individual_chunk(chunk_id) # as of now this just declines to load
             return
+        print(f'loading chunk {chunk_id}')
         self.chunks_loading.add(chunk_id)
         with open(chunk_file_name, 'r') as f:
                 chunk_data = json.load(f)
                 global_x_offset = self.chunk_width * chunk_id
                 self.chunks[chunk_id] = Chunk.fill_from_dict(chunk_data['chunk_data'], self.screen, self.BLOCK_WIDTH, global_x_offset, self)
                 self.chunks_loading.remove(chunk_id)
+        self.width = (max(self.chunks) + 1) * self.chunk_width
 
     def generate_individual_chunk(self, chunk_id):
+        print(f'attempting to generate chunk {chunk_id}')
+        global_x_offset = chunk_id * self.chunk_width
+        self.chunks[chunk_id] = Chunk.generate_chunk_test(global_x_offset, self.chunk_width, self.height, self.BLOCK_WIDTH, self.screen, self)
+        self.width = max((chunk_id + 1) * self.chunk_width, self.width)
+        # self.chunks_modified[chunk_id] = True
+            
         return # not yet doing anything - just returning should let the game keep working and bookmark this future functionality in the code
 
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
@@ -221,6 +237,7 @@ class Grid:
         
         for chunk_id in range(min_chunk_id, max_chunk_id+1):
             global_x_offset = chunk_id * self.chunk_width
+            if not self.is_chunk_loaded(chunk_id): continue
             chunk_block_queue = self.chunks[chunk_id].draw(camera_x, camera_y, INVENTORY_HEIGHT, global_x_offset=global_x_offset)
             block_queue = block_queue + chunk_block_queue
 
@@ -264,60 +281,13 @@ class Grid:
         entity.entity_chunk = new_chunk_id
 
     @classmethod
-    def load_chunk_files(cls, directory):
-        """gets the data for a grid in from a direcotyr -> doesn't fill anything out yet"""
-        max_chunk_id = 0
-        chunks_data = {}
-        for file in Path(directory).rglob('*.json'):
-            with open(file, 'r') as f:
-                chunk = json.load(f)
-                chunk_id = chunk['chunk_id']
-                max_chunk_id = max(max_chunk_id, chunk_id)
-                chunks_data[chunk_id] = chunk
-        
-        return chunks_data, max_chunk_id
-
-    @classmethod
-    def fill_from_file_show_loading(cls, chunks_data, max_chunk_id, directory, screen, block_width, player):
+    def preinitialize_local_grid(cls, directory, screen, block_width, player):
         "fills the grid from a file but uses a generator and required to be run in a loop -> yields grid, percent done (if percent done < 1 then grid = None)"        
         # initialize the grid
-        world_width = (max_chunk_id + 1) * cls.chunk_width # assumes only positive chunks
-        world_height = chunks_data[0]['chunk_data']['grid_height']
-        return_grid = Grid(world_width, world_height, block_width, screen, directory)
+        world_width = (player.compute_chunk_id() + 1) * cls.chunk_width # assumes only positive chunks
+        # world_height = chunks_data[0]['chunk_data']['grid_height']
+        world_height = 150
+        return_grid = Grid(world_width, world_height, block_width, screen, directory, initialize_empty_chunks=False)
 
-        # start generator
-        chunks = {}
-        chunks_generated_on_each_side = 5
-        player_start_chunk = player.compute_chunk_id()
-        start_check = max(player_start_chunk - chunks_generated_on_each_side, 0)
-        end_check = min(player_start_chunk + chunks_generated_on_each_side, max_chunk_id) + 1
-        for chunk_id in range(start_check, end_check):
-            # print(f'filling from chunk {chunk_id}')
-            chunk_data = chunks_data[chunk_id]['chunk_data']
-            global_x_offset = cls.chunk_width * chunk_id
-            chunks[chunk_id] = Chunk.fill_from_dict(chunk_data, screen, block_width, global_x_offset, return_grid)
-
-        return_grid.set_chunks(chunks)
+        return_grid.manage_chunks(player.x, ignore_width=True)
         yield return_grid, 1
-
-    # @classmethod
-    # def fill_grid_from_file(cls, directory, screen, block_width, player):
-    #     "fills out relevant parts of the grid"
-    #     # initialize the grid
-    #     world_height = player.world_details.grid_height
-    #     player_start_chunk = player.compute_chunk_id()
-    #     return_grid = Grid(world_width, world_height, block_width, screen, directory)
-
-    #     # start generator
-    #     chunks = {}
-    #     chunks_generated_on_each_side = 5
-    #     start_check = max(player_start_chunk - chunks_generated_on_each_side, 0)
-    #     end_check = min(player_start_chunk + chunks_generated_on_each_side, max_chunk_id) + 1
-    #     for chunk_id in range(start_check, end_check):
-    #         # print(f'filling from chunk {chunk_id}')
-    #         chunk_data = chunks_data[chunk_id]['chunk_data']
-    #         global_x_offset = cls.chunk_width * chunk_id
-    #         chunks[chunk_id] = Chunk.fill_from_dict(chunk_data, screen, block_width, global_x_offset, return_grid)
-
-    #     return_grid.set_chunks(chunks)
-    #     yield return_grid, 1

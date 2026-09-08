@@ -82,8 +82,8 @@ def main_game_loop(resource_path, user_data_dir):
 
 
     APP_NAME = "Into The Under"
-    APP_DISPLAY_NAME = "Into The Under v1.7.0"
-    VERSION_NAME = "intotheunder1.7.0"
+    APP_DISPLAY_NAME = "Into The Under v1.7.1"
+    VERSION_NAME = "intotheunder1.7.1"
     VERSION = 1.7 # primary version - ex 1.3.1 becomes 1.3
     GAME_FILE_FOLDER_NAME = "game_files"
     IMAGES_FILE_NAME = "image_files"

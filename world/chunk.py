@@ -163,7 +163,15 @@ class Chunk:
                 print(f'error (probable): {block_type_str} is not a valid block type in this version')
                 
         return grid
-        
+    
+    @staticmethod
+    def generate_chunk_test(x_offset, width, height, block_width, screen, return_grid):
+        chunk = Chunk(width, height, block_width, screen)
+        for y in range(70, height):
+            for x in range(width):
+                chunk.set_manual(x, y, Rock(return_grid, screen, x + x_offset, y, block_width, pass_through=Rock.pass_through))
+        return chunk
+
     def copy (self):
         return deepcopy(self)
     
