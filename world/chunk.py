@@ -40,13 +40,16 @@ class Chunk:
     def set_manual(self, x, y, value):
         self.array[y][x] = value
         
-    def set(self, x, y, block, pass_through=None, stored_inventory_items=None):
+    def set(self, x, y, block, pass_through=None, stored_inventory_items=None, x_offset=0, grid=None):
             if block is None:
                 self.array[y][x] = None
             else:
                 if pass_through is None:
                     pass_through = block.pass_through
-                self.array[y][x] = block(self, self.screen, x, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
+                cur_grid = self
+                if grid is not None:
+                    cur_grid = grid
+                self.array[y][x] = block(cur_grid, self.screen, x+x_offset, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
 
     def is_filled(self, x, y):
         return self.array[y, x] != None
@@ -110,6 +113,9 @@ class Chunk:
 
     def get_entities(self):
         return self.entity_set
+
+    def get_x_offset(self, chunk_id):
+        return self.width * chunk_id
 
     @staticmethod
     def fill_from_dict(grid_dict, screen, BLOCK_WIDTH, global_x_offset, return_grid):

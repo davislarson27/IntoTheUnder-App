@@ -10,8 +10,8 @@ from .lake_pre_fill import LakePreFill
 class Grid_Superstructure:
     def __init__(self, screen, world_generation_settings, world_details, directory='', world_seed=0, spawn_x=0):
         self.world_generation_settings = world_generation_settings
-        self.foreground_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/foreground_grid')
-        self.background_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/background_grid') 
+        self.foreground_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/foreground_grid', world_details=world_details)
+        self.background_grid = Grid(world_generation_settings.grid_width, world_generation_settings.grid_depth, world_generation_settings.block_width, screen, f'{directory}/background_grid', world_details=world_details)
         
         grid_height = self.foreground_grid.height
 

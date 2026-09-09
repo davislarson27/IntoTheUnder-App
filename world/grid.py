@@ -4,13 +4,14 @@ from pathlib import Path
 
 from components.block_queue import Block_Queue
 import components.settings as settings
+from world.world_creation.chunk_generator import Chunk_Generator
 
 
 class Grid:
     
     chunk_width = 16
 
-    def __init__(self, world_width, world_height, BLOCK_WIDTH, screen, save_directory=None, save_as_you_go=False, initialize_empty_chunks=True):
+    def __init__(self, world_width, world_height, BLOCK_WIDTH, screen, save_directory=None, save_as_you_go=False, initialize_empty_chunks=True, world_details=None):
         self.settings = settings.get()
 
         chunks = (world_width + self.chunk_width - 1) // self.chunk_width
@@ -37,6 +38,12 @@ class Grid:
                 self.chunks[chunk] = Chunk(self.chunk_width, world_height, BLOCK_WIDTH, screen)
 
         self.width = len(self.chunks) * self.chunk_width
+
+        self.world_details = world_details
+        if world_details is not None and world_details.world_height is not None:
+            self.chunk_generator = Chunk_Generator(screen, self.chunk_width, world_details, save_directory)
+        else:
+            self.chunk_generator = None
 
     def __str__(self):
         string = ''
@@ -169,7 +176,7 @@ class Grid:
     def generate_save_files(self):
         Path(f'{self.save_directory}').mkdir()
 
-    def manage_chunks(self, camera_x, ignore_width=False):
+    def manage_chunks(self, camera_x, ignore_width=False, is_background=False):
         chunks_off_screen = self.settings.physics_chunks_beyond_screen + 2
 
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
@@ -182,8 +189,8 @@ class Grid:
         min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
         max_chunk = cur_screen_max_chunk + chunks_off_screen
         for chunk_id in range(min_chunk, max_chunk):
-            if not self.is_chunk_loaded(chunk_id): self.load_chunk(chunk_id)
-
+            if not self.is_chunk_loaded(chunk_id): self.load_chunk(chunk_id, is_background)
+                
     def chunked_physics(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         chunks_off_screen = self.settings.physics_chunks_beyond_screen
 
@@ -202,10 +209,10 @@ class Grid:
         for chunk_id in range(min_chunk, max_chunk):
             if chunk_id in self.chunks: self.chunks[chunk_id].chunked_physics(y_grid_min, y_grid_max)
 
-    def load_chunk(self, chunk_id):
+    def load_chunk(self, chunk_id, is_background):
         chunk_file_name = Path(self.save_directory) / f'chunk_{chunk_id}.json'
         if not chunk_file_name.is_file() and chunk_id not in self.chunks_loading:
-            self.generate_individual_chunk(chunk_id) # as of now this just declines to load
+            self.generate_individual_chunk(chunk_id, is_background) # as of now this just declines to load
             return
         print(f'loading chunk {chunk_id}')
         self.chunks_loading.add(chunk_id)
@@ -216,15 +223,17 @@ class Grid:
                 self.chunks_loading.remove(chunk_id)
         self.width = (max(self.chunks) + 1) * self.chunk_width
 
-    def generate_individual_chunk(self, chunk_id):
-        print(f'attempting to generate chunk {chunk_id}')
-        global_x_offset = chunk_id * self.chunk_width
-        self.chunks[chunk_id] = Chunk.generate_chunk_test(global_x_offset, self.chunk_width, self.height, self.BLOCK_WIDTH, self.screen, self)
+    def insert_new_chunk(self, chunk_id, chunk):
+        self.chunks[chunk_id] = chunk
         self.width = max((chunk_id + 1) * self.chunk_width, self.width)
-        # self.chunks_modified[chunk_id] = True
-            
-        return # not yet doing anything - just returning should let the game keep working and bookmark this future functionality in the code
 
+    def generate_individual_chunk(self, chunk_id, is_background):
+        print(f'attempting to generate chunk {chunk_id}')
+        if self.chunk_generator is not None:
+            if is_background: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_bg_chunk(chunk_id, self))
+            else: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_fg_chunk(chunk_id, self))
+        else: print('missing chunk generator')
+            
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         """draws the grid on the screen and returns blocks that need to get drawn later"""
         x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
@@ -281,13 +290,12 @@ class Grid:
         entity.entity_chunk = new_chunk_id
 
     @classmethod
-    def preinitialize_local_grid(cls, directory, screen, block_width, player):
-        "fills the grid from a file but uses a generator and required to be run in a loop -> yields grid, percent done (if percent done < 1 then grid = None)"        
+    def preinitialize_local_grid(cls, directory, screen, block_width, player, is_background=False):
+        "fills the grid from a file but uses a generator and required to be run in a loop -> yields grid, percent done (if percent done < 1 then grid = None)"
         # initialize the grid
         world_width = (player.compute_chunk_id() + 1) * cls.chunk_width # assumes only positive chunks
-        # world_height = chunks_data[0]['chunk_data']['grid_height']
-        world_height = 150
-        return_grid = Grid(world_width, world_height, block_width, screen, directory, initialize_empty_chunks=False)
+        world_height = player.world_details.world_height or 150 # falls back for saves made before world_details carried generation data
+        return_grid = Grid(world_width, world_height, block_width, screen, directory, initialize_empty_chunks=False, world_details=player.world_details)
 
-        return_grid.manage_chunks(player.x, ignore_width=True)
+        return_grid.manage_chunks(player.x, ignore_width=True, is_background=is_background)
         yield return_grid, 1

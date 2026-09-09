@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import random
 
 class World_Details():
-    def __init__(self, world_name, version, creation_date, last_modified_date, is_corrupted = False, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True):
+    def __init__(self, world_name, version, creation_date, last_modified_date, is_corrupted = False, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True, grid_width=None, world_height=None, block_width=None, ground_level=13):
         self.world_name = world_name
         self.version = version
         self.creation_date = creation_date or self.get_cur_timestamp()
@@ -14,6 +14,11 @@ class World_Details():
         self.keep_inventory = keep_inventory
         self.survival_mode = survival_mode
         self.recipe_progression = recipe_progression
+        # generation data needed so chunks generated on-demand stay consistent with the rest of the world
+        self.grid_width = grid_width
+        self.world_height = world_height
+        self.block_width = block_width
+        self.ground_level = ground_level
 
     def to_dict(self, update_last_modified_date=True):
         cur_dict = {
@@ -25,7 +30,11 @@ class World_Details():
             "creation_date": self.creation_date.isoformat(),
             "keep_inventory": self.keep_inventory,
             "survival_mode": self.survival_mode,
-            "recipe_progression": self.recipe_progression
+            "recipe_progression": self.recipe_progression,
+            "grid_width": self.grid_width,
+            "world_height": self.world_height,
+            "block_width": self.block_width,
+            "ground_level": self.ground_level
         }
         if update_last_modified_date:
             cur_dict["last_modified_date"] = self.get_cur_timestamp().isoformat()
@@ -49,9 +58,9 @@ class World_Details():
         return datetime.min.replace(tzinfo=timezone.utc)
     
     @staticmethod
-    def create_new_world(world_name, game_version, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True):
+    def create_new_world(world_name, game_version, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True, grid_width=None, world_height=None, block_width=None, ground_level=13):
         cur_time = World_Details.get_cur_timestamp()
-        return World_Details(world_name, game_version, cur_time, cur_time, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression)
+        return World_Details(world_name, game_version, cur_time, cur_time, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression, grid_width=grid_width, world_height=world_height, block_width=block_width, ground_level=ground_level)
         
     @staticmethod
     def fill_from_dict(world_details_dict):
@@ -87,5 +96,10 @@ class World_Details():
         else:
             recipe_progression = True
 
-        return World_Details(world_name, version, creation_date, last_modified_date, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression)
+        grid_width = world_details_dict.get("grid_width")
+        world_height = world_details_dict.get("world_height")
+        block_width = world_details_dict.get("block_width")
+        ground_level = world_details_dict.get("ground_level", 13)
+
+        return World_Details(world_name, version, creation_date, last_modified_date, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression, grid_width=grid_width, world_height=world_height, block_width=block_width, ground_level=ground_level)
     

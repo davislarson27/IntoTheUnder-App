@@ -1373,7 +1373,20 @@ class Menu:
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
         world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
         world_spawn_y = 0
-        world_details = World_Details.create_new_world(self.world_name, self.world_generation_settings.version, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=self.keep_inventory, survival_mode=self.survival_mode, recipe_progression=self.recipe_progression)
+        world_details = World_Details.create_new_world(
+            self.world_name,
+            self.world_generation_settings.version,
+            world_spawn_x=world_spawn_x,
+            world_spawn_y=world_spawn_y,
+            world_seed=world_seed,
+            keep_inventory=self.keep_inventory,
+            survival_mode=self.survival_mode,
+            recipe_progression=self.recipe_progression,
+            grid_width=self.world_generation_settings.grid_width,
+            world_height=self.world_generation_settings.grid_depth,
+            block_width=self.block_width,
+            ground_level=self.world_generation_settings.ground_level,
+        )
 
         # initialize grid and terrain
         grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, world_details, new_directory_path, world_seed, world_spawn_x)
@@ -1450,7 +1463,7 @@ class Menu:
         percent_tot_inc = percent_end - percent_start
         self.draw_loading_world_screen(percent_start, loading_message)
 
-        for bg_grid, percent_complete in Grid.preinitialize_local_grid(background_directory, self.screen, self.block_width, player):
+        for bg_grid, percent_complete in Grid.preinitialize_local_grid(background_directory, self.screen, self.block_width, player, is_background=True):
             full_process_percent_complete = (percent_tot_inc * percent_complete) + percent_start
             self.draw_loading_world_screen(full_process_percent_complete, loading_message)
 

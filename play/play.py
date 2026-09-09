@@ -257,8 +257,8 @@ class Play:
 
     def interact_with_grid(self, input):
 
-        self.grid.manage_chunks(self.camera_x) # this will become async
-        self.background_grid.manage_chunks(self.camera_x) # this will become async
+        self.grid.manage_chunks(self.camera_x, is_background=False) # this will become async
+        self.background_grid.manage_chunks(self.camera_x, is_background=True) # this will become async
 
         allow_bg_interactions = input.caps_lock
 
