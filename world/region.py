@@ -19,15 +19,17 @@ class Region:
     def __str__(self):
         return_str = f'region {self.region_id} saving to directory {self.directory}'
         return_str += '\nbiomes'
+        i = 0
         for biome in self.biomes:
-            return_str += f'\n  {biome.__name__}'
+            return_str += f'\n  {i}: {biome.__name__}'
+            i+=1
         return_str += '\nelevations'
         for elevation in self.elevations:
             return_str += f'\n  {elevation}'
         return_str += '\nstructures'
         for structure in self.structures:
             if structure is None: struct_str = 'none'
-            else: struct_str = structure.__name__
+            else: struct_str = f'({structure.structure_type.__name__}, {structure.col_num})'
             return_str += f'\n  {struct_str}'
         return return_str
     

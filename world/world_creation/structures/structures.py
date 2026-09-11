@@ -1048,13 +1048,11 @@ class Watermellon_Patch:
 
 
 
-class End_Structure:
-    def __init__(self, struct_region_start_x):
-        self.struct_region_start_x = struct_region_start_x
-
-    def get_start(self):
-        return self.struct_region_start_x
-
+class Structure_Region_Container:
+    def __init__(self, structure_type, col_num):
+        self.structure_type = structure_type
+        self.col_num = col_num
+        
 
 class New_Cactus_Structure:
     width = 1
