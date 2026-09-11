@@ -43,6 +43,11 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
         Structure_Identifier(Recipe_Cave, 0.0015),
     ]
 
+    fg_chunk_structures = [
+        Structure_Identifier(New_Cactus_Structure, 0.2),
+        Structure_Identifier(New_Mahogany_Tree, 0.2),
+    ]
+
 
 # elev checks for ultra high/low areas
 class Volcano(Biome):

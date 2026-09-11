@@ -1,6 +1,8 @@
 import pygame
 import components.fonts as font_manager
 
+from world.region import Region
+
 class Debug_Overlay:
     def __init__(self, screen, grid, player):
         self.screen = screen
@@ -46,11 +48,15 @@ class Debug_Overlay:
         surface = self.font.render(text, True, (255, 255, 255))
         self.screen.blit(surface, (self.margin_left, self.get_line_start_y(1)))
 
-        text = f'Chunk ID: {self.cur_chunk}'
+        text = f'Region ID: {Region.get_region_id_from_global_x(x)}'
         surface = self.font.render(text, True, (255, 255, 255))
         self.screen.blit(surface, (self.margin_left, self.get_line_start_y(2)))
 
-        text = f'FPS: {self.fps}'
+        text = f'Chunk ID: {self.cur_chunk}'
         surface = self.font.render(text, True, (255, 255, 255))
         self.screen.blit(surface, (self.margin_left, self.get_line_start_y(3)))
+
+        text = f'FPS: {self.fps}'
+        surface = self.font.render(text, True, (255, 255, 255))
+        self.screen.blit(surface, (self.margin_left, self.get_line_start_y(4)))
 

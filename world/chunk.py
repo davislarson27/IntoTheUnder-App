@@ -12,6 +12,9 @@ class Chunk:
     2D grid with (x, y) int indexed internal storage
     Has .width .height size properties
     """
+
+    chunk_width = 16
+
     def __init__(self, width, height, BLOCK_WIDTH, screen):
         self.width = width
         self.height = height
@@ -40,7 +43,7 @@ class Chunk:
     def set_manual(self, x, y, value):
         self.array[y][x] = value
         
-    def set(self, x, y, block, pass_through=None, stored_inventory_items=None, x_offset=0, grid=None):
+    def set(self, x, y, block, pass_through=None, stored_inventory_items=None, x_offset=0, grid=None, anchor_x=None, anchor_y=None, tick_threshold=0):
             if block is None:
                 self.array[y][x] = None
             else:
@@ -49,7 +52,8 @@ class Chunk:
                 cur_grid = self
                 if grid is not None:
                     cur_grid = grid
-                self.array[y][x] = block(cur_grid, self.screen, x+x_offset, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items)
+                global_anchor_x = anchor_x + x_offset if anchor_x is not None else None
+                self.array[y][x] = block(cur_grid, self.screen, x+x_offset, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items, anchor_x=global_anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold)
 
     def is_filled(self, x, y):
         return self.array[y, x] != None

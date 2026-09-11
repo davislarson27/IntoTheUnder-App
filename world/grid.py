@@ -5,11 +5,12 @@ from pathlib import Path
 from components.block_queue import Block_Queue
 import components.settings as settings
 from world.world_creation.chunk_generator import Chunk_Generator
+from world.region import Region
 
 
 class Grid:
     
-    chunk_width = 16
+    chunk_width = Chunk.chunk_width
 
     def __init__(self, world_width, world_height, BLOCK_WIDTH, screen, save_directory=None, save_as_you_go=False, initialize_empty_chunks=True, world_details=None):
         self.settings = settings.get()
@@ -19,6 +20,7 @@ class Grid:
         # self.negative_chunks = chunks - self.positive_chunks
         self.positive_chunks = chunks
         self.negative_chunks = 0
+        self.chunks_per_region = Region.get_region_width() // self.chunk_width
 
         self.BLOCK_WIDTH = BLOCK_WIDTH
         self.screen = screen
@@ -28,8 +30,10 @@ class Grid:
         self.MAX_WORLD_CHUNKS = 50000
 
         self.chunks_modified = {}
-
         self.chunks_loading = set()
+
+        self.regions = {}
+        self.regions_loading = set()
 
         # fill in self.chunks
         self.chunks = { }
@@ -73,6 +77,12 @@ class Grid:
         chunk_id, x = self.get_chunk_x(global_x)
         return self.chunks[chunk_id]
 
+    def get_region_id(self, global_x):
+        return global_x // Region.get_region_width()
+    
+    def get_region_from_chunk_id(self, chunk_id):
+        return chunk_id // self.chunks_per_region
+        
     def get(self, global_x, y):
         if not self.in_bounds(global_x, y):
             return None
@@ -228,11 +238,21 @@ class Grid:
         self.width = max((chunk_id + 1) * self.chunk_width, self.width)
 
     def generate_individual_chunk(self, chunk_id, is_background):
-        print(f'attempting to generate chunk {chunk_id}')
+        region_id = self.get_region_from_chunk_id(chunk_id)
+        print(f'attempting to generate chunk {chunk_id} in region {region_id}')
         if self.chunk_generator is not None:
-            if is_background: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_bg_chunk(chunk_id, self))
-            else: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_fg_chunk(chunk_id, self))
-        else: print('missing chunk generator')
+            if region_id not in self.regions: region = self.generate_region(region_id, is_background)
+            else: region = self.regions[region_id]
+
+            if is_background: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_bg_chunk_using_region(self, region, chunk_id))
+            else: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_fg_chunk_using_region(self, region, chunk_id))
+        # else: print('missing chunk generator')
+
+    def generate_region(self, region_id, is_background):
+        if is_background: region = self.chunk_generator.generate_bg_region(region_id)
+        else: region = self.chunk_generator.generate_fg_region(region_id)
+        self.regions[region_id] = region
+        return region
             
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         """draws the grid on the screen and returns blocks that need to get drawn later"""

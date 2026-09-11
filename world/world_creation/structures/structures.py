@@ -799,6 +799,11 @@ class Cactus_Structure:
     def getBgStructureInstructions(cls, ground_x, ground_y, grid, random_factor=0, biome_name=None): # needs to actually reflect the background
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [], [] # trees don't have backgrounds
+    
+    # @classmethod
+    # def get_fg_instructions_by_col(cls, chunk, col_num, ground_y, random_factor=0, biome_name=None):
+    #     structure_instructions_list = []
+    #     if col_num == 0:
 
 
 class Snow_Man_Structure:
@@ -1041,3 +1046,89 @@ class Watermellon_Patch:
         """takes top left block coordinates and returns list of coordinates and a list of blocks to access in the same order"""
         return [], [] # trees don't have backgrounds
 
+
+
+class End_Structure:
+    def __init__(self, struct_region_start_x):
+        self.struct_region_start_x = struct_region_start_x
+
+    def get_start(self):
+        return self.struct_region_start_x
+
+
+class New_Cactus_Structure:
+    width = 1
+    def __init__(self, structure_odds, start_x, start_y, grid, chunk, x_offset):
+        self.start_x = start_x
+        self.struct_seed = structure_odds
+        self.grid = grid
+        self.chunk = chunk
+        self.x_offset = x_offset
+
+        self.cactus_height = 2
+
+    def set_fg_col(self, col_num, ground_y):
+        if col_num == 0:
+            for y in range(ground_y-self.cactus_height-1, ground_y):
+                self.chunk.set(self.start_x, y, Cactus, x_offset=self.x_offset, grid=self.grid)
+
+    @classmethod
+    def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
+        return start_x
+
+    @classmethod
+    def get_width(cls):
+        return cls.width
+
+
+class New_Mahogany_Tree:
+    width = 5
+    distance_to_stump_x = 2
+    def __init__(self, structure_odds, start_x, start_y, grid, chunk, x_offset):
+        self.start_x = start_x
+        self.start_y = start_y
+        self.struct_seed = structure_odds
+        self.grid = grid
+        self.chunk = chunk
+        self.x_offset = x_offset
+
+        self.tree_height = 3
+        self.leaves_start_elev = start_y - self.tree_height - 1
+
+        self.anchor_x = self.start_x + self.distance_to_stump_x
+        self.anchor_y = self.start_y - 1
+
+    def get_ticks(self, x, y):
+        value = int(hashlib.sha256(f"{self.struct_seed}_{x}_{y}".encode()).hexdigest(), 16)
+        normalized = value / (2**256)
+        return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+    def set_to_chunk(self, x, y, block_type, pass_through=None, anchor_x=None, anchor_y=None, tick_threshold=None):
+        self.chunk.set(x, y, block_type, x_offset=self.x_offset, pass_through=pass_through, grid=self.grid, anchor_x=anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold)
+
+    def set_fg_col(self, col_num, ground_y):
+        # add leaves
+        if col_num == 0 or col_num == self.width - 1:
+            x = self.start_x + col_num
+            y = self.leaves_start_elev
+            ticks = self.get_ticks(x, ground_y)
+            self.set_to_chunk(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+        elif col_num > 0 and col_num - 1 < self.width:
+            x = self.start_x + col_num
+            for y in range(self.leaves_start_elev-1, self.leaves_start_elev+1):
+                ticks = self.get_ticks(x, ground_y)
+                self.set_to_chunk(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)    
+            
+        # add stump
+        if col_num == self.distance_to_stump_x:
+            x = self.start_x + col_num
+            for y in range(self.start_y-self.tree_height, ground_y):
+                self.set_to_chunk(x, y, Mahogany_Log)
+
+    @classmethod
+    def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
+        return start_x + cls.distance_to_stump_x
+    
+    @classmethod
+    def get_width(cls):
+        return cls.width
