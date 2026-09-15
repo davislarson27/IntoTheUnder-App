@@ -16,6 +16,7 @@ class Region:
         self.structures = structures
         self.bg_structures_for_fg = bg_structures_for_fg
         self.underground_structures = underground_structures
+        self.undeground_bg_structures_for_fg = []
 
     def __str__(self):
         return_str = f'region {self.region_id} saving to directory {self.directory}'
