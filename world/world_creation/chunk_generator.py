@@ -283,6 +283,7 @@ class Chunk_Generator:
         biomes = []
         elevations = []
         structures = []
+        bg_structures_for_fg = []
         underground_structures = []
 
         end_range = x_offset+Region.get_region_width()
@@ -304,7 +305,7 @@ class Chunk_Generator:
             structure = None
             for structureIdentifier in getattr(biome, structure_list_attr_value):
                 if structureIdentifier.odds + running_odds_total > structure_odds:
-                    struct_width = structureIdentifier.structure.get_width()
+                    struct_width = structureIdentifier.structure.get_width(structure_odds)
                     end_of_structure = x + struct_width
                     if end_of_structure < end_range:
                         structure = structureIdentifier.structure
@@ -317,7 +318,7 @@ class Chunk_Generator:
             structures.append(None)
             x+=1
             
-        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, underground_structures)
+        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures)
 
     def generate_bg_region(self, region_id: int) -> Region:
         x_offset: int = Region.get_x_offset(region_id)
@@ -325,37 +326,69 @@ class Chunk_Generator:
         biomes = []
         elevations = []
         structures = []
+        bg_structures_for_fg = []
         underground_structures = []
 
-        # generate relevant details
-        for x in range(x_offset, x_offset+Region.get_region_width()): # this will loop through the grid and let me go x by x
-            biome = self.get_biome_pregen(x)
-            biomes.append(biome)
-            elevation = self.get_bg_terrain_height_pregen(x)
-            elevations.append(elevation)
+        end_range = x_offset+Region.get_region_width()
+        for x in range(x_offset, end_range):
+            biomes.append(self.get_biome_pregen(x))
+            elevations.append(self.get_bg_terrain_height_pregen(x))
 
-            # structure_list_attr_value = "structures"
-            # hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_fg_struct_{x}".encode()).hexdigest(), 16)
-            # structure_odds = (hash % 1000) / 1000.0
+        x = x_offset
+        while x < end_range:
+            global_x = x - x_offset
+            biome = biomes[global_x]
 
-            # # subStructure_hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_sub_struct_{x}".encode()).hexdigest(), 16)
-            # # instruction_variance_chance = (subStructure_hash % 1000) / 1000.0
+            structure_list_attr_value = "bg_chunk_structures"
+            hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_bg_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0
 
-            # # get structure to generate based on biome
-            # running_odds_total = 0
-            # structure = None
-            # hold_x_until = 0
-            # if x < hold_x_until:
-            #     for structureIdentifier in getattr(biome, structure_list_attr_value):
-            #         if structureIdentifier.odds + running_odds_total > structure_odds:
-            #             structure = structureIdentifier.structure
-            #             # structures.append(structure) # assign structure
-            #             hold_x_until = x + structure.get_width() # jump x past the end of the structure
-            #             break
-            #         running_odds_total += structureIdentifier.odds
-            # structures.append(structure)
+            # get structure to generate based on biome
+            running_odds_total = 0
+            structure = None
+            for structureIdentifier in getattr(biome, structure_list_attr_value):
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    struct_width = structureIdentifier.structure.get_width(structure_odds)
+                    end_of_structure = x + struct_width
+                    if end_of_structure < end_range:
+                        structure = structureIdentifier.structure
+                        for col_num in range(struct_width):
+                            structures.append(Structure_Region_Container(structure, col_num))
+                        x+=struct_width
+                        break
+                running_odds_total += structureIdentifier.odds
 
-        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, underground_structures)
+            structures.append(None)
+            x+=1
+
+        x = x_offset
+        while x < end_range:
+            global_x = x - x_offset
+            biome = biomes[global_x]
+
+            structure_list_attr_value = "fg_chunk_structures"
+            hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_fg_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0
+
+            # get structure to generate based on biome
+            running_odds_total = 0
+            structure = None
+            for structureIdentifier in getattr(biome, structure_list_attr_value):
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    struct_width = structureIdentifier.structure.get_width(structure_odds)
+                    end_of_structure = x + struct_width
+                    if end_of_structure < end_range:
+                        structure = structureIdentifier.structure
+                        for col_num in range(struct_width):
+                            bg_structures_for_fg.append(Structure_Region_Container(structure, col_num))
+                        x+=struct_width
+                        break
+                running_odds_total += structureIdentifier.odds
+
+            bg_structures_for_fg.append(None)
+            x+=1
+
+        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures)
 
 
     def generate_fg_chunk_using_region(self, grid, region, chunk_id) -> Chunk:
@@ -390,16 +423,18 @@ class Chunk_Generator:
                 struct_origin_x = x - structure_region_container.col_num
 
                 # get seed based random number (hashed based on x)
+                global_struct_origin_x = struct_origin_x + global_x_start
                 structure_list_attr_value = "fg_chunk_structures"
-                subStructure_hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_sub_struct_{struct_origin_x}".encode()).hexdigest(), 16)
+                subStructure_hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_sub_struct_{global_struct_origin_x}".encode()).hexdigest(), 16)
                 instruction_variance_chance = (subStructure_hash % 1000) / 1000.0
 
                 base_start_x = structure_type.get_x_for_start_y(struct_origin_x, instruction_variance_chance)
-                structure = structure_type(instruction_variance_chance, struct_origin_x, region.get_elevation(base_start_x, chunk_id), grid, chunk, global_x_start)
-                
-                structure.set_fg_col(structure_region_container.col_num, region.get_elevation(x, chunk_id))
+                base_end_y = struct_origin_x + structure_type.get_width(instruction_variance_chance)
+                structure = structure_type(instruction_variance_chance, struct_origin_x, region.get_elevation(base_start_x, chunk_id), region.get_elevation(base_end_y, chunk_id), grid, chunk, global_x_start)
+
+                structure.set_fg_col(structure_region_container.col_num, region.get_elevation(x, chunk_id), region.get_biome(x, chunk_id))
                 x+=1
-                
+
         # generate the foreground chunk
         for x in range(fg_chunk.width): # this will loop through the grid and let me go x by x
             biome = region.get_biome(x, chunk_id)
@@ -443,6 +478,52 @@ class Chunk_Generator:
         fg_chunk = Chunk(Chunk.chunk_width, self.world_details.world_height, self.world_details.block_width, self.screen)
         global_x_start = fg_chunk.get_x_offset(chunk_id)
 
+        def _generate_structures(global_x_start, chunk):
+            x = 0
+            while x < fg_chunk.width:
+                structure_region_container = region.get_structure(x, chunk_id)
+                if structure_region_container is None:
+                    x += 1
+                    continue
+                structure_type = structure_region_container.structure_type
+                struct_origin_x = x - structure_region_container.col_num
+
+                # get seed based random number (hashed based on x)
+                global_struct_origin_x = struct_origin_x + global_x_start
+                structure_list_attr_value = "bg_chunk_structures"
+                subStructure_hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_sub_struct_{global_struct_origin_x}".encode()).hexdigest(), 16)
+                instruction_variance_chance = (subStructure_hash % 1000) / 1000.0
+
+                base_start_x = structure_type.get_x_for_start_y(struct_origin_x, instruction_variance_chance)
+                base_end_y = struct_origin_x + structure_type.get_width(instruction_variance_chance)
+                structure = structure_type(instruction_variance_chance, struct_origin_x, region.get_elevation(base_start_x, chunk_id), region.get_elevation(base_end_y, chunk_id), grid, chunk, global_x_start)
+
+                structure.set_fg_col(structure_region_container.col_num, region.get_elevation(x, chunk_id), region.get_biome(x, chunk_id))
+                x+=1
+
+        def _generate_bg_for_fg_structures(global_x_start, chunk):
+            x = 0
+            while x < fg_chunk.width:
+                structure_region_container = region.get_bg_structure_for_fg(x, chunk_id)
+                if structure_region_container is None:
+                    x += 1
+                    continue
+                structure_type = structure_region_container.structure_type
+                struct_origin_x = x - structure_region_container.col_num
+
+                # get seed based random number (hashed based on x)
+                global_struct_origin_x = struct_origin_x + global_x_start
+                structure_list_attr_value = "fg_chunk_structures"
+                subStructure_hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_sub_struct_{global_struct_origin_x}".encode()).hexdigest(), 16)
+                instruction_variance_chance = (subStructure_hash % 1000) / 1000.0
+
+                base_start_x = structure_type.get_x_for_start_y(struct_origin_x, instruction_variance_chance)
+                base_end_x = struct_origin_x + structure_type.get_width(instruction_variance_chance)
+                structure = structure_type(instruction_variance_chance, struct_origin_x, self.get_terrain_height_pregen(grid.get_global_x_from_chunk_x(base_start_x, chunk_id)), self.get_terrain_height_pregen(grid.get_global_x_from_chunk_x(base_end_x, chunk_id)), grid, chunk, global_x_start)
+
+                structure.set_bg_col(structure_region_container.col_num, self.get_terrain_height_pregen(grid.get_global_x_from_chunk_x(x, chunk_id)), region.get_biome(x, chunk_id))
+                x+=1
+
         # generate the foreground chunk
         for x in range(fg_chunk.width): # this will loop through the grid and let me go x by x
             biome = region.get_biome(x, chunk_id)
@@ -461,6 +542,10 @@ class Chunk_Generator:
                 layer_num+=1
             for y in range(cur_depth_down, fg_chunk.height):
                 fg_chunk.set(x, y, biome.sub_layer, x_offset=global_x_start, grid=grid)
+
+        # generate structures
+        _generate_structures(global_x_start, fg_chunk)
+        _generate_bg_for_fg_structures(global_x_start, fg_chunk)
 
         return fg_chunk
 

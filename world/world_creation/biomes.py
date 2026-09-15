@@ -44,8 +44,11 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     ]
 
     fg_chunk_structures = [
-        Structure_Identifier(New_Cactus_Structure, 0.2),
-        Structure_Identifier(New_Mahogany_Tree, 0.2),
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Tree, 0.1),
+    ]
+    bg_chunk_structures = [
+        Structure_Identifier(Col_Tree, 0.1),
     ]
 
 
@@ -59,11 +62,18 @@ class Volcano(Biome):
     layers = [Layer(Snow_Block, 1, variation_amp=0), Layer(Gravel, 1), Layer(Rock, 7)]
     sub_layer = Rock
 
-    structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Tree, 0.007),
         Structure_Identifier(Recipe_Burrow, 0.00001),
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
+    fg_chunk_structures = [
+        Structure_Identifier(Col_Tree, 0.007),
+        Structure_Identifier(Col_Recipe_Burrow, 0.00001),
+    ]
+    bg_chunk_structures = [
     ]
 
     biome_ore_modifier = {**Biome.biome_ore_modifier}
@@ -87,6 +97,14 @@ class Mountain(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Snow_Tree, 0.01),
+        Structure_Identifier(Col_Snow_Man_Structure, 0.0001),
+        Structure_Identifier(Col_Watermellon_Patch, 0.00005),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
     biome_ore_modifier = {**Biome.biome_ore_modifier}
     biome_ore_modifier[Sulfur_Flakes_Block] *= 1.4
 
@@ -102,6 +120,11 @@ class Lake(Biome):
     structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
 
@@ -122,6 +145,13 @@ class Ravine(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Tree, 0.01),
+        Structure_Identifier(Col_Wild_Flower_Struct, 0.018),
+        Structure_Identifier(Col_Watermellon_Patch, 0.00005),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
 
 # low humidity
 class Desert(Biome):
@@ -139,6 +169,14 @@ class Desert(Biome):
     ]
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Cactus_Structure, 0.015)
+    ]
+
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Cactus_Structure, 0.05),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Cactus_Structure, 0.002),
     ]
 
 
@@ -160,6 +198,15 @@ class Tundra(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_White_Lily_Struct, 0.015),
+        Structure_Identifier(Col_Watermellon_Patch, 0.025),
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Small_Bush, 0.02),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
+    
 
 class Glacier(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -178,6 +225,13 @@ class Glacier(Biome):
     bg_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Snow_Man_Structure, 0.006),
+        Structure_Identifier(Col_Rose_Struct, 0.001),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+    ]
 
 # high humidity
 class Rain_Forest(Biome):
@@ -203,6 +257,22 @@ class Rain_Forest(Biome):
         Structure_Identifier(Tree, 0.01),
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Mahogany_Tree, 0.12),
+        Structure_Identifier(Col_Tree, 0.02),
+        Structure_Identifier(Col_Small_Bush, 0.02),
+        Structure_Identifier(Col_Puddle, 0.01),
+        Structure_Identifier(Col_Watermellon_Patch, 0.02),
+        Structure_Identifier(Col_Wild_Flower_Struct, 0.0025),
+        Structure_Identifier(Col_White_Lily_Struct, 0.0025),
+        Structure_Identifier(Col_Forget_Me_Not_Struct, 0.0025),
+        Structure_Identifier(Col_Rose_Struct, 0.0042),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Mahogany_Tree, 0.17),
+        Structure_Identifier(Col_Tree, 0.01),
+    ]
 
 class Spruce_Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -223,6 +293,18 @@ class Spruce_Forest(Biome):
         Structure_Identifier(Spruce_Tree, 0.065)
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Spruce_Tree, 0.07),
+        Structure_Identifier(Col_Small_Bush, 0.01),
+        Structure_Identifier(Col_Wild_Flower_Struct, 0.007),
+        Structure_Identifier(Col_White_Lily_Struct, 0.007),
+        Structure_Identifier(Col_Forget_Me_Not_Struct, 0.007),
+        Structure_Identifier(Col_Rose_Struct, 0.007),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Spruce_Tree, 0.065),
+    ]
 
 class Forest(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -244,6 +326,19 @@ class Forest(Biome):
         Structure_Identifier(Tree, 0.1)
     ]
     
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Tree, 0.1),
+        Structure_Identifier(Col_Small_Bush, 0.01),
+        Structure_Identifier(Col_Mahogany_Tree, 0.00001),
+        Structure_Identifier(Col_Wild_Flower_Struct, 0.007),
+        Structure_Identifier(Col_White_Lily_Struct, 0.007),
+        Structure_Identifier(Col_Forget_Me_Not_Struct, 0.007),
+        Structure_Identifier(Col_Rose_Struct, 0.007),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Tree, 0.1),
+    ]
 
 class Montane_Forest(Biome): # at some point get more gravel to appear here near the surface
     def claim(elevation, temp, humidity, mountain):
@@ -267,6 +362,20 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
         Structure_Identifier(Tree, 0.019)
     ]
     
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Tree, 0.028),
+        Structure_Identifier(Col_Snow_Tree, 0.002),
+        Structure_Identifier(Col_Small_Bush, 0.025),
+        Structure_Identifier(Col_Puddle, 0.012),
+        Structure_Identifier(Col_Spruce_Tree, 0.0003),
+        Structure_Identifier(Col_White_Lily_Struct, 0.014),
+        Structure_Identifier(Col_Rose_Struct, 0.0014),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Tree, 0.019)
+    ]
+
 
 class Plains(Biome):
     def claim(elevation, temp, humidity, mountain):
@@ -287,3 +396,15 @@ class Plains(Biome):
         Structure_Identifier(Tree, 0.02)
     ]
 
+    fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Recipe_Burrow, 0.0002),
+        Structure_Identifier(Col_Tree, 0.02),
+        Structure_Identifier(Col_Small_Bush, 0.03),
+        Structure_Identifier(Col_Wild_Flower_Struct, 0.0065),
+        Structure_Identifier(Col_White_Lily_Struct, 0.0065),
+        Structure_Identifier(Col_Forget_Me_Not_Struct, 0.0065),
+        Structure_Identifier(Col_Rose_Struct, 0.0065),
+    ]
+    bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
+        Structure_Identifier(Col_Tree, 0.02)
+    ]

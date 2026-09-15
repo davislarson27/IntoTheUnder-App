@@ -7,13 +7,14 @@ from world.chunk import Chunk
 class Region:
     chunks_in_region = 4
     region_width: int = Chunk.chunk_width *  chunks_in_region # gives the number of blocks across a region
-    def __init__(self, directory, region_id, chunk_width, biomes, elevations, structures, underground_structures):
+    def __init__(self, directory, region_id, chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures):
         self.directory = directory
         self.region_id = region_id
         self.chunk_width = chunk_width
         self.biomes = biomes
         self.elevations = elevations
         self.structures = structures
+        self.bg_structures_for_fg = bg_structures_for_fg
         self.underground_structures = underground_structures
 
     def __str__(self):
@@ -44,6 +45,9 @@ class Region:
     
     def get_structure(self, chunk_x: int, chunk_id: int) -> int:
         return self.structures[self.get_region_x_from_chunk_x(chunk_x, chunk_id)]
+
+    def get_bg_structure_for_fg(self, chunk_x: int, chunk_id: int) -> int:
+        return self.bg_structures_for_fg[self.get_region_x_from_chunk_x(chunk_x, chunk_id)]
 
     @classmethod
     def get_x_offset(cls, region_id: int) -> int:

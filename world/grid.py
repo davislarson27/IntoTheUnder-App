@@ -66,6 +66,10 @@ class Grid:
         return chunk_id, chunk_x
     
     @classmethod
+    def get_global_x_from_chunk_x(cls, chunk_x: int, chunk_id: int) -> int:
+        return chunk_id * Chunk.chunk_width + chunk_x
+    
+    @classmethod
     def get_chunk_id(cls, global_x):
         """returns chunk_id"""
         chunk_id, _ = cls.get_chunk_x(global_x)
