@@ -1,7 +1,7 @@
-from .chunk import Chunk
 import json
 from pathlib import Path
 
+from .chunk import Chunk
 from components.block_queue import Block_Queue
 import components.settings as settings
 from world.world_creation.chunk_generator import Chunk_Generator
