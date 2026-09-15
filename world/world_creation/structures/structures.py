@@ -1659,3 +1659,70 @@ class Col_Recipe_Burrow(Col_Structures):
     @classmethod
     def get_width(cls, structure_odds):
         return cls.width
+
+
+class Col_Recipe_Cave(Col_Structures):
+    width = 6
+    def __init__(self, structure_odds, start_x, start_y, end_y, grid, chunk, x_offset):
+        self.start_x = start_x
+        self.global_x = start_x + x_offset
+        self.start_y = start_y
+        self.end_y = end_y
+        self.struct_seed = structure_odds
+        self.grid = grid
+        self.chunk = chunk
+        self.x_offset = x_offset
+
+        self.height = 6
+        min_depth = start_y + 10
+        if min_depth + self.height >= grid.height: self.depth = start_y + 3
+        else: self.depth = self.get_random_int(min_depth, grid.height - 7, f'{self.global_x}_recipe_cave_depth')
+        self.chest_loot = Chest_Loot([
+            Loot_Odds(Rose, 3, 0.025),
+            Loot_Odds(White_Lily, 3, 0.025),
+            Loot_Odds(Packed_Ice, 15, 0.06),
+            Loot_Odds(Spruce_Planks, 15, 0.06),
+            Loot_Odds(Spruce_Log, 4, 0.02),
+            Loot_Odds(Gravel, 15, 0.06),
+            Loot_Odds(Gold_Ingot, 4, 0.0008),
+            Loot_Odds(Iron_Ingot, 4, 0.0008),
+            Loot_Odds(Diamond, 2, 0.00045),
+        ])
+
+    def set_fg_col(self, col_num, ground_y, biome):
+        x = col_num + self.start_x
+        if col_num == 0 or col_num == self.width - 1: # left or right side
+            for y in range(self.depth, self.depth+self.height):
+                self.set_to_chunk(x, y, Stone_Bricks)
+        else:
+            self.set_to_chunk(x, self.depth, Stone_Bricks)
+            self.set_to_chunk(x, self.depth+self.height-1, Stone_Bricks)
+            for y in range(self.depth+1, self.depth+self.height-1):
+                self.set_to_chunk(x, y, None)
+
+        if col_num == 2:
+            recipeFrame_y = self.depth + 4
+            recipeList = User_Crafting_Recipes_List.getBiomeWeightedFindableRecipesList(biome.__name__)
+            randomRecipe = recipeList[int(self.struct_seed * len(recipeList)) % len(recipeList)]
+            self.set_to_chunk(x, recipeFrame_y, Recipe_Frame, stored_inventory_items=[randomRecipe])
+
+        if col_num == 3:
+            chest_y = self.depth + 4
+            self.set_to_chunk(x, chest_y, Spruce_Chest)
+            chest_block = self.chunk.get(x, chest_y)
+            for chest_slot_num in range(chest_block.chest_slots_count):
+                chest_loot_random_factor = self.get_random_float(f'{self.struct_seed}_{chest_slot_num}')
+                chest_block.stored_inventory_items.append(self.chest_loot.get_slot(chest_loot_random_factor))
+
+    def set_bg_col(self, col_num, fg_ground_y, biome):
+        x = col_num + self.start_x
+        for y in range(self.depth, self.depth+self.height):
+            self.set_to_chunk(x, y, Spruce_Planks)
+    
+    @classmethod
+    def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
+        return start_x
+
+    @classmethod
+    def get_width(cls, structure_odds):
+        return cls.width

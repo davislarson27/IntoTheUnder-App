@@ -7,7 +7,7 @@ from world.chunk import Chunk
 class Region:
     chunks_in_region = 4
     region_width: int = Chunk.chunk_width *  chunks_in_region # gives the number of blocks across a region
-    def __init__(self, directory, region_id, chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures):
+    def __init__(self, directory, region_id, chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures, undeground_bg_structures_for_fg):
         self.directory = directory
         self.region_id = region_id
         self.chunk_width = chunk_width
@@ -16,7 +16,7 @@ class Region:
         self.structures = structures
         self.bg_structures_for_fg = bg_structures_for_fg
         self.underground_structures = underground_structures
-        self.undeground_bg_structures_for_fg = []
+        self.undeground_bg_structures_for_fg = undeground_bg_structures_for_fg
 
     def __str__(self):
         return_str = f'region {self.region_id} saving to directory {self.directory}'
@@ -50,6 +50,12 @@ class Region:
 
     def get_bg_structure_for_fg(self, chunk_x: int, chunk_id: int) -> int:
         return self.bg_structures_for_fg[self.get_region_x_from_chunk_x(chunk_x, chunk_id)]
+
+    def get_underground_structure(self, chunk_x: int, chunk_id: int) -> int:
+        return self.underground_structures[self.get_region_x_from_chunk_x(chunk_x, chunk_id)]
+
+    def get_underground_bg_structure_for_fg(self, chunk_x: int, chunk_id: int) -> int:
+        return self.undeground_bg_structures_for_fg[self.get_region_x_from_chunk_x(chunk_x, chunk_id)]
 
     @classmethod
     def get_x_offset(cls, region_id: int) -> int:

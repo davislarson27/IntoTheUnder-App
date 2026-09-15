@@ -285,6 +285,7 @@ class Chunk_Generator:
         structures = []
         bg_structures_for_fg = []
         underground_structures = []
+        undeground_bg_structures_for_fg = []
 
         end_range = x_offset+Region.get_region_width()
         for x in range(x_offset, end_range):
@@ -317,8 +318,35 @@ class Chunk_Generator:
 
             structures.append(None)
             x+=1
-            
-        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures)
+
+        x = x_offset
+        while x < end_range:
+            global_x = x - x_offset
+            biome = biomes[global_x]
+
+            structure_list_attr_value = "underground_fg_chunk_structures"
+            hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_fg_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0
+
+            # get structure to generate based on biome
+            running_odds_total = 0
+            structure = None
+            for structureIdentifier in getattr(biome, structure_list_attr_value):
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    struct_width = structureIdentifier.structure.get_width(structure_odds)
+                    end_of_structure = x + struct_width
+                    if end_of_structure < end_range:
+                        structure = structureIdentifier.structure
+                        for col_num in range(struct_width):
+                            underground_structures.append(Structure_Region_Container(structure, col_num))
+                        x+=struct_width
+                        break
+                running_odds_total += structureIdentifier.odds
+
+            underground_structures.append(None)
+            x+=1
+
+        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures, undeground_bg_structures_for_fg)
 
     def generate_bg_region(self, region_id: int) -> Region:
         x_offset: int = Region.get_x_offset(region_id)
@@ -328,6 +356,7 @@ class Chunk_Generator:
         structures = []
         bg_structures_for_fg = []
         underground_structures = []
+        undeground_bg_structures_for_fg = []
 
         end_range = x_offset+Region.get_region_width()
         for x in range(x_offset, end_range):
@@ -388,7 +417,34 @@ class Chunk_Generator:
             bg_structures_for_fg.append(None)
             x+=1
 
-        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures)
+        x = x_offset
+        while x < end_range:
+            global_x = x - x_offset
+            biome = biomes[global_x]
+
+            structure_list_attr_value = "underground_fg_chunk_structures"
+            hash = int(hashlib.sha256(f"{self.seed}_{structure_list_attr_value}_fg_struct_{x}".encode()).hexdigest(), 16)
+            structure_odds = (hash % 1000) / 1000.0
+
+            # get structure to generate based on biome
+            running_odds_total = 0
+            structure = None
+            for structureIdentifier in getattr(biome, structure_list_attr_value):
+                if structureIdentifier.odds + running_odds_total > structure_odds:
+                    struct_width = structureIdentifier.structure.get_width(structure_odds)
+                    end_of_structure = x + struct_width
+                    if end_of_structure < end_range:
+                        structure = structureIdentifier.structure
+                        for col_num in range(struct_width):
+                            undeground_bg_structures_for_fg.append(Structure_Region_Container(structure, col_num))
+                        x+=struct_width
+                        break
+                running_odds_total += structureIdentifier.odds
+
+            undeground_bg_structures_for_fg.append(None)
+            x+=1
+
+        return Region(self.directory, region_id, Chunk.chunk_width, biomes, elevations, structures, bg_structures_for_fg, underground_structures, undeground_bg_structures_for_fg)
 
 
     def generate_fg_chunk_using_region(self, grid, region, chunk_id) -> Chunk:
@@ -412,10 +468,10 @@ class Chunk_Generator:
                         if ore_spawn_attributes.allow_replace(chunk.get(x, y)):
                             chunk.set(x, y, ore, x_offset=x_offset, grid=grid)
 
-        def _generate_structures(global_x_start, chunk):
+        def _generate_structures(global_x_start, chunk, get_structure_function):
             x = 0
             while x < fg_chunk.width:
-                structure_region_container = region.get_structure(x, chunk_id)
+                structure_region_container = get_structure_function(x, chunk_id)
                 if structure_region_container is None:
                     x += 1
                     continue
@@ -434,6 +490,13 @@ class Chunk_Generator:
 
                 structure.set_fg_col(structure_region_container.col_num, region.get_elevation(x, chunk_id), region.get_biome(x, chunk_id))
                 x+=1
+
+        def _generate_border_blocks_at(x, chunk, x_offset):
+            base_y = chunk.height - 1
+            chunk.set(x, base_y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
+            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+                chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
+
 
         # generate the foreground chunk
         for x in range(fg_chunk.width): # this will loop through the grid and let me go x by x
@@ -468,8 +531,11 @@ class Chunk_Generator:
                             block_set = Saltpeter
                     fg_chunk.set(x, y, block_set, x_offset=global_x_start, grid=grid)
 
+            _generate_border_blocks_at(x, fg_chunk, global_x_start)
+
             # generate structures
-            _generate_structures(global_x_start, fg_chunk)
+            _generate_structures(global_x_start, fg_chunk, region.get_structure)
+            _generate_structures(global_x_start, fg_chunk, region.get_underground_structure)
 
         return fg_chunk
 
@@ -501,10 +567,10 @@ class Chunk_Generator:
                 structure.set_fg_col(structure_region_container.col_num, region.get_elevation(x, chunk_id), region.get_biome(x, chunk_id))
                 x+=1
 
-        def _generate_bg_for_fg_structures(global_x_start, chunk):
+        def _generate_bg_for_fg_structures(global_x_start, chunk, get_structure_function):
             x = 0
             while x < fg_chunk.width:
-                structure_region_container = region.get_bg_structure_for_fg(x, chunk_id)
+                structure_region_container = get_structure_function(x, chunk_id)
                 if structure_region_container is None:
                     x += 1
                     continue
@@ -523,6 +589,12 @@ class Chunk_Generator:
 
                 structure.set_bg_col(structure_region_container.col_num, self.get_terrain_height_pregen(grid.get_global_x_from_chunk_x(x, chunk_id)), region.get_biome(x, chunk_id))
                 x+=1
+
+        def _generate_border_blocks_at(x, chunk, x_offset):
+            base_y = chunk.height - 1
+            chunk.set(x, base_y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
+            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+                chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
 
         # generate the foreground chunk
         for x in range(fg_chunk.width): # this will loop through the grid and let me go x by x
@@ -543,9 +615,12 @@ class Chunk_Generator:
             for y in range(cur_depth_down, fg_chunk.height):
                 fg_chunk.set(x, y, biome.sub_layer, x_offset=global_x_start, grid=grid)
 
+            _generate_border_blocks_at(x, fg_chunk, global_x_start)
+
         # generate structures
         _generate_structures(global_x_start, fg_chunk)
-        _generate_bg_for_fg_structures(global_x_start, fg_chunk)
+        _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_bg_structure_for_fg)
+        _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_underground_bg_structure_for_fg)
 
         return fg_chunk
 

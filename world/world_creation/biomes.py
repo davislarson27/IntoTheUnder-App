@@ -50,6 +50,9 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     bg_chunk_structures = [
         Structure_Identifier(Col_Tree, 0.1),
     ]
+    underground_fg_chunk_structures = [
+        Structure_Identifier(Col_Recipe_Cave, 0.3),
+    ]
 
 
 # elev checks for ultra high/low areas
