@@ -16,8 +16,6 @@ class Grid:
         self.settings = settings.get()
 
         chunks = (world_width + self.chunk_width - 1) // self.chunk_width
-        # self.positive_chunks = chunks // 2
-        # self.negative_chunks = chunks - self.positive_chunks
         self.positive_chunks = chunks
         self.negative_chunks = 0
         self.chunks_per_region = Region.get_region_width() // self.chunk_width
@@ -232,7 +230,6 @@ class Grid:
         if not chunk_file_name.is_file() and chunk_id not in self.chunks_loading:
             self.generate_individual_chunk(chunk_id, is_background) # as of now this just declines to load
             return
-        print(f'loading chunk {chunk_id}')
         self.chunks_loading.add(chunk_id)
         with open(chunk_file_name, 'r') as f:
                 chunk_data = json.load(f)
@@ -247,14 +244,12 @@ class Grid:
 
     def generate_individual_chunk(self, chunk_id, is_background):
         region_id = self.get_region_from_chunk_id(chunk_id)
-        print(f'attempting to generate chunk {chunk_id} in region {region_id}')
         if self.chunk_generator is not None:
             if region_id not in self.regions: region = self.generate_region(region_id, is_background)
             else: region = self.regions[region_id]
 
             if is_background: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_bg_chunk_using_region(self, region, chunk_id))
             else: self.insert_new_chunk(chunk_id, self.chunk_generator.generate_fg_chunk_using_region(self, region, chunk_id))
-        # else: print('missing chunk generator')
 
     def generate_region(self, region_id, is_background):
         if is_background: region = self.chunk_generator.generate_bg_region(region_id)
