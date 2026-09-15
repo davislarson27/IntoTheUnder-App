@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from .blocks.block_export import *
 from play.inventory.inventory_item import Inventory_Item
 from play.inventory.submenus.crafting_recipes import *
@@ -181,7 +179,4 @@ class Chunk:
             for x in range(width):
                 chunk.set_manual(x, y, Rock(return_grid, screen, x + x_offset, y, block_width, pass_through=Rock.pass_through))
         return chunk
-
-    def copy (self):
-        return deepcopy(self)
     
