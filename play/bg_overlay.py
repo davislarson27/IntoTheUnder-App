@@ -71,7 +71,7 @@ class BG_Overlay:
         self.screen.blit(overlay, (draw_x, draw_y))
 
     def draw(self, camera_x, camera_y, inventory_height):
-        x_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_min = camera_x // self.BLOCK_WIDTH
         x_max = min(self.background_grid.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
 
         true_height = self.screen.get_height() - inventory_height

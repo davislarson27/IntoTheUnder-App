@@ -34,8 +34,9 @@ class Region:
             return_str += f'\n  {struct_str}'
         return return_str
     
-    def get_region_x_from_chunk_x(self, chunk_x: int, chunk_id: int) -> int:
-        return chunk_id % self.chunks_in_region * Chunk.chunk_width + chunk_x
+    @classmethod
+    def get_region_x_from_chunk_x(cls, chunk_x: int, chunk_id: int) -> int:
+        return chunk_id % cls.chunks_in_region * Chunk.chunk_width + chunk_x
     
     def get_biome(self, chunk_x: int, chunk_id: int):
         return self.biomes[self.get_region_x_from_chunk_x(chunk_x, chunk_id)]

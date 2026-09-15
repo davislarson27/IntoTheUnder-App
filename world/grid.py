@@ -193,14 +193,16 @@ class Grid:
     def manage_chunks(self, camera_x, ignore_width=False, is_background=False):
         chunks_off_screen = self.settings.physics_chunks_beyond_screen + 2
 
-        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_draw_grid_min = camera_x // self.BLOCK_WIDTH
+
         if ignore_width: x_draw_grid_max = (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH
         else: x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         cur_screen_min_chunk = self.get_chunk_id(x_draw_grid_min)
         cur_screen_max_chunk = self.get_chunk_id(x_draw_grid_max)
 
-        min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
+        # min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
+        min_chunk = cur_screen_min_chunk - chunks_off_screen
         max_chunk = cur_screen_max_chunk + chunks_off_screen
         for chunk_id in range(min_chunk, max_chunk):
             if not self.is_chunk_loaded(chunk_id): self.load_chunk(chunk_id, is_background)
@@ -212,13 +214,15 @@ class Grid:
         y_grid_min = max(0, (camera_y // self.BLOCK_WIDTH) - 7)
         y_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 8
 
-        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        # x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_draw_grid_min = camera_x // self.BLOCK_WIDTH
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         cur_screen_min_chunk = self.get_chunk_id(x_draw_grid_min)
         cur_screen_max_chunk = self.get_chunk_id(x_draw_grid_max)
 
-        min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
+        # min_chunk = max(cur_screen_min_chunk - chunks_off_screen, 0)
+        min_chunk = cur_screen_min_chunk - chunks_off_screen
         max_chunk = min(cur_screen_max_chunk + chunks_off_screen + 1, self.width // self.chunk_width) # is used in range so uses a + 1 (len function gets a - 1 + 1)
         for chunk_id in range(min_chunk, max_chunk):
             if chunk_id in self.chunks: self.chunks[chunk_id].chunked_physics(y_grid_min, y_grid_max)
@@ -260,7 +264,8 @@ class Grid:
             
     def draw(self, camera_x, camera_y, INVENTORY_HEIGHT=0):
         """draws the grid on the screen and returns blocks that need to get drawn later"""
-        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        # x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_draw_grid_min = camera_x // self.BLOCK_WIDTH
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)
@@ -290,7 +295,7 @@ class Grid:
 
     def get_entities(self, camera_x):
         """returns a set of entities on the screen"""
-        x_draw_grid_min = max(0, camera_x // self.BLOCK_WIDTH)
+        x_draw_grid_min = camera_x // self.BLOCK_WIDTH
         x_draw_grid_max = min(self.width - 1, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH)
 
         min_chunk_id, _ = self.get_chunk_x(x_draw_grid_min)

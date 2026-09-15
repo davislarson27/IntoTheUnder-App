@@ -261,17 +261,17 @@ class Chunk_Generator:
         return abs(int(depth))
 
     def get_biome_pregen(self, x):
-        if x < len(self.biomes_by_x):
+        if 0 <= x < len(self.biomes_by_x):
             return self.biomes_by_x[x]
         return self.get_biome(x)
-    
+
     def get_terrain_height_pregen(self, x):
-        if x < len(self.terrain_heights_by_x):
+        if 0 <= x < len(self.terrain_heights_by_x):
             return self.terrain_heights_by_x[x]
         return self.get_terrain_height(x)
-    
+
     def get_bg_terrain_height_pregen(self, x):
-        if x < len(self.bg_terrain_heights_by_x):
+        if 0 <= x < len(self.bg_terrain_heights_by_x):
             return self.bg_terrain_heights_by_x[x]
         return self.get_bg_terrain_height(x)
         
