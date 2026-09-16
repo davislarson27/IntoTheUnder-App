@@ -1166,8 +1166,17 @@ class Dead_Sappling(Block):
         (-1, 0): True
     }
     tick_threshold = 2
-    grow_tick_threshold = 4000
-    
+
+    def physics(self):
+        if self.grid.in_bounds(self.x, self.y + 1): #checks for block directly under the water
+            if self.grid.get(self.x, self.y + 1) is None: # this means that the block under is empty!!
+                if self.ticks_till_physics < self.tick_threshold:
+                    self.ticks_till_physics += 1
+                else: #tick count has reached go time :)
+                    self.grid.set(self.x, self.y, None)
+                    self.grid.set(self.x, self.y+1, type(self), False)
+                    self.ticks_till_physics = 0
+
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         added = 25 if being_mined else 0
