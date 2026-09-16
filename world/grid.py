@@ -100,13 +100,11 @@ class Grid:
         if not self.in_bounds(global_x, y):
             return
         chunk_id, x = self.get_chunk_x(global_x)
-        chunk = self.chunks[chunk_id]
-        x_offset = chunk.get_x_offset(chunk_id)
-        if anchor_x is not None: _, anchor_x_local = self.get_chunk_x(anchor_x)
-        else: anchor_x_local = None
         if not self.is_chunk_loaded(chunk_id):
             return
         chunk = self.chunks[chunk_id]
+        x_offset = chunk.get_x_offset(chunk_id)
+        anchor_x_local = anchor_x - x_offset if anchor_x is not None else None
         chunk.set(x, y, block, pass_through=pass_through, stored_inventory_items=stored_inventory_items, x_offset=x_offset, grid=self, anchor_x=anchor_x_local, anchor_y=anchor_y, tick_threshold=tick_threshold)
 
         self.chunks_modified[chunk_id] = True
