@@ -843,10 +843,11 @@ class Tree_Sappling(Block):
                     self.ticks_till_physics += 1
 
     def grow_tree(self):
-        from world.world_creation.structures.structures import Tree
-        tree_instructions, tree_var_instructions = Tree.getStructureInstructions(self.x-1, self.y+1, self.grid, random.random())
-        for instruct in tree_instructions:
-            instruct.setBlock(self.grid)
+        from world.world_creation.structures.structures import Col_Tree
+        struct_odds = random.random()
+        tree = Col_Tree(struct_odds, self.x-1, self.y+1, self.y+1, self.grid, self.grid, 0)
+        for col_num in range(tree.get_width(struct_odds)):
+            tree.set_fg_col_to_grid_directly(col_num, self.y+1, None)
 
     def kill_tree(self):
         self.grid.set(self.x, self.y, Dead_Sappling)
