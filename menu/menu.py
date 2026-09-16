@@ -497,9 +497,8 @@ class Menu:
         self.active_tab = 0
 
     def move_background(self):
-        # if self.camera_x + self.width < self.background_world_width_px:
         self.background_grid.manage_chunks(int(self.camera_x))
-        self.bg_background_grid.manage_chunks(int(self.camera_x))
+        self.bg_background_grid.manage_chunks(int(self.camera_x), is_background=True)
         self.camera_x += self.background_move_speed
 
     def _menu_font(self, size):
