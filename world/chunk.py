@@ -42,6 +42,8 @@ class Chunk:
         self.array[y][x] = value
         
     def set(self, x, y, block, pass_through=None, stored_inventory_items=None, x_offset=0, grid=None, anchor_x=None, anchor_y=None, tick_threshold=None):
+            if not self.in_bounds(x, y):
+                return
             if block is None:
                 self.array[y][x] = None
             else:

@@ -6,7 +6,7 @@ import json
 import random
 import hashlib
 
-from world.world_creation.generate_world import *
+from world.grid import Grid
 from components.text_box import Text_Box
 from play.play import Play
 from components.blit_letterboxed import blit_letterboxed
@@ -227,13 +227,13 @@ class Menu:
 
         # ------------------------------- world creation options ------------------------------- #
 
-        self.world_size_options = ["Small", "Medium", "Large"]
+        self.world_size_options = ["Small", "Medium", "Infinite"]
         self.default_selected_world_size = self.settings_data.default_world_size
         self.selected_world_size = self.settings_data.default_world_size
         self.size_to_width_dict = {
-            "Small": 1000,
-            "Medium": 5000,
-            "Large": 15000
+            "Small": 33,
+            "Medium": 161,
+            "Infinite": 0
         }
         self.world_seed_text_box = Text_Box()
         self.seed_length = 100000000000000000
@@ -364,11 +364,12 @@ class Menu:
 
         menu_world_seed = self.getRandomSeed()
         menu_world_settings.reset_ground_level(13)
-        world_details = World_Details('menu world', 'non-saved data', None, None)
-        grid_superstructure = Grid_Superstructure(screen, menu_world_settings, world_details, world_seed=menu_world_seed)
-        grid_superstructure.generate_world()
-        self.background_grid, self.bg_background_grid = grid_superstructure.get_grids()
+        world_details = World_Details('menu world', 'non-saved data', None, None, world_height=self.height_blocks, block_width=self.block_width, world_seed=menu_world_seed)
+        self.background_grid = Grid(0, world_details.world_height, self.block_width, self.screen, None, True, world_details=world_details, is_menu_grid=True)
+        self.background_grid.manage_chunks(0)
 
+        self.bg_background_grid = Grid(0, world_details.world_height, self.block_width, self.screen, None, True, world_details=world_details, is_menu_grid=True)
+        self.bg_background_grid.manage_chunks(0, is_background=True)
         self.bg_overlay = BG_Overlay(screen, self.background_grid.BLOCK_WIDTH, self.background_grid, self.bg_background_grid)
 
         self.stars = Star_Background(screen)
@@ -418,11 +419,14 @@ class Menu:
             with open(path) as f:
                 d = json.load(f)
             seed = d.get("world_seed", "Unknown")
-            spawn_x = d.get("world_spawn_x", 0)
-            grid_width = round((spawn_x * 2) / self.block_width)
-            if grid_width <= 3000: size = "Small"
-            elif grid_width <= 10000: size = "Medium"
-            else: size = "Large"
+            chunks_right = d.get("max_chunks_right")
+            chunks_left = d.get("max_chunks_left")
+            if chunks_right is None or chunks_left is None:
+                size = "Infinite"
+            elif chunks_right <= 16:
+                size = "Small"
+            else:
+                size = "Medium"
             return seed, size
         except Exception:
             return "Unknown", "Unknown"
@@ -493,7 +497,10 @@ class Menu:
         self.active_tab = 0
 
     def move_background(self):
-        if self.camera_x + self.width < self.background_world_width_px: self.camera_x += self.background_move_speed
+        # if self.camera_x + self.width < self.background_world_width_px:
+        self.background_grid.manage_chunks(int(self.camera_x))
+        self.bg_background_grid.manage_chunks(int(self.camera_x))
+        self.camera_x += self.background_move_speed
 
     def _menu_font(self, size):
         if self.pixel_font_path:
@@ -1368,10 +1375,17 @@ class Menu:
         self.world_generation_settings.reset_ground_level(50)
         world_seed = resolve_seed()
 
-        self.world_generation_settings.set_grid_width(self.size_to_width_dict[self.world_size_options[self.selected_world_size]])
+        world_size = self.size_to_width_dict[self.world_size_options[self.selected_world_size]]
+        self.world_generation_settings.set_grid_width(world_size)
+
+        chunks_right = (world_size - 1) // 2
+        chunks_left = -1 * (world_size - 1) // 2
+        if world_size == 0:
+            chunks_right = None
+            chunks_left = None
 
         inventory = Inventory(self.screen, self.window, self.world_generation_settings.inventory_height, self.world_generation_settings.health_bar_height)
-        world_spawn_x = ((self.world_generation_settings.grid_width * self.block_width) // 2)
+        world_spawn_x = 0
         world_spawn_y = 0
         world_details = World_Details.create_new_world(
             self.world_name,
@@ -1386,23 +1400,31 @@ class Menu:
             world_height=self.world_generation_settings.grid_depth,
             block_width=self.block_width,
             ground_level=self.world_generation_settings.ground_level,
+            max_chunks_left=chunks_left,
+            max_chunks_right=chunks_right,
         )
 
-        # initialize grid and terrain
-        grid_superstructure = Grid_Superstructure(self.screen, self.world_generation_settings, world_details, new_directory_path, world_seed, world_spawn_x)
-        for GenerationText, percentComplete in grid_superstructure.iter_generate_world():
-            self.draw_loading_world_screen(percentComplete, GenerationText)
-        grid, background_grid = grid_superstructure.get_grids()
+        # if self.world_size_options[self.selected_world_size] == 'Infinite':
+        world_details.world_spawn_x = 0
+        GenerationText, percentComplete = "Generating Foreground", 5
+        self.draw_loading_world_screen(percentComplete, GenerationText)
+        grid = Grid(0, world_details.world_height, self.block_width, self.screen, f'{new_directory_path}/foreground_grid', True, world_details=world_details)
+        grid.manage_chunks(0)
+        GenerationText, percentComplete = "Generating Background", 40
+        self.draw_loading_world_screen(percentComplete, GenerationText)
+        background_grid = Grid(0, world_details.world_height, self.block_width, self.screen, f'{new_directory_path}/background_grid', True, world_details=world_details)
+        background_grid.manage_chunks(0, is_background=True)
 
         # create world save directory
         new_directory_path.mkdir()
         grid.generate_save_files()
         background_grid.generate_save_files()
         
-        player = Player(grid, self.screen, world_spawn_x, world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height=self.world_generation_settings.health_bar_height, images=self.images, world_details=world_details)
+        player = Player(grid, self.screen, world_details.world_spawn_x, world_details.world_spawn_y, self.block_width, x_size=22, y_size=40, inventory_bar_height=self.world_generation_settings.inventory_height, health_bar_height=self.world_generation_settings.health_bar_height, images=self.images, world_details=world_details)
 
-        save_start_percent = 55
+        save_start_percent = 80
         save_end_percent = 99
+        self.draw_loading_world_screen(save_start_percent, "Saving World Details")
         for percent, save_message in save_game(new_directory_path, player, inventory, grid, background_grid, world_details, save_start_percent, save_end_percent):
             self.draw_loading_world_screen(percent, save_message)
 

@@ -1710,9 +1710,10 @@ class Col_Recipe_Cave(Col_Structures):
             chest_y = self.depth + 4
             self.set_to_chunk(x, chest_y, Spruce_Chest)
             chest_block = self.chunk.get(x, chest_y)
-            for chest_slot_num in range(chest_block.chest_slots_count):
-                chest_loot_random_factor = self.get_random_float(f'{self.struct_seed}_{chest_slot_num}')
-                chest_block.stored_inventory_items.append(self.chest_loot.get_slot(chest_loot_random_factor))
+            if chest_block is not None:
+                for chest_slot_num in range(chest_block.chest_slots_count):
+                    chest_loot_random_factor = self.get_random_float(f'{self.struct_seed}_{chest_slot_num}')
+                    chest_block.stored_inventory_items.append(self.chest_loot.get_slot(chest_loot_random_factor))
 
     def set_bg_col(self, col_num, fg_ground_y, biome):
         x = col_num + self.start_x

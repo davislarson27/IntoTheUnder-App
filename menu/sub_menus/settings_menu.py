@@ -56,8 +56,8 @@ class Settings_Menu:
 
         # selector options
         self.chunk_options     = ["0", "1", "2", "3", "4", "5"]
-        self.world_size_options = ["Small", "Medium", "Large"]
-        self.world_size_to_value = {"Small": 0, "Medium": 1, "Large": 2}
+        self.world_size_options = ["Mini", "Limited", "Infinite"]
+        self.world_size_to_value = {"Mini": 0, "Limited": 1, "Infinite": 2}
 
         chunk_val = self.settings_obj.physics_chunks_beyond_screen
         self.selected_chunks = chunk_val if 0 <= chunk_val <= 5 else 2

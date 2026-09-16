@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import random
 
 class World_Details():
-    def __init__(self, world_name, version, creation_date, last_modified_date, is_corrupted = False, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True, grid_width=None, world_height=None, block_width=None, ground_level=13):
+    def __init__(self, world_name, version, creation_date, last_modified_date, is_corrupted = False, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True, grid_width=None, world_height=None, block_width=None, ground_level=13, max_chunks_right=None, max_chunks_left=None):
         self.world_name = world_name
         self.version = version
         self.creation_date = creation_date or self.get_cur_timestamp()
@@ -19,6 +19,9 @@ class World_Details():
         self.world_height = world_height
         self.block_width = block_width
         self.ground_level = ground_level
+        # furthest chunk id explored in each direction, relative to spawn
+        self.max_chunks_right = max_chunks_right
+        self.max_chunks_left = max_chunks_left
 
     def to_dict(self, update_last_modified_date=True):
         cur_dict = {
@@ -34,7 +37,9 @@ class World_Details():
             "grid_width": self.grid_width,
             "world_height": self.world_height,
             "block_width": self.block_width,
-            "ground_level": self.ground_level
+            "ground_level": self.ground_level,
+            "max_chunks_right": self.max_chunks_right,
+            "max_chunks_left": self.max_chunks_left
         }
         if update_last_modified_date:
             cur_dict["last_modified_date"] = self.get_cur_timestamp().isoformat()
@@ -58,9 +63,9 @@ class World_Details():
         return datetime.min.replace(tzinfo=timezone.utc)
     
     @staticmethod
-    def create_new_world(world_name, game_version, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True, grid_width=None, world_height=None, block_width=None, ground_level=13):
+    def create_new_world(world_name, game_version, world_spawn_x=0, world_spawn_y=0, world_seed=0, keep_inventory=True, survival_mode=True, recipe_progression=True, grid_width=None, world_height=None, block_width=None, ground_level=13, max_chunks_right=None, max_chunks_left=None):
         cur_time = World_Details.get_cur_timestamp()
-        return World_Details(world_name, game_version, cur_time, cur_time, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression, grid_width=grid_width, world_height=world_height, block_width=block_width, ground_level=ground_level)
+        return World_Details(world_name, game_version, cur_time, cur_time, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression, grid_width=grid_width, world_height=world_height, block_width=block_width, ground_level=ground_level, max_chunks_right=max_chunks_right, max_chunks_left=max_chunks_left)
         
     @staticmethod
     def fill_from_dict(world_details_dict):
@@ -100,6 +105,8 @@ class World_Details():
         world_height = world_details_dict.get("world_height")
         block_width = world_details_dict.get("block_width")
         ground_level = world_details_dict.get("ground_level", 13)
+        max_chunks_right = world_details_dict.get("max_chunks_right")
+        max_chunks_left = world_details_dict.get("max_chunks_left")
 
-        return World_Details(world_name, version, creation_date, last_modified_date, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression, grid_width=grid_width, world_height=world_height, block_width=block_width, ground_level=ground_level)
+        return World_Details(world_name, version, creation_date, last_modified_date, world_spawn_x=world_spawn_x, world_spawn_y=world_spawn_y, world_seed=world_seed, keep_inventory=keep_inventory, survival_mode=survival_mode, recipe_progression=recipe_progression, grid_width=grid_width, world_height=world_height, block_width=block_width, ground_level=ground_level, max_chunks_right=max_chunks_right, max_chunks_left=max_chunks_left)
     

@@ -6,13 +6,10 @@ from world.region import Region
 from .biomes import *
 from world.world_creation.structures.structures import *
 from .ore import Ore
-from .lake_pre_fill import LakePreFill
 
 class Chunk_Generator:
     def __init__(self, screen, chunk_width, world_details, directory=''):
         self.world_details = world_details
-        # self.foreground_grid = Grid(world_details.grid_width, world_details.world_height, world_details.block_width, screen, f'{directory}/foreground_grid')
-        # self.background_grid = Grid(world_details.grid_width, world_details.world_height, world_details.block_width, screen, f'{directory}/background_grid')
 
         self.chunk_width = chunk_width
         grid_height = world_details.world_height
@@ -535,7 +532,7 @@ class Chunk_Generator:
 
             # generate structures
             _generate_structures(global_x_start, fg_chunk, region.get_structure)
-            _generate_structures(global_x_start, fg_chunk, region.get_underground_structure)
+            if not grid.is_menu_grid: _generate_structures(global_x_start, fg_chunk, region.get_underground_structure)
 
         return fg_chunk
 
@@ -620,7 +617,7 @@ class Chunk_Generator:
         # generate structures
         _generate_structures(global_x_start, fg_chunk)
         _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_bg_structure_for_fg)
-        _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_underground_bg_structure_for_fg)
+        if not grid.is_menu_grid: _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_underground_bg_structure_for_fg)
 
         return fg_chunk
 
