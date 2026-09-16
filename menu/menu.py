@@ -364,7 +364,7 @@ class Menu:
 
         menu_world_seed = self.getRandomSeed()
         menu_world_settings.reset_ground_level(13)
-        world_details = World_Details('menu world', 'non-saved data', None, None, world_height=self.height_blocks, block_width=self.block_width, world_seed=menu_world_seed)
+        world_details = World_Details('menu world', 'non-saved data', None, None, world_height=self.height_blocks+1, block_width=self.block_width, world_seed=menu_world_seed)
         self.background_grid = Grid(0, world_details.world_height, self.block_width, self.screen, None, True, world_details=world_details, is_menu_grid=True)
         self.background_grid.manage_chunks(0)
 
