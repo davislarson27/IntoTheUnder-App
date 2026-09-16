@@ -1080,11 +1080,23 @@ class Col_Structures:
         return int(rand_flt * int_range) + min
 
     def set_fg_col(self, col_num, ground_y, biome):
+        self._set_fg_col(col_num, ground_y, biome, self.set_to_chunk)
+
+    def set_fg_col_to_grid_directly(self, col_num, ground_y, biome):
+        self._set_fg_col(col_num, ground_y, biome, self.set_to_grid)
+
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         return
 
     def set_bg_col(self, col_num, fg_ground_y, biome):
+        self._set_bg_col(col_num, fg_ground_y, biome, self.set_to_chunk)
+
+    def set_bg_col_to_grid_directly(self, col_num, fg_ground_y, biome):
+        self._set_bg_col(col_num, fg_ground_y, biome, self.set_to_grid)
+
+    def _set_bg_col(self, col_num, fg_ground_y, biome, set_to_func):
         return
-    
+
 
 class Col_Cactus_Structure(Col_Structures):
     width = 1
@@ -1107,10 +1119,10 @@ class Col_Cactus_Structure(Col_Structures):
         else:
             self.cactus_height = 2
 
-    def set_fg_col(self, col_num, ground_y, biome):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         if col_num == 0:
             for y in range(ground_y-self.cactus_height, ground_y):
-                self.chunk.set(self.start_x, y, Cactus, x_offset=self.x_offset, grid=self.grid)
+                set_to_func(self.start_x, y, Cactus)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1133,9 +1145,9 @@ class Col_Snow_Man_Structure(Col_Structures):
 
         self.height = 2
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.set_to_chunk(self.start_x, ground_y-1, Snow_Block)
-        self.set_to_chunk(self.start_x, ground_y-2, Snow_Man_Head)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, Snow_Block)
+        set_to_func(self.start_x, ground_y-2, Snow_Man_Head)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1174,12 +1186,6 @@ class Col_Tree(Col_Structures):
         value = int(hashlib.sha256(f"{self.struct_seed}_{x}_{y}".encode()).hexdigest(), 16)
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
-
-    def set_fg_col(self, col_num, ground_y, biome):
-        self._set_fg_col(col_num, ground_y, biome, self.set_to_chunk)
-
-    def set_fg_col_to_grid_directly(self, col_num, ground_y, biome):
-        self._set_fg_col(col_num, ground_y, biome, self.set_to_grid)
 
     def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         x = self.start_x + col_num
@@ -1233,26 +1239,26 @@ class Col_Snow_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def set_fg_col(self, col_num, ground_y, biome):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         # add leaves
         x = self.start_x + col_num
         if col_num == 0 or col_num == self.width - 1:
             for y in range(self.leaves_start_elev-1, self.leaves_start_elev+1):
                 ticks = self.get_ticks(x, y)
-                self.set_to_chunk(x, y, Snow_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+                set_to_func(x, y, Snow_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
             y = self.leaves_start_elev-2
             ticks = self.get_ticks(x, y)
-            self.set_to_chunk(x, y, Snow_Leaves_Top, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+            set_to_func(x, y, Snow_Leaves_Top, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
         elif col_num == self.distance_to_stump_x:
             for y in range(self.leaves_start_elev-1, self.leaves_start_elev+1):
                 ticks = self.get_ticks(x, ground_y)
-                self.set_to_chunk(x, y, Snow_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+                set_to_func(x, y, Snow_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
             y = self.leaves_start_elev-2
             ticks = self.get_ticks(x, y)
-            self.set_to_chunk(x, y, Snow_Leaves_Top, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+            set_to_func(x, y, Snow_Leaves_Top, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
 
             for y in range(self.start_y-self.tree_height, ground_y):
-                self.set_to_chunk(x, y, Log)
+                set_to_func(x, y, Log)
 
 
     @classmethod
@@ -1293,33 +1299,33 @@ class Col_Spruce_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def set_fg_col(self, col_num, ground_y, biome):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         # add leaves
         if col_num == 0 or col_num == self.width - 1:
             x = self.start_x + col_num
 
             y = self.leaves_start_elev-2
             ticks = self.get_ticks(x, y)
-            self.set_to_chunk(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
-            
+            set_to_func(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+
             y = self.leaves_start_elev
             ticks = self.get_ticks(x, y)
-            self.set_to_chunk(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+            set_to_func(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
 
         elif col_num == self.distance_to_stump_x:
             x = self.start_x + col_num
             for y in range(self.leaves_start_elev-3, self.leaves_start_elev-1):
                 ticks = self.get_ticks(x, ground_y)
-                self.set_to_chunk(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
-            
+                set_to_func(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+
             for y in range(self.start_y-self.tree_height, ground_y):
-                self.set_to_chunk(x, y, Spruce_Log)
+                set_to_func(x, y, Spruce_Log)
 
             y = self.leaves_start_elev
             ticks = self.get_ticks(x, y)
-            self.set_to_chunk(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
-            
-            self.set_to_chunk(x, self.leaves_start_elev-1, Spruce_Log, pass_through=True) # adding the extra log
+            set_to_func(x, y, Spruce_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+
+            set_to_func(x, self.leaves_start_elev-1, Spruce_Log, pass_through=True) # adding the extra log
 
 
     @classmethod
@@ -1359,24 +1365,24 @@ class Col_Mahogany_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def set_fg_col(self, col_num, ground_y, biome):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         # add leaves
         if col_num == 0 or col_num == self.width - 1:
             x = self.start_x + col_num
             y = self.leaves_start_elev
             ticks = self.get_ticks(x, ground_y)
-            self.set_to_chunk(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+            set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
         elif col_num > 0 and col_num - 1 < self.width:
             x = self.start_x + col_num
             for y in range(self.leaves_start_elev-1, self.leaves_start_elev+1):
                 ticks = self.get_ticks(x, ground_y)
-                self.set_to_chunk(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
-            
+                set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+
         # add stump
         if col_num == self.distance_to_stump_x:
             x = self.start_x + col_num
             for y in range(self.start_y-self.tree_height, ground_y):
-                self.set_to_chunk(x, y, Mahogany_Log)
+                set_to_func(x, y, Mahogany_Log)
 
         # add side leaves
         if col_num == 1 or col_num == self.width - 2:
@@ -1386,11 +1392,11 @@ class Col_Mahogany_Tree(Col_Structures):
             if side_leaf_odds < 0.35: # put left
                 if col_num == 1:
                     ticks = self.get_ticks(x, y)
-                    self.set_to_chunk(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+                    set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
             if side_leaf_odds > 0.65: # put right
                 if col_num == self.width - 2:
                     ticks = self.get_ticks(x, y)
-                    self.set_to_chunk(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+                    set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
 
 
     @classmethod
@@ -1412,8 +1418,8 @@ class Col_Puddle(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.chunk.set(self.start_x, ground_y, Water, x_offset=self.x_offset, grid=self.grid)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y, Water)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1434,8 +1440,8 @@ class Col_Wild_Flower_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.chunk.set(self.start_x, ground_y-1, Wild_Flower, x_offset=self.x_offset, grid=self.grid)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, Wild_Flower)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1456,8 +1462,8 @@ class Col_White_Lily_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.chunk.set(self.start_x, ground_y-1, White_Lily, x_offset=self.x_offset, grid=self.grid)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, White_Lily)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1478,8 +1484,8 @@ class Col_Forget_Me_Not_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.chunk.set(self.start_x, ground_y-1, Forget_Me_Not, x_offset=self.x_offset, grid=self.grid)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, Forget_Me_Not)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1500,8 +1506,8 @@ class Col_Rose_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.chunk.set(self.start_x, ground_y-1, Rose, x_offset=self.x_offset, grid=self.grid)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, Rose)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1522,8 +1528,8 @@ class Col_Watermellon_Patch(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.chunk.set(self.start_x, ground_y-1, Watermellon, x_offset=self.x_offset, grid=self.grid)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, Watermellon)
 
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1544,8 +1550,8 @@ class Col_Small_Bush(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_fg_col(self, col_num, ground_y, biome):
-        self.set_to_chunk(self.start_x, ground_y-1, Leaves, pass_through=True)
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        set_to_func(self.start_x, ground_y-1, Leaves, pass_through=True)
     
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
@@ -1576,83 +1582,83 @@ class Col_Recipe_Burrow(Col_Structures):
             self.is_reversed = True
             self.use_start_y = end_y
 
-    def set_fg_col(self, col_num, ground_y, biome):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         x = self.start_x + col_num
         adjusted_col_num = self.get_adjusted_col_num(col_num)
         if adjusted_col_num >= 0 and adjusted_col_num < 2: # add the floor & ceiling
-            self.set_to_chunk(x, self.use_start_y-self.height, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height, Wood_Planks)
             for y in range(self.use_start_y-self.height+1, self.use_start_y):
-                self.set_to_chunk(x, y, None)
-            self.set_to_chunk(x, self.use_start_y, Wood_Planks)
+                set_to_func(x, y, None)
+            set_to_func(x, self.use_start_y, Wood_Planks)
         elif adjusted_col_num == 2:
-            self.set_to_chunk(x, self.use_start_y-self.height, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height, Wood_Planks)
             for y in range(self.use_start_y-self.height+1, self.use_start_y):
-                self.set_to_chunk(x, y, None)
-            self.set_to_chunk(x, self.use_start_y, Wood_Planks)
-            self.set_to_chunk(x, self.use_start_y+1, Wood_Planks)
+                set_to_func(x, y, None)
+            set_to_func(x, self.use_start_y, Wood_Planks)
+            set_to_func(x, self.use_start_y+1, Wood_Planks)
         elif adjusted_col_num == 3:
-            self.set_to_chunk(x, self.use_start_y-self.height, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height, Wood_Planks)
             for y in range(self.use_start_y-self.height+1, self.use_start_y+1):
-                self.set_to_chunk(x, y, None)
-            self.set_to_chunk(x, self.use_start_y+1, Wood_Planks)
-            self.set_to_chunk(x, self.use_start_y+2, Wood_Planks)
+                set_to_func(x, y, None)
+            set_to_func(x, self.use_start_y+1, Wood_Planks)
+            set_to_func(x, self.use_start_y+2, Wood_Planks)
         elif adjusted_col_num == 4:
-            self.set_to_chunk(x, self.use_start_y-self.height, Wood_Planks)
-            self.set_to_chunk(x, self.use_start_y-self.height+1, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height+1, Wood_Planks)
             for y in range(self.use_start_y-self.height+2, self.use_start_y+2):
-                self.set_to_chunk(x, y, None)
-            self.set_to_chunk(x, self.use_start_y+2, Wood_Planks)
+                set_to_func(x, y, None)
+            set_to_func(x, self.use_start_y+2, Wood_Planks)
         elif adjusted_col_num == 5:
-            self.set_to_chunk(x, self.use_start_y-self.height+1, Wood_Planks)
-            self.set_to_chunk(x, self.use_start_y-self.height+2, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height+1, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height+2, Wood_Planks)
             for y in range(self.use_start_y-self.height+3, self.use_start_y+2):
-                self.set_to_chunk(x, y, None)
-            self.set_to_chunk(x, self.use_start_y+2, Wood_Planks)
+                set_to_func(x, y, None)
+            set_to_func(x, self.use_start_y+2, Wood_Planks)
         elif adjusted_col_num == 6 or adjusted_col_num == 7:
-            self.set_to_chunk(x, self.use_start_y-self.height+2, Wood_Planks)
+            set_to_func(x, self.use_start_y-self.height+2, Wood_Planks)
             for y in range(self.use_start_y-self.height+3, self.use_start_y+2):
-                self.set_to_chunk(x, y, None)
-            self.set_to_chunk(x, self.use_start_y+2, Wood_Planks)
+                set_to_func(x, y, None)
+            set_to_func(x, self.use_start_y+2, Wood_Planks)
         elif adjusted_col_num == 8:
             for y in range(self.use_start_y-self.height+2, self.use_start_y+3):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
 
         if adjusted_col_num == 0: # add the doors
-            self.set_to_chunk(x, self.use_start_y-self.height+1, Door_Top)
-            self.set_to_chunk(x, self.use_start_y-1, Door_Bottom)
+            set_to_func(x, self.use_start_y-self.height+1, Door_Top)
+            set_to_func(x, self.use_start_y-1, Door_Bottom)
 
         if adjusted_col_num == 6:
             biome_name = biome.__name__
             recipeList = User_Crafting_Recipes_List.getBiomeWeightedFindableRecipesList(biome_name)
             index = int(self.get_random_float(f'{self.global_x}_recipe') * len(recipeList)) % len(recipeList)
             randomRecipe = recipeList[index]
-            self.set_to_chunk(x, self.use_start_y+1, Recipe_Frame, stored_inventory_items=[randomRecipe])
+            set_to_func(x, self.use_start_y+1, Recipe_Frame, stored_inventory_items=[randomRecipe])
 
-    def set_bg_col(self, col_num, fg_ground_y, biome):
+    def _set_bg_col(self, col_num, fg_ground_y, biome, set_to_func):
         adjusted_col_num = col_num
         x = self.start_x + col_num
         adjusted_col_num = self.get_adjusted_col_num(col_num)
         if adjusted_col_num >= 0 and adjusted_col_num < 2: # add the floor & ceiling
             for y in range(self.use_start_y-self.height, self.use_start_y+1):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
         elif adjusted_col_num == 2:
             for y in range(self.use_start_y-self.height, self.use_start_y+2):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
         elif adjusted_col_num == 3:
             for y in range(self.use_start_y-self.height, self.use_start_y+3):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
         elif adjusted_col_num == 4:
             for y in range(self.use_start_y-self.height+1, self.use_start_y+3):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
         elif adjusted_col_num == 5:
             for y in range(self.use_start_y-self.height+2, self.use_start_y+3):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
         elif adjusted_col_num == 6 or adjusted_col_num == 7:
             for y in range(self.use_start_y-self.height+2, self.use_start_y+3):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
         elif adjusted_col_num == 8:
             for y in range(self.use_start_y-self.height+2, self.use_start_y+3):
-                self.set_to_chunk(x, y, Wood_Planks)
+                set_to_func(x, y, Wood_Planks)
 
     def get_adjusted_col_num(self, col_num):
         if self.is_reversed:
@@ -1696,36 +1702,36 @@ class Col_Recipe_Cave(Col_Structures):
             Loot_Odds(Diamond, 2, 0.00045),
         ])
 
-    def set_fg_col(self, col_num, ground_y, biome):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
         x = col_num + self.start_x
         if col_num == 0 or col_num == self.width - 1: # left or right side
             for y in range(self.depth, self.depth+self.height):
-                self.set_to_chunk(x, y, Stone_Bricks)
+                set_to_func(x, y, Stone_Bricks)
         else:
-            self.set_to_chunk(x, self.depth, Stone_Bricks)
-            self.set_to_chunk(x, self.depth+self.height-1, Stone_Bricks)
+            set_to_func(x, self.depth, Stone_Bricks)
+            set_to_func(x, self.depth+self.height-1, Stone_Bricks)
             for y in range(self.depth+1, self.depth+self.height-1):
-                self.set_to_chunk(x, y, None)
+                set_to_func(x, y, None)
 
         if col_num == 2:
             recipeFrame_y = self.depth + 4
             recipeList = User_Crafting_Recipes_List.getBiomeWeightedFindableRecipesList(biome.__name__)
             randomRecipe = recipeList[int(self.struct_seed * len(recipeList)) % len(recipeList)]
-            self.set_to_chunk(x, recipeFrame_y, Recipe_Frame, stored_inventory_items=[randomRecipe])
+            set_to_func(x, recipeFrame_y, Recipe_Frame, stored_inventory_items=[randomRecipe])
 
         if col_num == 3:
             chest_y = self.depth + 4
-            self.set_to_chunk(x, chest_y, Spruce_Chest)
+            set_to_func(x, chest_y, Spruce_Chest)
             chest_block = self.chunk.get(x, chest_y)
             if chest_block is not None:
                 for chest_slot_num in range(chest_block.chest_slots_count):
                     chest_loot_random_factor = self.get_random_float(f'{self.struct_seed}_{chest_slot_num}')
                     chest_block.stored_inventory_items.append(self.chest_loot.get_slot(chest_loot_random_factor))
 
-    def set_bg_col(self, col_num, fg_ground_y, biome):
+    def _set_bg_col(self, col_num, fg_ground_y, biome, set_to_func):
         x = col_num + self.start_x
         for y in range(self.depth, self.depth+self.height):
-            self.set_to_chunk(x, y, Spruce_Planks)
+            set_to_func(x, y, Spruce_Planks)
     
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
