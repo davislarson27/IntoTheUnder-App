@@ -810,9 +810,7 @@ class Tree_Sappling(Block):
         (-1, 0): True
     }
     tick_threshold = 2
-    # grow_tick_threshold = 4000
-    grow_tick_threshold = 40
-
+    grow_tick_threshold = 4000
 
     can_grow_on = [Grass, Dirt, Packed_Dirt]
 
@@ -927,8 +925,7 @@ class Spruce_Sappling(Block):
         (-1, 0): True
     }
     tick_threshold = 2
-    # grow_tick_threshold = 4000
-    grow_tick_threshold = 40
+    grow_tick_threshold = 4000
 
     can_grow_on = [Grass, Dirt, Packed_Dirt]
 
