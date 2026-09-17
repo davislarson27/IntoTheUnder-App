@@ -184,7 +184,8 @@ class Rain_Forest(Biome):
 
     fg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Col_Recipe_Burrow, 0.0002),
-        Structure_Identifier(Col_Mahogany_Tree, 0.12),
+        Structure_Identifier(Col_Mahogany_Tree, 0.096),
+        Structure_Identifier(Col_Thick_Mahogany_Tree, 0.024),
         Structure_Identifier(Col_Tree, 0.02),
         Structure_Identifier(Col_Small_Bush, 0.02),
         Structure_Identifier(Col_Puddle, 0.01),
@@ -195,7 +196,8 @@ class Rain_Forest(Biome):
         Structure_Identifier(Col_Rose_Struct, 0.0042),
     ]
     bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
-        Structure_Identifier(Col_Mahogany_Tree, 0.17),
+        Structure_Identifier(Col_Mahogany_Tree, 0.136),
+        Structure_Identifier(Col_Thick_Mahogany_Tree, 0.024),
         Structure_Identifier(Col_Tree, 0.01),
     ]
 

@@ -606,6 +606,81 @@ class Col_Mahogany_Tree(Col_Structures):
         return cls.width
 
 
+class Col_Thick_Mahogany_Tree(Col_Structures):
+    width = 6
+    distance_to_stump_x = 2
+    def __init__(self, structure_odds, start_x, start_y, end_y, grid, chunk, x_offset):
+        self.start_x = start_x
+        self.global_start_x = x_offset + start_x
+        self.start_y = start_y
+        self.end_y = end_y
+        self.struct_seed = structure_odds
+        self.grid = grid
+        self.chunk = chunk
+        self.x_offset = x_offset
+
+        tree_height_chance = self.get_random_float(f'{self.global_start_x}_mahogany_tree_height')
+        if tree_height_chance < 0.15: self.tree_height = 3
+        elif tree_height_chance < 0.35: self.tree_height = 5
+        else: self.tree_height = 4
+
+        self.leaves_start_elev = start_y - self.tree_height - 1
+
+        self.anchor_x = self.start_x + self.distance_to_stump_x
+        self.anchor_y = self.start_y - 1
+
+    def get_ticks(self, x, y):
+        value = int(hashlib.sha256(f"{self.struct_seed}_{x}_{y}".encode()).hexdigest(), 16)
+        normalized = value / (2**256)
+        return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
+
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+        # add leaves
+        if col_num == 0 or col_num == self.width - 1:
+            x = self.start_x + col_num
+            y = self.leaves_start_elev
+            ticks = self.get_ticks(x, ground_y)
+            set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+        elif col_num > 0 and col_num - 1 < self.width:
+            x = self.start_x + col_num
+            for y in range(self.leaves_start_elev-1, self.leaves_start_elev+1):
+                ticks = self.get_ticks(x, ground_y)
+                set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+
+        # add stump
+        if col_num == self.distance_to_stump_x:
+            x = self.start_x + col_num
+            for y in range(self.start_y-self.tree_height, ground_y):
+                set_to_func(x, y, Mahogany_Log)
+        if col_num == self.distance_to_stump_x + 1:
+            x = self.start_x + col_num
+            for y in range(self.start_y-self.tree_height, ground_y):
+                set_to_func(x, y, Mahogany_Log)
+
+        # add side leaves
+        if col_num == 1 or col_num == self.width - 2:
+            side_leaf_odds = self.get_random_float(f'{self.global_start_x}_mahogany_leaves_side_chance')
+            y = self.leaves_start_elev + 2
+            x = self.start_x + col_num
+            if side_leaf_odds < 0.35: # put left
+                if col_num == 1:
+                    ticks = self.get_ticks(x, y)
+                    set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+            if side_leaf_odds > 0.65: # put right
+                if col_num == self.width - 2:
+                    ticks = self.get_ticks(x, y)
+                    set_to_func(x, y, Mahogany_Leaves, pass_through=True, anchor_x=self.anchor_x, anchor_y=self.anchor_y, tick_threshold=ticks)
+
+
+    @classmethod
+    def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
+        return start_x + cls.distance_to_stump_x
+    
+    @classmethod
+    def get_width(cls, structure_odds):
+        return cls.width
+
+
 class Col_Puddle(Col_Structures):
     width = 1
     def __init__(self, structure_odds, start_x, start_y, end_y, grid, chunk, x_offset):
