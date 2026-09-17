@@ -6,6 +6,8 @@ from world.region import Region
 from .biomes import *
 from world.world_creation.structures.structures import *
 from .ore import Ore
+from world.world_creation.structures.structure_region_container import Structure_Region_Container
+
 
 class Chunk_Generator:
     def __init__(self, screen, chunk_width, world_details, directory=''):

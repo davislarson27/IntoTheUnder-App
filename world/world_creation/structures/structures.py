@@ -1,17 +1,8 @@
 import hashlib
 
 from world.blocks.block_export import *
-from .structure_instruction import Structure_Instruction, Var_Structure_Instruction
 from play.inventory.submenus.crafting_recipes import User_Crafting_Recipes_List
 from .chest_loot import Chest_Loot, Loot_Odds
-
-
-# ------------------------------------ start column/chunk based structures ------------------------------------ #
-
-class Structure_Region_Container:
-    def __init__(self, structure_type, col_num):
-        self.structure_type = structure_type
-        self.col_num = col_num
 
 
 class Col_Structures:
