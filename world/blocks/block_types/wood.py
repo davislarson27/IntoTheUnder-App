@@ -1076,17 +1076,19 @@ class Mahogany_Sappling(Block):
         block_to_the_right = self.grid.get(self.x+1, self.y)
         block_to_the_left = self.grid.get(self.x-1, self.y)
         if isinstance(block_to_the_right, Mahogany_Sappling): # gets the block to the direct right
-            from world.world_creation.structures.structures import Mahogany_Tree_Double as Mahogany_Tree
+            from world.world_creation.structures.structures import Col_Thick_Mahogany_Tree as Mahogany_Tree
             offset = 2
         elif isinstance(block_to_the_left, Mahogany_Sappling):
-            from world.world_creation.structures.structures import Mahogany_Tree_Double as Mahogany_Tree
+            from world.world_creation.structures.structures import Col_Thick_Mahogany_Tree as Mahogany_Tree
             offset = 3
         else:
-            from world.world_creation.structures.structures import Mahogany_Tree as Mahogany_Tree
+            from world.world_creation.structures.structures import Col_Mahogany_Tree as Mahogany_Tree
             offset = 2
-        tree_instructions, tree_var_instructions = Mahogany_Tree.getStructureInstructions(self.x-offset, self.y+1, self.grid, random.random())
-        for instruct in tree_instructions:
-            instruct.setBlock(self.grid)
+
+        struct_odds = random.random()
+        tree = Mahogany_Tree(struct_odds, self.x-offset, self.y+1, self.y+1, self.grid, self.grid, 0)
+        for col_num in range(tree.get_width(struct_odds)):
+            tree.set_fg_col_to_grid_directly(col_num, self.y+1, None)
 
     def kill_tree(self):
         self.grid.set(self.x, self.y, Dead_Sappling)
