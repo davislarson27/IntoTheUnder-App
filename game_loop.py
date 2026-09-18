@@ -21,7 +21,7 @@ import components.settings as Settings_Manager
 from components.game_file_reading import *
 from components.input import Input
 from world.world_creation.world_generation_settings import World_Generation_Settings
-from components.blit_letterboxed import blit_letterboxed
+from components.blit_letterboxed import blit_letterboxed, get_scale, blit_screen_to_window
 from components.crash_menu import Crash_Menu
 from components.game_file_reading import get_user_worlds_list
 from components.launch_load_screen import Launch_Load_Screen
@@ -157,8 +157,11 @@ def main_game_loop(resource_path, user_data_dir):
                 # prep reset force quit var
                 force_quit_crash = last_frame_failed and not isinstance(run_class, Crash_Menu)
 
-                # get scale stuff
-                scale, offx, offy = blit_letterboxed(screen, window, screen_size_cutoff_bar_color, run_class.get_scale_type())
+                # get scale for bliting the screen to the window
+                scale, offx, offy = get_scale(screen, window, run_class.get_scale_type())
+
+                # # get scale stuff
+                # scale, offx, offy = blit_letterboxed(screen, window, screen_size_cutoff_bar_color, run_class.get_scale_type())
 
                 # get inputs
                 input_object.take_input(scale, offx, offy)
@@ -168,8 +171,15 @@ def main_game_loop(resource_path, user_data_dir):
                     run_class.on_quit()
                     break
 
-                # execute run function, includes drawing
-                run_class = run_class.run(input_object, clock)
+                # execute run function, includes drawing to the screen
+                next_run_class = run_class.run(input_object, clock)
+
+                # render to the window
+                blit_screen_to_window(screen, window, screen_size_cutoff_bar_color, scale, offx, offy)
+                run_class.straight_to_window_rendering()
+
+                # set the next run class
+                run_class = next_run_class
 
                 # update screen
                 pygame.display.flip()

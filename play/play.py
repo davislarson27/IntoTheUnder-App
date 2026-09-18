@@ -31,6 +31,8 @@ class Play:
         self.window = window
         self.BLOCK_WIDTH = BLOCK_WIDTH
 
+        self.last_input = None
+
         # set up crash menu
         self.crash_menu = Crash_Menu(screen, menu, self, button_message="Save and Return to Menu")
 
@@ -77,6 +79,8 @@ class Play:
         self.last_window_width = 0
 
         self.star_bg = Star_Background(screen)
+
+        self.manage_window_overlay_rerenders()
 
     # ------------------------------ helper functions ------------------------------ #
 
@@ -435,9 +439,20 @@ class Play:
         else:
             return min
     
+    def straight_to_window_rendering(self):
+        if self.sub_state is None:
+            self.manage_window_overlay_rerenders()
+            self.bg_mining_icon.draw(self.last_input)
+            self.player_health_bar.draw(self.window)
+            self.debug_overlay.draw()
+
+            self.inventory.run_passive(self.last_input) # this is resetting the value of self.inventory.show_full_item_mamagement BEFORE the loop runs with that! it forces exit incorrectly. fix!
+
     def run(self, input, clock):
         # initialize return_class
         return_class = self
+
+        self.last_input = input
 
         if self.sub_state is not None:
             # check for if a sub_state wants the the play class to quit and return to the menu
@@ -509,17 +524,7 @@ class Play:
             #     entity.draw(self.camera_x, self.cur_camera_y)
 
             # now draw the rest of the queue
-            main_grid_queue.draw(self.camera_x, self.cur_camera_y)
-
-            self.manage_window_overlay_rerenders()
-
-            self.bg_mining_icon.draw(input)
-            self.player_health_bar.draw(self.window)
-
-
-            # ------------- run passive inventory ------------- #
-            
-            self.inventory.run_passive(input) # this is resetting the value of self.inventory.show_full_item_mamagement BEFORE the loop runs with that! it forces exit incorrectly. fix!
+            main_grid_queue.draw(self.camera_x, self.cur_camera_y)            
 
 
             # ------------- draw inventory ------------- #
@@ -529,7 +534,6 @@ class Play:
             # ------------- run & draw the debug overlay ------------- #
 
             self.debug_overlay.run(input, clock)
-            self.debug_overlay.draw()
 
             # ------------- check entity chunks --------------#
             # self.grid.check_entity_chunks(entities)

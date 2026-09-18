@@ -182,5 +182,8 @@ class Credits:
     def get_scale_type(self):
         return self.scale_type
 
+    def straight_to_window_rendering(self):
+        return
+
     def catch_exception(self):
         return self.menu

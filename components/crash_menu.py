@@ -122,7 +122,10 @@ class Crash_Menu:
     
     def get_scale_type(self):
         return min
-    
+
+    def straight_to_window_rendering(self):
+        return
+
     def run(self, input, clock):
         returnClass = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
         self.draw(input.virtual_mouse_x, input.virtual_mouse_y)

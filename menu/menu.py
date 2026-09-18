@@ -1530,6 +1530,9 @@ class Menu:
     def get_scale_type(self):
         return self.scale_type
 
+    def straight_to_window_rendering(self):
+        return
+    
     def run(self, input, clock):
         """runs the menu and returns function of class that will run next (normally itself)"""
 

@@ -222,3 +222,6 @@ class Settings_Menu:
     def get_scale_type(self):
         return self.scale_type
 
+    def straight_to_window_rendering(self):
+        return
+
