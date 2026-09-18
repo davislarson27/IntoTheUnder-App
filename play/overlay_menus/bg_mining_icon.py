@@ -1,14 +1,19 @@
 import pygame
 
 from world.blocks.block_export import *
-from .bg_overlay import BG_Overlay
+from ..bg_overlay import BG_Overlay
 
 class Bg_Mining_Icon:
-    def __init__(self, screen, x, y, icon_width, icon_height):
+    def __init__(self, window, margin, row_width):
+        self.window = window
+        self.rerender(margin, row_width)
+    
+    def rerender(self, margin, row_width):
         # region set attributes
-        self.screen = screen
-        self.x = x
-        self.y = y
+        icon_width = int(row_width * 1.1)
+        
+        self.x = self.window.get_width() - icon_width - margin
+        self.y = margin
 
         block_width = (icon_width * 2) // 3
         self.foreground_block_offset_position = icon_width - block_width
@@ -28,7 +33,7 @@ class Bg_Mining_Icon:
 
         # region bg overlays
         half = block_width // 2
-        bg_overlay = BG_Overlay(screen, half, None, None)
+        bg_overlay = BG_Overlay(self.window, half, None, None)
 
         quadrants = [
             # (draw_x, draw_y, exposed_top, exposed_bottom, exposed_left, exposed_right)
@@ -54,8 +59,8 @@ class Bg_Mining_Icon:
 
     def draw(self, input):
         if input.caps_lock:
-            self.screen.blit(self.background_icon_active, (self.x, self.y))
+            self.window.blit(self.background_icon_active, (self.x, self.y))
         else:
-            self.screen.blit(self.background_icon_inactive, (self.x, self.y))
+            self.window.blit(self.background_icon_inactive, (self.x, self.y))
         
-        self.screen.blit(self.foreground_icon, (self.x+self.foreground_block_offset_position, self.y+self.foreground_block_offset_position))
+        self.window.blit(self.foreground_icon, (self.x+self.foreground_block_offset_position, self.y+self.foreground_block_offset_position))

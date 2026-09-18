@@ -16,89 +16,14 @@ class Entity_Health:
         self.is_survival = is_survival
 
         self.tot_columns = 24
-        self.row_width = screen.get_width() // self.tot_columns
-
-        self.margin = 30
-        margin = self.margin
-        icon_width = 15
         self.health_bar_height = 50
-        health_bar_width = self.row_width * 4 + int(icon_width * 1.5)
-        bar_margin_y = int(self.health_bar_height / 4.4)
-
-        self.bar_start_x = margin + health_bar_width // 6
-        self.bar_full_width = health_bar_width - health_bar_width // 6 - health_bar_width // 12
-
-        self.health_icon_x = self.bar_start_x - int(icon_width * 1.5)
-        self.energy_icon_x = self.bar_start_x - int(icon_width * 1.5)
-
-
-        self.bar_height = 8
-        icon_offset_y = (icon_width - self.bar_height) // 2
-
-        self.health_bar_start_y = margin + bar_margin_y
-        self.energy_bar_start_y = self.health_bar_height + margin - bar_margin_y - self.bar_height
-
-        self.main_box = pygame.rect.Rect(
-            margin,
-            margin,
-            health_bar_width,
-            self.health_bar_height
-        )
-
-        self.health_bar_outline = pygame.rect.Rect(
-            self.bar_start_x,
-            self.health_bar_start_y,
-            self.bar_full_width,
-            self.bar_height
-        )
-        self.energy_bar_outline = pygame.rect.Rect(
-            self.bar_start_x,
-            self.energy_bar_start_y,
-            self.bar_full_width,
-            self.bar_height
-        )
-
-        self.health_icon_x = self.bar_start_x - int(icon_width * 1.5)
-        self.health_icon_y = self.health_bar_start_y - icon_offset_y
-
-        self.energy_icon_x = self.bar_start_x - int(icon_width * 1.5)
-        self.energy_icon_y = self.energy_bar_start_y - icon_offset_y
+        self.health_bar_start_y = 0
 
         self.margin_color = (50, 50, 50)
         self.bg_color = (190, 190, 190)
         self.divider_color = (150, 150, 150)
         self.full_health_compartment_color = (185, 68, 68)
         self.full_energy_bar_color = (90, 140, 200)
-
-        # region drawing the cross myself
-
-        def draw_health_icon(surface, color=self.full_health_compartment_color, border_color=(135, 45, 45)):
-            surf_size = 90
-            border = 4
-            padding = border + 10  # shift inward so caps aren't clipped
-            size = surf_size - padding * 2
-            third = size // 3
-
-            x, y = padding, padding
-
-            # Horizontal caps
-            pygame.draw.rect(surface, border_color, (x - border, y + third - border, border, third + border * 2))
-            pygame.draw.rect(surface, border_color, (x + size, y + third - border, border, third + border * 2))
-            # Vertical caps
-            pygame.draw.rect(surface, border_color, (x + third - border, y - border, third + border * 2, border))
-            pygame.draw.rect(surface, border_color, (x + third - border, y + size, third + border * 2, border))
-            # Cross body border
-            pygame.draw.rect(surface, border_color, (x, y + third - border, size, third + border * 2))
-            pygame.draw.rect(surface, border_color, (x + third - border, y, third + border * 2, size))
-            # Fill
-            pygame.draw.rect(surface, color, (x, y + third, size, third))
-            pygame.draw.rect(surface, color, (x + third, y, third, size))
-
-        self.health_icon_surf = pygame.Surface((90, 90), pygame.SRCALPHA)
-        draw_health_icon(self.health_icon_surf)
-        self.health_icon_surf = pygame.transform.smoothscale(self.health_icon_surf, (15, 15))
-
-        # region end
 
     def change_health(self, change_in_health):
         """takes the change in the health and applies it"""
@@ -169,9 +94,94 @@ class Entity_Health:
         else: # nothing is drawn if it's not survival mode
             return 0
         
-    def draw(self):
+    # ------------------------------------------- drawing ------------------------------------------- #
+    def rerender(self, margin, row_width):
 
-        # doesn't draw anything if it is not survival mode
+        self.row_width = row_width
+
+        self.margin = margin
+        icon_width = self.row_width // 3
+        health_bar_width = self.row_width * 4 + int(icon_width * 1.5)
+        self.health_bar_height = health_bar_width // 4
+        bar_margin_y = int(self.health_bar_height / 4.4)
+
+        self.bar_start_x = margin + health_bar_width // 6
+        self.bar_full_width = health_bar_width - health_bar_width // 6 - health_bar_width // 12
+
+        self.health_icon_x = self.bar_start_x - int(icon_width * 1.5)
+        self.energy_icon_x = self.bar_start_x - int(icon_width * 1.5)
+
+
+        self.bar_height = self.health_bar_height // 6
+        icon_offset_y = (icon_width - self.bar_height) // 2
+
+        self.health_bar_start_y = margin + bar_margin_y
+        self.energy_bar_start_y = self.health_bar_height + margin - bar_margin_y - self.bar_height
+
+        self.main_box = pygame.rect.Rect(
+            margin,
+            margin,
+            health_bar_width,
+            self.health_bar_height
+        )
+
+        self.health_bar_outline = pygame.rect.Rect(
+            self.bar_start_x,
+            self.health_bar_start_y,
+            self.bar_full_width,
+            self.bar_height
+        )
+        self.energy_bar_outline = pygame.rect.Rect(
+            self.bar_start_x,
+            self.energy_bar_start_y,
+            self.bar_full_width,
+            self.bar_height
+        )
+
+        self.health_icon_x = self.bar_start_x - int(icon_width * 1.5)
+        self.health_icon_y = self.health_bar_start_y - icon_offset_y
+
+        self.energy_icon_x = self.bar_start_x - int(icon_width * 1.5)
+        self.energy_icon_y = self.energy_bar_start_y - icon_offset_y
+
+        # region drawing the cross myself
+
+        def draw_health_icon(surface, color=self.full_health_compartment_color, border_color=(135, 45, 45)):
+            surf_size = 90
+            border = 4
+            padding = border + 10  # shift inward so caps aren't clipped
+            size = surf_size - padding * 2
+            third = size // 3
+
+            x, y = padding, padding
+
+            # Horizontal caps
+            pygame.draw.rect(surface, border_color, (x - border, y + third - border, border, third + border * 2))
+            pygame.draw.rect(surface, border_color, (x + size, y + third - border, border, third + border * 2))
+            # Vertical caps
+            pygame.draw.rect(surface, border_color, (x + third - border, y - border, third + border * 2, border))
+            pygame.draw.rect(surface, border_color, (x + third - border, y + size, third + border * 2, border))
+            # Cross body border
+            pygame.draw.rect(surface, border_color, (x, y + third - border, size, third + border * 2))
+            pygame.draw.rect(surface, border_color, (x + third - border, y, third + border * 2, size))
+            # Fill
+            pygame.draw.rect(surface, color, (x, y + third, size, third))
+            pygame.draw.rect(surface, color, (x + third, y, third, size))
+
+        self.health_icon_surf = pygame.Surface((90, 90), pygame.SRCALPHA)
+        draw_health_icon(self.health_icon_surf)
+        self.health_icon_surf = pygame.transform.smoothscale(self.health_icon_surf, (icon_width, icon_width))
+
+        # region end
+
+        self.energy_icon_surf = pygame.transform.smoothscale(self.images.energy_icon, (icon_width, icon_width))
+
+    def draw(self, window):
+
+        if window is None:
+            return
+        
+        # doesn't draw anything if it is survival mode is not on
         if not self.is_survival:
             return
         
@@ -180,20 +190,20 @@ class Entity_Health:
         energy_percent = max(min(self.energy / self.max_energy, 1), 0)
 
         pygame.draw.rect( # draw bg
-            self.screen,
+            window,
             self.bg_color,
             self.main_box
         )
 
         # health bar
-        self.screen.blit(self.health_icon_surf, (self.health_icon_x, self.health_icon_y))
+        window.blit(self.health_icon_surf, (self.health_icon_x, self.health_icon_y))
         pygame.draw.rect(
-            self.screen,
+            window,
             self.divider_color,
             self.health_bar_outline
         )
         pygame.draw.rect(
-            self.screen,
+            window,
             self.full_health_compartment_color,
             (
                 self.bar_start_x,
@@ -204,14 +214,14 @@ class Entity_Health:
         )
 
         # draw energy bar
-        self.screen.blit(self.images.energy_icon, (self.energy_icon_x, self.energy_icon_y))
+        window.blit(self.energy_icon_surf, (self.energy_icon_x, self.energy_icon_y))
         pygame.draw.rect( 
-            self.screen,
+            window,
             self.divider_color,
             self.energy_bar_outline
         )
         pygame.draw.rect(
-            self.screen,
+            window,
             self.full_energy_bar_color,
             (
                 self.bar_start_x,

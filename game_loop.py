@@ -101,7 +101,7 @@ def main_game_loop(resource_path, user_data_dir):
     pygame.font.init()
 
     # create the screen
-    background_color = (30,30,30)
+    screen_size_cutoff_bar_color = (0, 0, 0)
     window = pygame.display.set_mode((screen_width_px, screen_height_px), pygame.RESIZABLE, vsync=1)
     screen = pygame.Surface((screen_width_px, screen_height_px))
     pygame.display.set_caption(APP_DISPLAY_NAME)
@@ -158,7 +158,7 @@ def main_game_loop(resource_path, user_data_dir):
                 force_quit_crash = last_frame_failed and not isinstance(run_class, Crash_Menu)
 
                 # get scale stuff
-                scale, offx, offy = blit_letterboxed(screen, window, background_color)
+                scale, offx, offy = blit_letterboxed(screen, window, screen_size_cutoff_bar_color, run_class.get_scale_type())
 
                 # get inputs
                 input_object.take_input(scale, offx, offy)

@@ -11,7 +11,8 @@ class Settings_Menu:
         self.screen = screen
         self.menu = menu
         self.is_clicked = False
-
+        self.scale_type = min
+        
         self.settings_obj = settings.get()
         self.active_tab = 0
 
@@ -217,3 +218,7 @@ class Settings_Menu:
 
     def on_quit(self): pass
     def catch_exception(self): return self.menu
+
+    def get_scale_type(self):
+        return self.scale_type
+

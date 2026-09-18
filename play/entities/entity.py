@@ -1,7 +1,7 @@
 from math import floor
 
 from world.blocks.block_export import *
-from play.entity_health import Entity_Health
+from play.overlay_menus.entity_health import Entity_Health
 from world.grid import Grid
 
 
@@ -229,7 +229,6 @@ class Entity:
         self.can_take_fall_damage = False
 
     def draw(self, screen_x=0, screen_y=0):
-
         if self.is_left_facing:
             player_rect = self.images.player_left.get_rect(
                 topleft=(self.x - screen_x, self.y - screen_y)
@@ -240,9 +239,6 @@ class Entity:
                 topleft=(self.x - screen_x, self.y - screen_y)
             )
             self.screen.blit(self.images.player_right, player_rect)
-
-
-        self.health_bar.draw()
 
     def get_health_bar_height(self):
         return self.health_bar.get_health_bar_height()

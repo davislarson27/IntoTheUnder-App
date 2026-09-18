@@ -1,9 +1,9 @@
 import pygame
 
-def blit_letterboxed(src, dst, color):
+def blit_letterboxed(src, dst, color, scale_type=min):
     sw, sh = src.get_size()
     dw, dh = dst.get_size()
-    scale = min(dw / sw, dh / sh)
+    scale = scale_type(dw / sw, dh / sh)
     new_size = (round(sw * scale), round(sh * scale))
     x = (dw - new_size[0]) // 2
     y = (dh - new_size[1]) // 2

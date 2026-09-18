@@ -16,9 +16,6 @@ class Player(Entity):
             )
             self.screen.blit(self.images.player_right, player_rect)
 
-        # also draw the health bar for the player
-        self.health_bar.draw()
-
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement):
         if input.a_hold > 0:
             dx -= int(cur_player_speed_x * self.health_bar.get_low_energy_speed_reduction_factor())
@@ -40,4 +37,3 @@ class Player(Entity):
                 self.apply_movement_cost_y()
 
         return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
-

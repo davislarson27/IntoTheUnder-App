@@ -1,34 +1,34 @@
-import pygame
 from math import floor, sqrt
 
 from world.blocks.block_export import *
+from .entities.entities_export import *
 from play.mining_sprite import Mining_Sprite
 from components.game_file_reading import save_game
 from .physics_rules import Physics_Rules
 from .in_play_menus.escape_menu import Escape_Menu
 from components.crash_menu import Crash_Menu
 from .bg_overlay import BG_Overlay
-from .bg_mining_icon import Bg_Mining_Icon
-from .in_play_menus.debug_screen_overlay import Debug_Overlay
+from .overlay_menus.bg_mining_icon import Bg_Mining_Icon
+from .overlay_menus.debug_screen_overlay import Debug_Overlay
 from .in_play_menus.death_menu import Death_Menu
 from .inventory.inventory import Inventory
 from .inventory.submenus.crafting import Crafting_Slots
 from .inventory.submenus.fuel import Fuel_Slots
 from .inventory.submenus.chest import Chest_Slots
 from .inventory.submenus.enduring_chest import Enduring_Chest_Slots
-from .entities.entities_export import *
 from .star_background import Star_Background
 
 
 class Play:
 
-    def __init__(self, screen, BLOCK_WIDTH, grid, background_grid, inventory, player, world_details, menu):
+    def __init__(self, screen, window, BLOCK_WIDTH, grid, background_grid, inventory, player, world_details, menu):
         # set details
         self.grid, self.inventory, self.player, self.world_details = grid, inventory, player, world_details
         self.player.inventory = inventory
         self.background_grid = background_grid
         self.menu = menu
         self.screen = screen
+        self.window = window
         self.BLOCK_WIDTH = BLOCK_WIDTH
 
         # set up crash menu
@@ -48,7 +48,7 @@ class Play:
         self.mining_sprite = Mining_Sprite(screen, BLOCK_WIDTH)
         self.destroy_held_time = 0
         self.build_held_time = 0
-        self.affected_x, self.affected_y = None, None
+        self.affected_x, self.affected_y, self.affected_type = None, None, None
         self.build_mode = False
 
         self.mining_sprite.set_grid(grid)
@@ -64,14 +64,17 @@ class Play:
 
         self.build_block_surfaces()
         
-        # gemerate the bg_mining_active icon
-        bg_mining_icon_margin = 30
-        bg_mining_icon_width = 51
-        self.bg_mining_icon = Bg_Mining_Icon(screen, screen.get_width() - bg_mining_icon_width - bg_mining_icon_margin, bg_mining_icon_margin, bg_mining_icon_width, bg_mining_icon_width)
+        # gemerate the bg_mining_active icon        
+        overlay_margin, row_width = self.get_dimentions_for_overlays()
+        self.bg_mining_icon = Bg_Mining_Icon(window, overlay_margin, row_width)
 
-        self.debug_overlay = Debug_Overlay(screen, grid, player)
+        self.debug_overlay = Debug_Overlay(window, grid, player)
 
         self.inventory.set_health_bar(self.player.health_bar)
+        self.player_health_bar = self.player.health_bar
+
+        self.window_based_overlays = [self.player_health_bar, self.bg_mining_icon, self.debug_overlay]
+        self.last_window_width = 0
 
         self.star_bg = Star_Background(screen)
 
@@ -83,6 +86,19 @@ class Play:
             block.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=False)
             block.draw_to_surface(self.BLOCK_WIDTH, being_mined=True, use_alt_drawing=True)
             block.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=True)
+
+    def get_dimentions_for_overlays(self):
+        tot_columns = 24
+        row_width = self.window.get_width() // tot_columns
+        margin = (row_width * 2) // 3
+        return margin, row_width
+
+    def manage_window_overlay_rerenders(self):
+        if self.last_window_width != self.window.get_width():
+            for overlay in self.window_based_overlays:
+                margin, row_width = self.get_dimentions_for_overlays()
+                overlay.rerender(margin, row_width)
+            self.last_window_width = self.window.get_width()
 
     @staticmethod
     def pixel_to_grid(pixel_coordinates, BLOCK_WIDTH):
@@ -413,6 +429,12 @@ class Play:
             self.menu.reopen_menu_prep() # minimum required to prep menu
             print('CRASH WHILE ATTEMPTING SAVE')
 
+    def get_scale_type(self):
+        if self.sub_state is None:
+            return max
+        else:
+            return min
+    
     def run(self, input, clock):
         # initialize return_class
         return_class = self
@@ -450,7 +472,7 @@ class Play:
             # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities
-            entities = self.grid.get_entities(self.camera_x)
+            # entities = self.grid.get_entities(self.camera_x)
             # for entity in entities:
             #     entity.move(input, self.physics_rules)
 
@@ -489,7 +511,10 @@ class Play:
             # now draw the rest of the queue
             main_grid_queue.draw(self.camera_x, self.cur_camera_y)
 
+            self.manage_window_overlay_rerenders()
+
             self.bg_mining_icon.draw(input)
+            self.player_health_bar.draw(self.window)
 
 
             # ------------- run passive inventory ------------- #

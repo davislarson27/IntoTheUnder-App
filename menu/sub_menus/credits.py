@@ -8,7 +8,8 @@ class Credits:
         self.screen = screen
         self.menu = menu
         self.is_clicked = False
-
+        self.scale_type = min
+        
         # colors
         self.title_col   = (255, 255, 255)
         self.heading_col = (150, 170, 200)
@@ -177,6 +178,9 @@ class Credits:
 
     def on_quit(self):
         pass
+
+    def get_scale_type(self):
+        return self.scale_type
 
     def catch_exception(self):
         return self.menu

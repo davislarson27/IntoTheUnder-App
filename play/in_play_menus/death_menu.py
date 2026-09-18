@@ -9,6 +9,7 @@ class Death_Menu:
 
         self.is_clicked = False
         self.quit_to_menu = False
+        self.scale_type = min
 
         possible_death_messages = [
             'Pro Tip: 10 out of 10 doctors do not recommend death.',
@@ -25,7 +26,8 @@ class Death_Menu:
             'Well that was unpleasant!',
             'Maybe try to press the \'F\' key and heal up next time, alright?',
             'Hint: Don\'t try that move again!',
-            'If these death messages rage bait you... then mission accomplished!'
+            'If these death messages rage bait you... then mission accomplished!',
+            'Well that was unpleasant',
         ]
         self.death_message = random.choice(possible_death_messages)
 
@@ -130,6 +132,9 @@ class Death_Menu:
     def catch_exception(self):
         pass
     
+    def get_scale_type(self):
+        return self.scale_type
+
     def run(self, input):
         return_class = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
         if return_class is None:

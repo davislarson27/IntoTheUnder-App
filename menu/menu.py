@@ -54,6 +54,7 @@ class Menu:
         self.APP_DISPLAY_NAME = APP_DISPLAY_NAME
         self.run_game = False
         self.settings_data = settings.get()
+        self.scale_type = min
 
         # initialize main menu submenus
         self.credits = Credits(screen, self)
@@ -1526,6 +1527,9 @@ class Menu:
     def finalExceptionHandle(self):
         pass
 
+    def get_scale_type(self):
+        return self.scale_type
+
     def run(self, input, clock):
         """runs the menu and returns function of class that will run next (normally itself)"""
 
@@ -1549,12 +1553,12 @@ class Menu:
 
             if self.load_world:
                 grid, background_grid, inventory, player, world_details = self.load_world_from_file()
-                play_object = Play(self.screen, self.block_width, grid, background_grid, inventory, player, world_details, self)
+                play_object = Play(self.screen, self.window, self.block_width, grid, background_grid, inventory, player, world_details, self)
 
             elif self.generate_new_world:
                 self.world_names_list.insert(0, self.world_name)
                 grid, background_grid, inventory, player, world_details = self.create_new_world_with_loading()
-                play_object = Play(self.screen, self.block_width, grid, background_grid, inventory, player, world_details, self)
+                play_object = Play(self.screen, self.window, self.block_width, grid, background_grid, inventory, player, world_details, self)
 
             if play_object is None: return self
 
