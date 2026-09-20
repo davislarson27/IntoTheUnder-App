@@ -490,9 +490,9 @@ class Play:
             # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities
-            # entities = self.grid.get_entities(self.camera_x)
-            # for entity in entities:
-            #     entity.move(input, self.physics_rules)
+            entities = self.grid.get_entities(self.camera_x)
+            for entity in entities:
+                entity.move(input, self.physics_rules)
 
             # ------------- draw main game ------------- #
 
@@ -523,11 +523,11 @@ class Play:
                 self.bg_overlay.draw_at(self.affected_x, self.affected_y, self.camera_x, self.cur_camera_y)
 
             self.player.draw(self.camera_x, self.cur_camera_y)
-            # for entity in entities:
-            #     entity.draw(self.camera_x, self.cur_camera_y)
+            for entity in entities:
+                entity.draw(self.camera_x, self.cur_camera_y)
 
             # now draw the rest of the queue
-            main_grid_queue.draw(self.camera_x, self.cur_camera_y)            
+            main_grid_queue.draw(self.camera_x, self.cur_camera_y)
             
 
             # ------------- run & draw the debug overlay ------------- #
@@ -535,7 +535,7 @@ class Play:
             self.debug_overlay.run(input, clock)
 
             # ------------- check entity chunks --------------#
-            # self.grid.check_entity_chunks(entities)
+            self.grid.check_entity_chunks(entities)
 
 
         # check for changing menus in game

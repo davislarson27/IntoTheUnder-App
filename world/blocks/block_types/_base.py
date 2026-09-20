@@ -124,6 +124,7 @@ class Block:
         return
 
     def onDestroy(self, inventory=None):
+        self.grid.insert_entity()
         block_type = type(self)
         self.grid.set(self.x, self.y, None)
         return block_type
