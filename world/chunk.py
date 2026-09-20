@@ -95,7 +95,8 @@ class Chunk:
         x_draw_grid_min = max(0, (camera_x // self.BLOCK_WIDTH) - global_x_offset)
         x_draw_grid_max = min(self.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH - global_x_offset) + 1
 
-        true_height = self.screen.get_height() - INVENTORY_HEIGHT
+        # true_height = self.screen.get_height() - INVENTORY_HEIGHT
+        true_height = self.screen.get_height()
         y_draw_grid_min = max(0, camera_y // self.BLOCK_WIDTH)
         y_draw_grid_max = min(self.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
 

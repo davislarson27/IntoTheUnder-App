@@ -74,7 +74,7 @@ class BG_Overlay:
         x_min = camera_x // self.BLOCK_WIDTH
         x_max = min(self.background_grid.width, (camera_x + self.screen.get_width()) // self.BLOCK_WIDTH) + 1
 
-        true_height = self.screen.get_height() - inventory_height
+        true_height = self.screen.get_height()
         y_min = max(0, camera_y // self.BLOCK_WIDTH)
         y_max = min(self.background_grid.height, (camera_y + true_height) // self.BLOCK_WIDTH) + 1
 

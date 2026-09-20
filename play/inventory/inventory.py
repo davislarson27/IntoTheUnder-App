@@ -15,9 +15,12 @@ class Inventory:
 
     def __init__(self, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25, cur_position_index = 0):
         self.screen = screen
+        self.window = window
         
         self.expanded_inventory = []
         self.active_slots = []
+
+        self.passive_hot_bar_slots = []
 
         self.openNextFrame = False
 
@@ -921,16 +924,75 @@ class Inventory:
             self.active_slots.append(slot)
 
 
+# -------------------------------------------- rerendering -------------------------------------------- #
+    def rerender(self, margin, row_width):
+
+        box_width = row_width
+
+        label_gap_y = int(row_width * 0.5)
+        # label_height = max(12, int(row_width * 1.0))
+        label_height = int(row_width * 1.0)
+
+        # item frame box details
+        item_percent_of_box = 0.75
+        full_inventory_item_size = floor(box_width * item_percent_of_box) # item is 75% as long as its box is
+        full_inventory_item_margin = floor((box_width - full_inventory_item_size) / 2)
+
+
+        # inventory hot bar dimentions
+        inventory_height = int(row_width * 1.6)
+        inventory_start_height = self.window.get_height() - inventory_height
+        hot_bar_margin_x = 5 * row_width
+        hot_bar_width = self.window.get_width() - (hot_bar_margin_x * 2)
+        margin_between_hot_bar_boxes = (hot_bar_width - (self.items_in_hot_bar * box_width)) // (self.items_in_hot_bar - 1)
+        hot_bar_margin_y = (inventory_height - box_width) // 2
+        hot_bar_start_height = self.window.get_height() - hot_bar_margin_y - box_width
+
+        # pygame objects
+        self.passive_inventory_background = pygame.Rect(
+            hot_bar_margin_x  - margin_between_hot_bar_boxes,
+            inventory_start_height,
+            self.window.get_width() - 2*hot_bar_margin_x + 2*margin_between_hot_bar_boxes,
+            inventory_height
+        )
+
+        self.passive_hot_bar_slots = []
+        for i in range(self.items_in_hot_bar): # fills hot bar with positions
+            hit_box = pygame.Rect(
+                (i * (box_width + margin_between_hot_bar_boxes)) + hot_bar_margin_x,
+                hot_bar_start_height,
+                box_width,
+                box_width
+            )
+            item_frame = pygame.Rect(
+                (i * (box_width + margin_between_hot_bar_boxes)) + hot_bar_margin_x + full_inventory_item_margin,
+                hot_bar_start_height + full_inventory_item_margin,
+                full_inventory_item_size,
+                full_inventory_item_size
+            )
+            label_rect = pygame.Rect(
+                hit_box.x,
+                hit_box.bottom + label_gap_y - 2, # gets it a hair close and centers it
+                hit_box.width,
+                label_height
+            )
+
+            self.passive_hot_bar_slots.append(Inventory_Position(hit_box, item_frame, label_rect=label_rect))
+
+
 # -------------------------------------------------- drawing methods -------------------------------------------------- #
 
-    def draw_item_in_slot(self, slot):
+    def draw_item_in_slot(self, slot, surface=None):
         # now draw the item into the slot
+        if surface is None:
+            surface = self.screen
+
         item = slot.inventory_item
 
         if item is not None:
             if isinstance(item, Inventory_Item):
                 item.Block_Type.draw_manual(
-                    self.screen, 
+                    surface,
                     slot.item_frame.x,
                     slot.item_frame.y,
                     slot.item_frame.width,
@@ -938,19 +1000,19 @@ class Inventory:
                 )
 
                 text_surface = self.full_inventory_font.render(f"x{item.count_of_items}", True, self.inventory_text_color)
-                self.screen.blit(
-                    text_surface, 
+                surface.blit(
+                    text_surface,
                     (
-                        slot.item_frame.x, 
+                        slot.item_frame.x,
                         slot.item_frame.y
-                    ) 
+                    )
                 )
             elif isinstance(item, Special_Slot_Polygon):
-                item.draw(self.screen, False)
+                item.draw(surface, False)
             elif isinstance(item, Special_Slot_Dual_Rect):
-                item.draw(self.screen, False)
+                item.draw(surface, False)
             elif isinstance(item, Recipe_Slot_Contents):
-                item.draw(self.screen)
+                item.draw(surface)
 
     def draw_item_label(self, slot, is_hot_bar=False):
         # draw labels
@@ -977,25 +1039,7 @@ class Inventory:
 
         # 4. Blit
         self.screen.blit(text_surface, text_rect)
-
-    def draw_hot_bar(self):
-        # draw background
-        pygame.draw.rect(self.screen, self.hot_bar_background_color, self.inventory_background)
-
-        # draw inventory
-        for i in range(self.items_in_hot_bar):
-            
-            if i == self.cur_position_index: cur_color = self.selected_box_color
-            else: cur_color = self.base_box_color
-
-            pygame.draw.rect(
-                self.screen,
-                cur_color,
-                self.expanded_inventory[i].hit_box 
-            )
-
-            self.draw_item_in_slot(self.expanded_inventory[i])
-
+    
     def draw_hot_bar_active(self):
         # draw background
         pygame.draw.rect(self.screen, self.hot_bar_background_color, self.inventory_background)
@@ -1066,8 +1110,24 @@ class Inventory:
         self.draw_expanded_item_management()
 
     def draw_passive(self):
-        self.draw_hot_bar()
+        # draw background
+        pygame.draw.rect(self.window, self.hot_bar_background_color, self.passive_inventory_background)
 
+        # draw inventory
+        for i in range(self.items_in_hot_bar):
+            
+            if i == self.cur_position_index: cur_color = self.selected_box_color
+            else: cur_color = self.base_box_color
+
+            pygame.draw.rect(
+                self.window,
+                cur_color,
+                self.passive_hot_bar_slots[i].hit_box
+            )
+
+            # the actual item data lives on expanded_inventory; passive_hot_bar_slots only tracks window-space layout
+            self.passive_hot_bar_slots[i].inventory_item = self.expanded_inventory[i].inventory_item
+            self.draw_item_in_slot(self.passive_hot_bar_slots[i], self.window)
 
 # extra functions to be added (misc)
 

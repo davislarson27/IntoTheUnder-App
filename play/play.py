@@ -75,8 +75,9 @@ class Play:
         self.inventory.set_health_bar(self.player.health_bar)
         self.player_health_bar = self.player.health_bar
 
-        self.window_based_overlays = [self.player_health_bar, self.bg_mining_icon, self.debug_overlay]
+        self.window_based_overlays = [self.player_health_bar, self.bg_mining_icon, self.debug_overlay, self.inventory]
         self.last_window_width = 0
+        self.last_window_height = 0
 
         self.star_bg = Star_Background(screen)
 
@@ -98,11 +99,12 @@ class Play:
         return margin, row_width
 
     def manage_window_overlay_rerenders(self):
-        if self.last_window_width != self.window.get_width():
+        if self.last_window_width != self.window.get_width() or self.last_window_height != self.window.get_height():
             for overlay in self.window_based_overlays:
                 margin, row_width = self.get_dimentions_for_overlays()
                 overlay.rerender(margin, row_width)
             self.last_window_width = self.window.get_width()
+            self.last_window_height = self.window.get_height()
 
     @staticmethod
     def pixel_to_grid(pixel_coordinates, BLOCK_WIDTH):
@@ -445,8 +447,7 @@ class Play:
             self.bg_mining_icon.draw(self.last_input)
             self.player_health_bar.draw(self.window)
             self.debug_overlay.draw()
-
-            self.inventory.run_passive(self.last_input) # this is resetting the value of self.inventory.show_full_item_mamagement BEFORE the loop runs with that! it forces exit incorrectly. fix!
+            self.inventory.draw_passive()
 
     def run(self, input, clock):
         # initialize return_class
@@ -480,6 +481,8 @@ class Play:
             else: is_interacting = False
             screen_x = self.player.x - self.camera_x
             self.player.get_direction(self.player.dx, screen_x, input.virtual_mouse_x, is_interacting)
+
+            self.inventory.run_passive(self.last_input)
 
             # ------------------------------------- temp spawn using enter ------------------------------------- #
             # if input.return_keypress:
@@ -525,11 +528,7 @@ class Play:
 
             # now draw the rest of the queue
             main_grid_queue.draw(self.camera_x, self.cur_camera_y)            
-
-
-            # ------------- draw inventory ------------- #
-
-            self.inventory.draw_passive()
+            
 
             # ------------- run & draw the debug overlay ------------- #
 
