@@ -124,10 +124,14 @@ class Block:
         return
 
     def onDestroy(self, inventory=None):
-        self.grid.insert_entity()
-        block_type = type(self)
+        from play.entities.entities_export import Item_Drop
+
+        item_drop = Item_Drop(self.grid, self.screen, self.grid.get_block_to_px(self.x), self.grid.get_block_to_px(self.y), self.block_width, world_details=self.grid.world_details)
+        item_drop.set_block(type(self))
+        item_drop.set_random_subblock_location()
+        self.grid.insert_entity(item_drop)
         self.grid.set(self.x, self.y, None)
-        return block_type
+        return None
     
     def block_edge_shade(self, directionOfBgBlock_x, directionofBgBlock_y):
         """returns true or false if the bg block should be shaded on the corner"""

@@ -324,6 +324,9 @@ class Grid:
         self.chunks[new_chunk_id].entity_set.add(entity)
         entity.entity_chunk = new_chunk_id
 
+    def remove_entity(self, entity):
+        self.chunks[entity.entity_chunk].entity_set.remove(entity)
+
     @classmethod
     def preinitialize_local_grid(cls, directory, screen, block_width, player, is_background=False):
         "fills the grid from a file but uses a generator and required to be run in a loop -> yields grid, percent done (if percent done < 1 then grid = None)"

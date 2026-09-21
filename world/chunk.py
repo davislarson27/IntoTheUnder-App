@@ -69,20 +69,7 @@ class Chunk:
             return self.array == other.array
         elif isinstance(other, list):
             return self.array == other
-        
-    def to_dict(self):
-        blocks_in_grid = []
-        for y in range(self.height):
-            for x in range(self.width):
-                cur_block = self.get(x, y)
-                if cur_block is not None:
-                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through, cur_block.get_stored_inventory_items(), cur_block.ticks_till_physics, cur_block.tick_threshold, cur_block.anchor_x, cur_block.anchor_y])
-        return { #returns dictionary for grid
-            "grid_width": self.width,
-            "grid_height": self.height,
-            "grid_array": blocks_in_grid
-        }
-        
+                
     def chunked_physics(self, y_min, y_max):
         """runs physics in whole chunk, [y_min, y_max)"""
         for y in range(y_min, y_max):
@@ -122,12 +109,34 @@ class Chunk:
     def get_x_offset(self, chunk_id):
         return self.width * chunk_id
 
+    def to_dict(self):
+        # store blocks
+        blocks_in_grid = []
+        for y in range(self.height):
+            for x in range(self.width):
+                cur_block = self.get(x, y)
+                if cur_block is not None:
+                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through, cur_block.get_stored_inventory_items(), cur_block.ticks_till_physics, cur_block.tick_threshold, cur_block.anchor_x, cur_block.anchor_y])
+        
+        # store entities
+        entities = []
+        for entity in self.entity_set:
+            entities.append(entity.to_dict())
+
+        # fill & return final dict
+        return { #returns dictionary for grid
+            "grid_width": self.width,
+            "grid_height": self.height,
+            "grid_array": blocks_in_grid,
+            "entities": entities,
+        }
+
     @staticmethod
     def fill_from_dict(grid_dict, screen, BLOCK_WIDTH, global_x_offset, return_grid):
         #create grid
         width = grid_dict["grid_width"]
         height = grid_dict["grid_height"]
-        grid = Chunk(width, height, BLOCK_WIDTH, screen)
+        chunk = Chunk(width, height, BLOCK_WIDTH, screen)
 
         #fill grid
         str_to_block = get_str_to_block()
@@ -156,7 +165,7 @@ class Chunk:
                 anchor_x = block[7]
                 anchor_y = block[8]
 
-                grid.set_manual(x, y, block_type(
+                chunk.set_manual(x, y, block_type(
                     return_grid,
                     screen,
                     x + global_x_offset,
@@ -172,8 +181,21 @@ class Chunk:
             
             except (KeyError):
                 print(f'error (probable): {block_type_str} is not a valid block type in this version')
+
+        from play.entities.entities_export import get_str_to_entity
+
+        entities_dicts = grid_dict["entities"]
+        str_to_entity_dict = get_str_to_entity()
+        for dict_entity in entities_dicts:
+            try:
+                str_entity_type = dict_entity["entity_type"]
+                entity_type = str_to_entity_dict[str_entity_type]
+                entity = entity_type.fill_entity_object(dict_entity, return_grid, screen, BLOCK_WIDTH)
+                chunk.insert_entity(entity)
+            except:
+                print('failed to generate an entity during chunk loading')
                 
-        return grid
+        return chunk
     
     @staticmethod
     def generate_chunk_test(x_offset, width, height, block_width, screen, return_grid):

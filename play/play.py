@@ -490,9 +490,24 @@ class Play:
             # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities
+            self.player.set_hit_box(self.camera_x, self.cur_camera_y)
             entities = self.grid.get_entities(self.camera_x)
             for entity in entities:
                 entity.move(input, self.physics_rules)
+                entity.set_hit_box(self.camera_x, self.cur_camera_y)
+                if self.player.is_collided_with(entity): # check for collisions between the player and other entities
+                    entity.execute_collide_with_player(self.player, self.inventory)
+                if entity.is_dead():
+                    self.grid.remove_entity(entity)
+            bg_entities = self.background_grid.get_entities(self.camera_x)
+            for entity in bg_entities:
+                entity.move(input, self.physics_rules)
+                entity.set_hit_box(self.camera_x, self.cur_camera_y)
+                if self.player.is_collided_with(entity): # check for collisions between the player and other entities
+                    entity.execute_collide_with_player(self.player, self.inventory)
+                if entity.is_dead():
+                    self.background_grid.remove_entity(entity)
+
 
             # ------------- draw main game ------------- #
 
@@ -524,6 +539,8 @@ class Play:
 
             self.player.draw(self.camera_x, self.cur_camera_y)
             for entity in entities:
+                entity.draw(self.camera_x, self.cur_camera_y)
+            for entity in bg_entities:
                 entity.draw(self.camera_x, self.cur_camera_y)
 
             # now draw the rest of the queue

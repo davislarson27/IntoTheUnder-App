@@ -37,3 +37,23 @@ class Player(Entity):
                 self.apply_movement_cost_y()
 
         return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+
+    def to_dict(self):
+        return {
+            "player_x_pixel": self.x,
+            "player_y_pixel": self.y,
+            "player_speed": self.player_speed,
+            "x_vel": self.x_vel,
+            "y_vel": self.y_vel,
+            "x_size": self.x_size,
+            "y_size": self.y_size,
+            "ticks_falling": self.ticks_falling,
+            "ticks_inc": self.ticks_inc,
+            "BLOCK_WIDTH": self.BLOCK_WIDTH,
+            "health": self.health_bar.get_health(),
+            "energy": self.health_bar.get_energy(),
+            "is_left_facing": self.is_left_facing,
+            "player_spawn_x": self.player_spawn_x,
+            "player_spawn_y": self.player_spawn_y,
+            "can_take_fall_damage": self.can_take_fall_damage
+        }

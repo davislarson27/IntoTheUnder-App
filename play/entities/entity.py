@@ -2,11 +2,10 @@ from math import floor
 
 from world.blocks.block_export import *
 from play.overlay_menus.entity_health import Entity_Health
-from world.grid import Grid
 
 
 class Entity:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, energy=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, energy=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True, ticks=0, survival_mode:bool=None):
         MAX_HEALTH = 100
         MAX_ENERGY = 100
         
@@ -22,20 +21,26 @@ class Entity:
         self.ticks_falling = ticks_falling
         self.ticks_inc = ticks_inc
         self.BLOCK_WIDTH = BLOCK_WIDTH
-        self.health_bar = Entity_Health(screen, MAX_HEALTH, health, MAX_ENERGY, energy, images, world_details.survival_mode)
+        if world_details is None:
+            survival_mode_set = survival_mode
+        else:
+            survival_mode_set = world_details.survival_mode
+        self.health_bar = Entity_Health(screen, MAX_HEALTH, health, MAX_ENERGY, energy, images, survival_mode_set)
         self.take_damage_threshold_velocity = 22
         self.loss_per_velocity = 1
         self.images = images
         self.is_left_facing = is_left_facing
         self.can_take_fall_damage = can_take_fall_damage
 
+        self.hit_box = pygame.Rect(0, 0, self.x_size, self.y_size)
+
         self.dx = 0
         self.y_remainder = 0
-        if player_spawn_x is None:
+        if player_spawn_x is None and world_details is not None:
             self.player_spawn_x = world_details.world_spawn_x
         else:
             self.player_spawn_x = player_spawn_x
-        if player_spawn_y is None:
+        if player_spawn_y is None and world_details is not None:
             self.player_spawn_y = world_details.world_spawn_y
         else:
             self.player_spawn_y = player_spawn_y
@@ -48,6 +53,7 @@ class Entity:
         self.entity_chunk = self.compute_chunk_id()
 
         self.world_details = world_details
+        self.ticks = ticks
 
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
@@ -137,26 +143,6 @@ class Entity:
             if y_max == block_y or y_min == block_y:
                 return True
         return False
-
-    def to_dict(self):
-        return {
-            "player_x_pixel": self.x,
-            "player_y_pixel": self.y,
-            "player_speed": self.player_speed,
-            "x_vel": self.x_vel,
-            "y_vel": self.y_vel,
-            "x_size": self.x_size,
-            "y_size": self.y_size,
-            "ticks_falling": self.ticks_falling,
-            "ticks_inc": self.ticks_inc,
-            "BLOCK_WIDTH": self.BLOCK_WIDTH,
-            "health": self.health_bar.get_health(),
-            "energy": self.health_bar.get_energy(),
-            "is_left_facing": self.is_left_facing,
-            "player_spawn_x": self.player_spawn_x,
-            "player_spawn_y": self.player_spawn_y,
-            "can_take_fall_damage": self.can_take_fall_damage
-        }
  
     def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
         if is_interacting:
@@ -243,6 +229,21 @@ class Entity:
     def get_health_bar_height(self):
         return self.health_bar.get_health_bar_height()
     
+    def set_hit_box(self, screen_x=0, screen_y=0):
+        self.hit_box.topleft = (self.x - screen_x, self.y - screen_y)
+
+    def get_hit_box(self):
+        return self.hit_box
+    
+    def is_collided_with(self, other_entity):
+        return self.hit_box.colliderect(other_entity.hit_box)
+    
+    def execute_collide_with_player(self, player, player_inventory):
+        return
+    
+    def is_dead(self):
+        return False
+    
     def initialize_drawing_vars(self):
         pass
     
@@ -250,6 +251,8 @@ class Entity:
         pass
 
     def compute_chunk_id(self):
+        from world.grid import Grid
+
         global_x, _ = self.get_player_block_coordinates()
         return global_x // Grid.chunk_width
 
@@ -335,3 +338,26 @@ class Entity:
         self.y_vel += cur_y_acceleration
 
         self.dx = dx
+
+
+
+    # ----------------------------- entity fill details ----------------------------- #
+    
+    def to_dict(self):
+        return {
+            "entity_type": type(self).__name__,
+            "x_pixel": self.x,
+            "y_pixel": self.y,
+            "player_speed": self.player_speed,
+            "x_vel": self.x_vel,
+            "y_vel": self.y_vel,
+            "ticks_falling": self.ticks_falling,
+            "ticks_inc": self.ticks_inc,
+            "health": self.health_bar.get_health(),
+            "energy": self.health_bar.get_energy(),
+            "is_left_facing": self.is_left_facing,
+        }
+    
+    @classmethod
+    def fill_entity_object(cls, entity_dict, grid, screen, block_width):
+        return
