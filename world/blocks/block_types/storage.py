@@ -22,11 +22,11 @@ class Chest(Block):
         for item in self.stored_inventory_items:
             if item is not None:
                 for i in range(item.count_of_items):
-                    inventory.add_item(item.Block_Type)
+                    self.drop_item(item.Block_Type)
         self.stored_inventory_items = []
-        block_type = type(self)
         self.grid.set(self.x, self.y, None)
-        return block_type
+        self.drop_item(type(self))
+        return None
 
 
     @staticmethod
@@ -79,17 +79,6 @@ class Spruce_Chest(Chest):
         player.inventory.open_chest(self.stored_inventory_items)
         return True
 
-    def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
-        for item in self.stored_inventory_items:
-            if item is not None:
-                for i in range(item.count_of_items):
-                    inventory.add_item(item.Block_Type)
-        self.stored_inventory_items = []
-        block_type = type(self)
-        self.grid.set(self.x, self.y, None)
-        return block_type
-
-
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         if being_mined:
@@ -139,17 +128,6 @@ class Mahogany_Chest(Chest):
     def interaction(self, player):
         player.inventory.open_chest(self.stored_inventory_items)
         return True
-
-    def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
-        for item in self.stored_inventory_items:
-            if item is not None:
-                for i in range(item.count_of_items):
-                    inventory.add_item(item.Block_Type)
-        self.stored_inventory_items = []
-        block_type = type(self)
-        self.grid.set(self.x, self.y, None)
-        return block_type
-
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -295,7 +273,8 @@ class Recipe_Frame(Block):
     def onDestroy(self, inventory): # this needs to get called on each block -> needs to give each item to the inventory
         if len(self.stored_inventory_items) > 0: self.addRecipe(inventory)
         self.grid.set(self.x, self.y, None)
-        return type(self)
+        self.drop_item(type(self))
+        return None
     
     def drawDependentDetails(self, screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         if is_grid_coordinates:
