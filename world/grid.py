@@ -153,8 +153,18 @@ class Grid:
                         count += 1
             print(f"Chunk {chunk_id}: {count} blocks")
 
+    def get_chunks_to_save(self):
+        """chunks that were explicitly marked dirty, plus any loaded chunk still holding live entities
+        (entities mutate state like rotation/position without marking the chunk dirty on every change,
+        so a chunk that still has entities in it always needs a fresh snapshot)"""
+        chunk_ids = set(self.chunks_modified.keys())
+        for chunk_id, chunk in self.chunks.items():
+            if len(chunk.entity_set) > 0:
+                chunk_ids.add(chunk_id)
+        return chunk_ids
+
     def save(self):
-        for chunk_id in self.chunks_modified:
+        for chunk_id in self.get_chunks_to_save():
             chunk = self.chunks[chunk_id]
             chunk_data = chunk.to_dict()
 
@@ -166,13 +176,14 @@ class Grid:
             # grid_dictionary = grid.to_dict()
             with open(f"{self.save_directory}/chunk_{chunk_id}.json", "w") as grid_file:
                 json.dump(chunk_dictionary, grid_file, indent=3)
-    
+
     def save_show_loading(self):
         chunks_per_update = 20
         i = 0
-        chunks_updated_count = len(self.chunks_modified)
+        chunks_to_save = self.get_chunks_to_save()
+        chunks_updated_count = len(chunks_to_save)
         chunks_loaded = 0
-        for chunk_id in self.chunks_modified:
+        for chunk_id in chunks_to_save:
             chunk = self.chunks[chunk_id]
             chunk_data = chunk.to_dict()
 
@@ -296,8 +307,10 @@ class Grid:
     # methods for interacting with entities
     def insert_entity(self, new_entity):
         global_grid_x, grid_y = new_entity.get_player_block_coordinates()
+        chunk_id, _ = self.get_chunk_x(global_grid_x)
         chunk = self.get_chunk(global_grid_x, grid_y)
         chunk.insert_entity(new_entity)
+        self.chunks_modified[chunk_id] = True
 
     def get_entities(self, camera_x):
         """returns a set of entities on the screen"""
@@ -320,11 +333,14 @@ class Grid:
                 self.reasign_entity_chunk(entity, cur_chunk_id)
 
     def reasign_entity_chunk(self, entity, new_chunk_id):
+        self.chunks_modified[entity.entity_chunk] = True
         self.chunks[entity.entity_chunk].entity_set.remove(entity)
         self.chunks[new_chunk_id].entity_set.add(entity)
         entity.entity_chunk = new_chunk_id
+        self.chunks_modified[new_chunk_id] = True
 
     def remove_entity(self, entity):
+        self.chunks_modified[entity.entity_chunk] = True
         self.chunks[entity.entity_chunk].entity_set.remove(entity)
 
     @classmethod
