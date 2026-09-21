@@ -389,7 +389,8 @@ class Door_Top(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Door_Bottom):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Door
+        self.drop_item(Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y + 1
@@ -511,7 +512,8 @@ class Door_Bottom(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Door_Top):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Door
+        self.drop_item(Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y - 1
@@ -615,7 +617,8 @@ class Spruce_Door_Top(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Spruce_Door_Bottom):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Spruce_Door
+        self.drop_item(Spruce_Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y + 1
@@ -737,7 +740,8 @@ class Spruce_Door_Bottom(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Spruce_Door_Top):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Spruce_Door
+        self.drop_item(Spruce_Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y - 1
@@ -841,7 +845,8 @@ class Mahogany_Door_Top(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Mahogany_Door_Bottom):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Mahogany_Door
+        self.drop_item(Mahogany_Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y + 1
@@ -963,7 +968,8 @@ class Mahogany_Door_Bottom(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Mahogany_Door_Top):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Mahogany_Door
+        self.drop_item(Mahogany_Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y - 1
@@ -1067,7 +1073,8 @@ class Iron_Door_Top(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Iron_Door_Bottom):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Iron_Door
+        self.drop_item(Iron_Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y + 1
@@ -1189,7 +1196,8 @@ class Iron_Door_Bottom(SubMultiBlock):
         if isinstance(self.grid.get(self.x, y_other_half), Iron_Door_Top):
             self.grid.set(self.x, self.y, None)
             self.grid.set(self.x, y_other_half, None)
-        return Iron_Door
+        self.drop_item(Iron_Door)
+        return None
 
     def interaction(self, player):
         top_y = self.y - 1
