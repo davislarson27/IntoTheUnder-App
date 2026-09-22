@@ -38,10 +38,6 @@ class TNT(Explosives):
 
         tnt_band = (190 + added, 190 + added, 190 + added)
 
-        # fuse_string = (140, 110, 70)
-        # fuse_tip    = (200, 160, 60)
-        # spark       = (255, 210, 80)
-
         pygame.draw.rect( # base red
             screen,
             tnt_red_mid,

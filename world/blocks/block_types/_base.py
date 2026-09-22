@@ -368,7 +368,7 @@ class MutliBlock(Block):
     @staticmethod
     def BuildMulti(grid, x, y):
         return False
-    
+
 class SubMultiBlock(Block):
     def onDestroy(self):
         return
