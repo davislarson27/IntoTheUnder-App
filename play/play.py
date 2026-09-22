@@ -493,7 +493,7 @@ class Play:
             self.player.set_hit_box(self.camera_x, self.cur_camera_y)
             entities = self.grid.get_entities(self.camera_x)
             for entity in entities:
-                entity.move(input, self.physics_rules)
+                entity.move(input, self.physics_rules, player=self.player)
                 entity.set_hit_box(self.camera_x, self.cur_camera_y)
                 if self.player.is_collided_with(entity): # check for collisions between the player and other entities
                     entity.execute_collide_with_player(self.player, self.inventory)
@@ -501,7 +501,7 @@ class Play:
                     self.grid.remove_entity(entity)
             bg_entities = self.background_grid.get_entities(self.camera_x)
             for entity in bg_entities:
-                entity.move(input, self.physics_rules)
+                entity.move(input, self.physics_rules, player=self.player)
                 entity.set_hit_box(self.camera_x, self.cur_camera_y)
                 if self.player.is_collided_with(entity): # check for collisions between the player and other entities
                     entity.execute_collide_with_player(self.player, self.inventory)

@@ -16,7 +16,7 @@ class Player(Entity):
             )
             self.screen.blit(self.images.player_right, player_rect)
 
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement):
+    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if input.a_hold > 0:
             dx -= int(cur_player_speed_x * self.health_bar.get_low_energy_speed_reduction_factor())
             self.apply_movement_cost_x()

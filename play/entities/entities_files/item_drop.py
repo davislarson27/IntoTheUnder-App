@@ -56,6 +56,19 @@ class Item_Drop(Entity):
 
         return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
 
+    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+
+        can_travel_px = self.BLOCK_WIDTH * 1.5
+        travel_speed = 3
+        player_center_x, player_center_y = player.get_center_px()
+        x_center, y_center = self.get_center_px()
+        if abs(x_center - player_center_x) < can_travel_px and abs(y_center - player_center_y) < can_travel_px:
+            if self.x > player_center_x:
+                dx = -travel_speed
+            else:
+                dx = travel_speed
+                
+        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
 
     # ---------------------------------------------- loading and saving methods ---------------------------------------------- #
     def to_dict(self):

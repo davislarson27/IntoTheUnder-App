@@ -70,7 +70,12 @@ class Entity:
         return (x_blocks, y_blocks)
     
     def get_player_center_x(self):
+        """returns the player center in px"""
         return self.x + (self.x_size//2)
+
+    def get_center_px(self):
+        """returns the player center in px"""
+        return self.x + (self.x_size//2), self.y + (self.y_size//2)
 
     def is_touching(self, block_positions, Block_Type):
         if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
@@ -280,21 +285,21 @@ class Entity:
 
         return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
     
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement):
+    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
 
         # pathfind
-                
+
         return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
 
 
     # ----------------------------- runs player physics ----------------------------- #
 
-    def move(self, input, physics): # returns assessed damage object
+    def move(self, input, physics, player=None): # returns assessed damage object
         # ---------------------- step 1: process input ---------------------- #
         dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement = self.initialize_temp_movement_vars(physics)
         
         # ---------------------- step 2: pathfind ---------------------- #
-        dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement = self.pathfind(input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement)
+        dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement = self.pathfind(input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player)
 
         # ---------------------- step 2: move ---------------------- #
         # apply gravity and jumping
