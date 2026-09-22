@@ -24,6 +24,8 @@ class Inventory:
 
         self.openNextFrame = False
 
+        self.ticks_since_last_click = 0
+        self.double_click_tick_threshold = 30
 
         # ----------------------------------- helper functions ----------------------------------- #
 
@@ -856,7 +858,11 @@ class Inventory:
         elif self.is_clicked and not mouse.get_pressed()[0]: # detect release and run execute_clicked()
             self.is_clicked = False
             self.execute_clicked((mx, my))
-        
+            self.ticks_since_last_click = 0 # mark this click as the most recent one
+            return
+
+        self.ticks_since_last_click += 1
+
     def execute_clicked(self, position_on_release):
         swap_index = self.get_slot_from_mouse(position_on_release)
 
@@ -880,6 +886,8 @@ class Inventory:
         if self.position_on_click is not None:
             if swap_index is not None:
                 if self.position_on_click == swap_index:
+                    if self.ticks_since_last_click < self.double_click_tick_threshold:
+                        self.auto_resort_slot_contents()
                     self.position_on_click = None
                 elif self.active_slots[swap_index].inventory_item is None and self.active_slots[self.position_on_click].inventory_item is None:
                     self.position_on_click = swap_index
@@ -914,6 +922,18 @@ class Inventory:
             leftover_items = total_items - max_items_in_slot
             swap_to.inventory_item.count_of_items = max_items_in_slot
             swap_from.inventory_item.count_of_items = leftover_items
+
+    def auto_resort_slot_contents(self):
+        slot = self.active_slots[self.position_on_click]
+        if slot.inventory_item is None: return
+        if slot.inventory_item.Block_Type is None: return
+
+        item_count = slot.inventory_item.count_of_items
+        block_type = slot.inventory_item.Block_Type
+
+        slot.inventory_item = None
+        for i in range(item_count):
+            self.add_item(block_type)
 
     def get_slot_from_mouse(self, mouse_position):
         for i in range(len(self.active_slots)):
@@ -1185,6 +1205,7 @@ class Inventory:
             if side_pannel_use is not None:
                 self.side_pannel = side_pannel_use
             self.set_active_slots()
+            self.ticks_since_last_click = 0
         else:
             self.openNextFrame = False
 
