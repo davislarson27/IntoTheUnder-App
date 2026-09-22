@@ -245,6 +245,28 @@ class Play:
         world_h_px = self.grid.height * self.BLOCK_WIDTH
         self.cur_camera_y = max(0, min(self.cur_camera_y, world_h_px - self.physics_rules.true_height))
 
+    def run_grid_without_player(self):
+        # execute physics
+        self.grid.chunked_physics(self.camera_x, self.cur_camera_y, 0)
+        self.background_grid.chunked_physics(self.camera_x, self.cur_camera_y, 0)
+
+        # process entities
+        entities = self.grid.get_entities(self.camera_x)
+        for entity in entities:
+            entity.move(input, self.physics_rules)
+            entity.set_hit_box(self.camera_x, self.cur_camera_y)
+            if entity.is_dead():
+                self.grid.remove_entity(entity)
+            bg_entities = self.background_grid.get_entities(self.camera_x)
+            for entity in bg_entities:
+                entity.move(input, self.physics_rules)
+                entity.set_hit_box(self.camera_x, self.cur_camera_y)
+                if entity.is_dead():
+                    self.background_grid.remove_entity(entity)
+
+            self.grid.check_entity_chunks(entities)
+            self.background_grid.check_entity_chunks(entities)
+
     def draw_grid(self):
         """used when another class needs to draw the grid - does not draw player or inventory"""
         # ------------- draw main game ------------- #
@@ -261,6 +283,14 @@ class Play:
         # draw main grid
         main_grid_queue = self.grid.draw(self.camera_x, self.cur_camera_y, 0)
         
+        # draw in entities
+        entities = self.grid.get_entities(self.camera_x)
+        for entity in entities:
+            entity.draw(self.camera_x, self.cur_camera_y)
+        bg_entities = self.background_grid.get_entities(self.camera_x)
+        for entity in bg_entities:
+            entity.draw(self.camera_x, self.cur_camera_y)
+
         # now draw the rest of the queue
         main_grid_queue.draw(self.camera_x, self.cur_camera_y)
 
@@ -553,6 +583,7 @@ class Play:
 
             # ------------- check entity chunks --------------#
             self.grid.check_entity_chunks(entities)
+            self.background_grid.check_entity_chunks(entities)
 
 
         # check for changing menus in game

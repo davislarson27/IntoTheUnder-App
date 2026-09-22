@@ -57,7 +57,8 @@ class Item_Drop(Entity):
         return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
 
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
-
+        if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        
         can_travel_px = self.BLOCK_WIDTH * 1.5
         travel_speed = 3
         player_center_x, player_center_y = player.get_center_px()

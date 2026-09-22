@@ -139,6 +139,7 @@ class Death_Menu:
         return_class = self.check_click(input.mouse, input.virtual_mouse_x, input.virtual_mouse_y)
         if return_class is None:
             return return_class
+        self.play.run_grid_without_player()
         self.draw(input.virtual_mouse_x, input.virtual_mouse_y)
         return return_class
 
