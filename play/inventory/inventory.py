@@ -16,6 +16,8 @@ class Inventory:
     def __init__(self, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25, cur_position_index = 0):
         self.screen = screen
         self.window = window
+
+        self.grid_reference = None
         
         self.expanded_inventory = []
         self.active_slots = []
@@ -801,11 +803,23 @@ class Inventory:
         for i in range(self.exp_inventory_size + self.items_in_hot_bar):
             if self.expanded_inventory[i].inventory_item != None and item == self.expanded_inventory[i].inventory_item.Block_Type and self.expanded_inventory[i].inventory_item.can_add():
                 self.expanded_inventory[i].inventory_item.add_block()
-                return
+                return True
             if empty_slot == None and self.expanded_inventory[i].inventory_item == None: empty_slot = i
 
         if empty_slot is not None:
             self.expanded_inventory[empty_slot].inventory_item = Inventory_Item(item)
+            return True
+        
+        return False
+    
+    def can_add_item(self, item):
+        empty_slot = None
+        for i in range(self.exp_inventory_size + self.items_in_hot_bar):
+            if self.expanded_inventory[i].inventory_item != None and item == self.expanded_inventory[i].inventory_item.Block_Type and self.expanded_inventory[i].inventory_item.can_add():
+                return True
+            if empty_slot == None and self.expanded_inventory[i].inventory_item == None:
+                return True        
+        return False
 
     def build_from_current(self):
         cur_inventory_slot = self.expanded_inventory[floor(self.cur_position_index)].inventory_item

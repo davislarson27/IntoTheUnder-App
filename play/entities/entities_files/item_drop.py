@@ -32,9 +32,9 @@ class Item_Drop(Entity):
         # step 0: make sure it isn't somehow collected already and has been dropped for long enough
         if self.is_collected or self.ticks < self.tick_threshold_to_be_collected: return
         # step 1: give the block_type to the player's inventory
-        player_inventory.add_item(self.block_type)
-        # step 2: mark entity as collected
-        self.is_collected = True
+        self.is_collected = player_inventory.add_item(self.block_type)
+        # # step 2: mark entity as collected
+        # self.is_collected = True
 
     def is_dead(self):
         return self.is_collected
@@ -60,6 +60,8 @@ class Item_Drop(Entity):
 
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+
+        if not player.inventory.can_add_item(self.block_type): return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
 
         can_travel_px = self.BLOCK_WIDTH * 1.5
         travel_speed = 3
