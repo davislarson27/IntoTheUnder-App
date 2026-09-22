@@ -1156,6 +1156,12 @@ class Inventory:
     def get_recipe_menu(self):
         return self.crafting_object.crafting_recipes
     
+    def get_inventory_contents_generator(self):
+        for slot in self.expanded_inventory:
+            if slot.inventory_item is not None:
+                for _ in range(slot.inventory_item.count_of_items):
+                    yield slot.inventory_item.Block_Type
+
     def clear_inventory_contents(self):
         for slot in self.expanded_inventory:
             slot.inventory_item = None

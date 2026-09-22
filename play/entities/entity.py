@@ -261,6 +261,14 @@ class Entity:
         global_x, _ = self.get_player_block_coordinates()
         return global_x // Grid.chunk_width
 
+    def execute_death(self, is_keep_inventory_active=False, inventory=None):
+        if is_keep_inventory_active:
+            return
+        if inventory is None:
+            return
+        for block_type in inventory.get_inventory_contents_generator():
+            self.grid.drop_block(block_type, self.x, self.y)
+
     @classmethod
     def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px, world_details=None):
         # step 1: initialize the entity

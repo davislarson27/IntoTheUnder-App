@@ -310,6 +310,7 @@ class Grid:
         chunk_id, _ = self.get_chunk_x(global_grid_x)
         chunk = self.get_chunk(global_grid_x, grid_y)
         chunk.insert_entity(new_entity)
+        new_entity.entity_chunk = chunk_id
         self.chunks_modified[chunk_id] = True
 
     def get_entities(self, camera_x):
@@ -342,6 +343,17 @@ class Grid:
     def remove_entity(self, entity):
         self.chunks_modified[entity.entity_chunk] = True
         self.chunks[entity.entity_chunk].entity_set.remove(entity)
+
+    def drop_block(self, drop_block_type, x_px, y_px):
+        if drop_block_type is None:
+            return
+        
+        from play.entities.entities_export import Item_Drop
+
+        item_drop = Item_Drop(self, self.screen, x_px, y_px, self.BLOCK_WIDTH, world_details=self.world_details)
+        item_drop.set_block(drop_block_type)
+        item_drop.set_random_subblock_location()
+        self.insert_entity(item_drop)
 
     @classmethod
     def preinitialize_local_grid(cls, directory, screen, block_width, player, is_background=False):

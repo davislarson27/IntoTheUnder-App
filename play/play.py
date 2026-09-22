@@ -381,6 +381,7 @@ class Play:
 
         # step 4: check for if the player is alive
         if not self.player.is_alive():
+            self.player.execute_death(self.world_details.keep_inventory, self.inventory)
             self.sub_state = Death_Menu(self.screen, self)
 
         # step 5: return run class

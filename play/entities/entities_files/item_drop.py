@@ -13,6 +13,8 @@ class Item_Drop(Entity):
         self.y_size = self.BLOCK_WIDTH
         self.is_collected = False
 
+        self.tick_threshold_to_be_collected = 2
+
     def set_random_subblock_location(self):
         self.x = (random.random() * (self.BLOCK_WIDTH - self.x_size)) + self.x
 
@@ -27,8 +29,8 @@ class Item_Drop(Entity):
 
     def execute_collide_with_player(self, player, player_inventory):
         """is executed when a player is touching an entity"""
-        # step 0: make sure it isn't somehow collected already
-        if self.is_collected: return
+        # step 0: make sure it isn't somehow collected already and has been dropped for long enough
+        if self.is_collected or self.ticks < self.tick_threshold_to_be_collected: return
         # step 1: give the block_type to the player's inventory
         player_inventory.add_item(self.block_type)
         # step 2: mark entity as collected
@@ -58,7 +60,7 @@ class Item_Drop(Entity):
 
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
-        
+
         can_travel_px = self.BLOCK_WIDTH * 1.5
         travel_speed = 3
         player_center_x, player_center_y = player.get_center_px()
