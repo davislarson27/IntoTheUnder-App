@@ -879,11 +879,10 @@ class Inventory:
     def full_swap(self, swap_index): # merges if possible
         if self.position_on_click is not None:
             if swap_index is not None:
-                if self.active_slots[swap_index].inventory_item is None and self.active_slots[self.position_on_click].inventory_item is None:
-                    if self.position_on_click == swap_index:
-                        self.position_on_click = None
-                    else:
-                        self.position_on_click = swap_index
+                if self.position_on_click == swap_index:
+                    self.position_on_click = None
+                elif self.active_slots[swap_index].inventory_item is None and self.active_slots[self.position_on_click].inventory_item is None:
+                    self.position_on_click = swap_index
                 else:
                     # if (
                     #     self.active_slots[swap_index].inventory_item is not None
@@ -904,25 +903,28 @@ class Inventory:
                 self.position_on_click = swap_index
 
     def swap_inventory_slots(self, swap_index):
-        self.active_slots[self.position_on_click].inventory_item, self.active_slots[swap_index].inventory_item = self.active_slots[swap_index].inventory_item, self.active_slots[self.position_on_click].inventory_item
+        if self.active_slots[self.position_on_click].inventory_item is not None and self.active_slots[swap_index].inventory_item is not None and self.active_slots[self.position_on_click].inventory_item.Block_Type == self.active_slots[swap_index].inventory_item.Block_Type:
+            self.fill_from_slot(swap_index)
+        else:
+            self.active_slots[self.position_on_click].inventory_item, self.active_slots[swap_index].inventory_item = self.active_slots[swap_index].inventory_item, self.active_slots[self.position_on_click].inventory_item
         self.position_on_click = None
     
-    def fill_swap_slots(self, swap_index): # not working properly right now -> needs reconnected and repaired
-        available_space = self.active_slots[swap_index].inventory_item.MAX_ITEMS_IN_INVENTORY_SLOT - self.active_slots[swap_index].inventory_item.count_of_items
-        if self.active_slots[self.position_on_click].inventory_item.count_of_items > available_space:
-            # needs split
-            count_to_send = min(self.active_slots[self.position_on_click].inventory_item.count_of_items, available_space - self.active_slots[self.position_on_click].inventory_item.count_of_items)
-            self.active_slots[swap_index].inventory_item.count_of_items += count_to_send
-            if count_to_send >= available_space:
-                self.active_slots[self.position_on_click].inventory_item = None
-            else:
-                self.active_slots[self.position_on_click].inventory_item.count_of_items -= count_to_send
+    def fill_from_slot(self, swap_index):
+        swap_to = self.active_slots[swap_index]
+        swap_from = self.active_slots[self.position_on_click]
+
+        if swap_to.inventory_item.Block_Type is None or swap_from.inventory_item.Block_Type is None: return
+
+        total_items = swap_to.inventory_item.count_of_items + swap_from.inventory_item.count_of_items
+        max_items_in_slot = swap_to.inventory_item.MAX_ITEMS_IN_INVENTORY_SLOT
+
+        if total_items <= max_items_in_slot:
+            swap_to.inventory_item.count_of_items += swap_from.inventory_item.count_of_items
+            swap_from.inventory_item = None
         else:
-            # can just fill and empty
-            self.active_slots[swap_index].inventory_item.count_of_items += self.active_slots[self.position_on_click].inventory_item.count_of_items
-            self.active_slots[self.position_on_click].inventory_item = None
-        
-        self.position_on_click = None
+            leftover_items = total_items - max_items_in_slot
+            swap_to.inventory_item.count_of_items = max_items_in_slot
+            swap_from.inventory_item.count_of_items = leftover_items
 
     def get_slot_from_mouse(self, mouse_position):
         for i in range(len(self.active_slots)):
