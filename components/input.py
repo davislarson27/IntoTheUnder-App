@@ -30,6 +30,7 @@ class Input:
         self.e_keypress = False
         self.c_keypress = False
         self.f_keypress = False
+        self.q_keypress = False
         self.return_keypress = False
         self.f3_keypress = False
 
@@ -49,6 +50,7 @@ class Input:
         self.e_keypress = False
         self.c_keypress = False
         self.f_keypress = False
+        self.q_keypress = False
         self.backspace_keypress = False
         self.return_keypress = False
         self.f3_keypress = False
@@ -69,6 +71,7 @@ class Input:
                 self.e_keypress = (event.key == pygame.K_e)
                 self.c_keypress = (event.key == pygame.K_c)
                 self.f_keypress = (event.key == pygame.K_f)
+                self.q_keypress = (event.key == pygame.K_q)
                 self.backspace_keypress = (event.key == pygame.K_BACKSPACE)
                 self.return_keypress = (event.key == pygame.K_RETURN)
                 self.f3_keypress = (event.key == pygame.K_F3)
