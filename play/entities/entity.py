@@ -257,7 +257,7 @@ class Entity:
         return
     
     def is_dead(self):
-        return False
+        return not self.is_alive()
     
     def initialize_drawing_vars(self):
         pass
@@ -270,6 +270,9 @@ class Entity:
 
         global_x, _ = self.get_player_block_coordinates()
         return global_x // Grid.chunk_width
+
+    def take_damage(self, damage_amount):
+        self.health_bar.change_health(-damage_amount)
 
     def execute_death(self, is_keep_inventory_active=False, inventory=None):
         if is_keep_inventory_active:

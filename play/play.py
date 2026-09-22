@@ -516,8 +516,8 @@ class Play:
             self.inventory.run_passive(self.last_input)
 
             # ------------------------------------- temp spawn using enter ------------------------------------- #
-            # if input.return_keypress:
-            #     Highly_Motivated_Blob.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, 0, self.world_details)
+            if input.return_keypress:
+                Snow_Man_Entity.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, self.BLOCK_WIDTH * 30, self.world_details)
             # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities
