@@ -158,9 +158,6 @@ class Block:
 class Item(Block):
     can_place = False
 
-    def onDestroy(self, inventory=None):
-        return None
-
 class Ingot(Item): # this is just here to help draw other ingots
     @staticmethod
     def draw_ingot_manual(screen, x, y, block_width, base_color, being_mined=False, is_grid_coordinates=True):
