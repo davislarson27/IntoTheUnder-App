@@ -1,5 +1,8 @@
+def default_select_color(special_color_1, special_color_2):
+    return special_color_1
+
 class Inventory_Position:
-    def __init__(self, hit_box, item_frame, can_allow_swap=True, execute_special_action=None, label_rect=None, inventory_item=None, special_color=None, special_color_2=None, block_check_on_click=False, allowed_items_list=None):
+    def __init__(self, hit_box, item_frame, can_allow_swap=True, execute_special_action=None, label_rect=None, inventory_item=None, special_color=None, special_color_2=None, block_check_on_click=False, allowed_items_list=None, select_color_function=default_select_color):
         self.hit_box = hit_box
         self.item_frame = item_frame
         self.label_rect = label_rect
@@ -11,6 +14,7 @@ class Inventory_Position:
 
         self.special_color = special_color
         self.special_color_2 = special_color_2
+        self.select_color_function = select_color_function
 
         self.block_check_on_click = block_check_on_click
 
@@ -21,7 +25,10 @@ class Inventory_Position:
         return self.hit_box.collidepoint(position_on_release)
     
     def get_special_color(self):
-        return self.special_color
+        return self.select_color_function(self.special_color, self.special_color_2)
+    
+    def use_special_color(self):
+        return self.special_color is not None
     
     def allow_swap(self, inventory_item_from):
         if self.can_allow_swap == False:

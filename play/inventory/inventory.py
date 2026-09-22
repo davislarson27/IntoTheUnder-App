@@ -1110,7 +1110,7 @@ class Inventory:
             if i == self.position_on_click: cur_color = self.selected_box_color
             else: cur_color = self.base_box_color
 
-            if self.active_slots[i].get_special_color() is not None:
+            if self.active_slots[i].use_special_color():
                 cur_color = self.active_slots[i].get_special_color()
 
             pygame.draw.rect(

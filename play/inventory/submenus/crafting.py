@@ -56,11 +56,8 @@ class Crafting_Slots:
             inventory_object.crafting_object.output_slot.inventory_item = None
 
         def inc_recipe_up(inventory_object):
-            if len(self.possible_crafting_recipes) > 0:
-                if self.cur_recipe_index == 0:
-                    self.cur_recipe_index = len(self.possible_crafting_recipes) - 1
-                else:
-                    self.cur_recipe_index -= 1
+            if len(self.possible_crafting_recipes) > 0 and self.cur_recipe_index != 0:
+                self.cur_recipe_index -= 1
 
             if len(self.possible_crafting_recipes) > 0:
                 self.recipe_slot.inventory_item.set_recipe(self.possible_crafting_recipes[self.cur_recipe_index])
@@ -68,24 +65,49 @@ class Crafting_Slots:
                 self.recipe_slot.inventory_item.set_recipe(None)
 
         def inc_recipe_down(inventory_object):
-            if len(self.possible_crafting_recipes) > 0:
-                if self.cur_recipe_index == len(self.possible_crafting_recipes) - 1:
-                    self.cur_recipe_index = 0
-                else:
-                    self.cur_recipe_index += 1
+            if len(self.possible_crafting_recipes) > 0 and self.cur_recipe_index != len(self.possible_crafting_recipes) - 1:
+                self.cur_recipe_index += 1
 
             if len(self.possible_crafting_recipes) > 0:
                 self.recipe_slot.inventory_item.set_recipe(self.possible_crafting_recipes[self.cur_recipe_index])
             else:
                 self.recipe_slot.inventory_item.set_recipe(None)
 
+        def select_recipe_box_color_up(color_1, color_2):
+            if len(self.possible_crafting_recipes) > 0 and self.cur_recipe_index > 0:
+                return color_1
+            else:
+                return color_2
+
+        def select_recipe_box_color_down(color_1, color_2):
+            possible_recipe_counts = len(self.possible_crafting_recipes)
+            if possible_recipe_counts > 0 and self.cur_recipe_index < possible_recipe_counts-1:
+                return color_1
+            else:
+                return color_2
+
+        can_move_recipe_bg_color = (145, 150, 155)
+        cannot_move_recipe_bg_color = (100, 105, 110)
+
         self.crafting_input_slots = []
-        for i in range(input_slots):
+        for _ in range(input_slots):
             self.crafting_input_slots.append(Inventory_Position(None, None))
         self.recipe_slot = Inventory_Position(None, None, False, recipe_on_click)
         self.output_slot = Inventory_Position(None, None, False, output_onclick)
-        self.point_up_slot = Inventory_Position(None, None, False, inc_recipe_up, special_color=(145, 150, 155), block_check_on_click=True)
-        self.point_down_slot = Inventory_Position(None, None, False, inc_recipe_down, special_color=(145, 150, 155), block_check_on_click=True)
+        self.point_up_slot = Inventory_Position(None, None, False,
+            inc_recipe_up,
+            special_color=can_move_recipe_bg_color,
+            special_color_2=cannot_move_recipe_bg_color,
+            block_check_on_click=True,
+            select_color_function=select_recipe_box_color_up,
+        )
+        self.point_down_slot = Inventory_Position(None, None, False,
+            inc_recipe_down,
+            special_color=can_move_recipe_bg_color,
+            special_color_2=cannot_move_recipe_bg_color,
+            block_check_on_click=True,
+            select_color_function=select_recipe_box_color_down,
+        )
 
         self.title_label_text_surface = None
         self.section_label_rect = None
