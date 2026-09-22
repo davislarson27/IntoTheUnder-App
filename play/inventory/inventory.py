@@ -915,7 +915,7 @@ class Inventory:
                 self.position_on_click = swap_index
 
     def swap_inventory_slots(self, swap_index):
-        if self.active_slots[self.position_on_click].inventory_item is not None and self.active_slots[swap_index].inventory_item is not None and self.active_slots[self.position_on_click].inventory_item.Block_Type == self.active_slots[swap_index].inventory_item.Block_Type:
+        if self.active_slots[self.position_on_click].inventory_item is not None and self.active_slots[swap_index].inventory_item is not None and self.active_slots[self.position_on_click].inventory_item.Block_Type == self.active_slots[swap_index].inventory_item.Block_Type and self.active_slots[swap_index].inventory_item.count_of_items != self.active_slots[swap_index].inventory_item.MAX_ITEMS_IN_INVENTORY_SLOT:
             self.fill_from_slot(swap_index)
         else:
             self.active_slots[self.position_on_click].inventory_item, self.active_slots[swap_index].inventory_item = self.active_slots[swap_index].inventory_item, self.active_slots[self.position_on_click].inventory_item
