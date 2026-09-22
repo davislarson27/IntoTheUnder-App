@@ -329,6 +329,8 @@ class Grid:
 
     def check_entity_chunks(self, rendered_entities):
         for entity in rendered_entities:
+            if entity.is_dead(): # already removed from its chunk's entity_set this frame
+                continue
             cur_chunk_id = entity.compute_chunk_id()
             if entity.entity_chunk != cur_chunk_id:
                 self.reasign_entity_chunk(entity, cur_chunk_id)
