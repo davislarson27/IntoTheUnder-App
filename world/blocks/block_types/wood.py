@@ -57,10 +57,7 @@ class Leaves(Block):
     def onDestroy(self, inventory=None):
         self.grid.set(self.x, self.y, None)
         if random.random() < self.sappling_drop_chance:
-            for y in range(self.y, self.y + 8):
-                if isinstance(self.grid.get(self.x, y), Tree_Sappling):
-                    return None
-            self.grid.set(self.x, self.y, Tree_Sappling, pass_through=True)
+            self.drop_item(Tree_Sappling)
         return None
 
     def physics(self):
@@ -177,10 +174,7 @@ class Spruce_Leaves(Block):
     def onDestroy(self, inventory=None):
         self.grid.set(self.x, self.y, None)
         if random.random() < self.sappling_drop_chance:
-            for y in range(self.y, self.y + 8):
-                if isinstance(self.grid.get(self.x, y), Spruce_Sappling):
-                    return None
-            self.grid.set(self.x, self.y, Spruce_Sappling, pass_through=True)
+            self.drop_item(Spruce_Sappling)
         return None
 
     def physics(self):
@@ -298,10 +292,7 @@ class Mahogany_Leaves(Block):
     def onDestroy(self, inventory=None):
         self.grid.set(self.x, self.y, None)
         if random.random() < self.sappling_drop_chance:
-            for y in range(self.y, self.y + 8):
-                if isinstance(self.grid.get(self.x, y), Mahogany_Sappling):
-                    return None
-            self.grid.set(self.x, self.y, Mahogany_Sappling, pass_through=True)
+            self.drop_item(Mahogany_Sappling)
         return None
 
     def physics(self):
