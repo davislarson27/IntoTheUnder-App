@@ -884,17 +884,6 @@ class Inventory:
                 elif self.active_slots[swap_index].inventory_item is None and self.active_slots[self.position_on_click].inventory_item is None:
                     self.position_on_click = swap_index
                 else:
-                    # if (
-                    #     self.active_slots[swap_index].inventory_item is not None
-                    #     and 
-                    #     self.active_slots[self.position_on_click].inventory_item is not None
-                    #     and
-                    #     self.active_slots[swap_index].inventory_item.Block_Type == self.active_slots[self.position_on_click].inventory_item.Block_Type 
-                    #     and 
-                    #     self.active_slots[self.position_on_click].inventory_item.count_of_items < self.active_slots[self.position_on_click].inventory_item.MAX_ITEMS_IN_INVENTORY_SLOT
-                    # ):
-                    #     self.fill_swap_slots(swap_index)
-                    # else:
                     self.swap_inventory_slots(swap_index)
             else: # if they click an invalid option it deselects
                 self.position_on_click = None
