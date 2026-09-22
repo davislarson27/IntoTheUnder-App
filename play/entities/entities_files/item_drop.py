@@ -13,7 +13,7 @@ class Item_Drop(Entity):
         self.y_size = self.BLOCK_WIDTH
         self.is_collected = False
 
-        self.tick_threshold_to_be_collected = 2
+        if self.immunity_ticks == 0: self.immunity_ticks = 2
 
     def set_random_subblock_location(self, set_random_subblock_location=True):
         if set_random_subblock_location:
@@ -26,7 +26,7 @@ class Item_Drop(Entity):
         self.y_vel = init_vel_y
 
     def set_immunity_threshold(self, threshold):
-        self.tick_threshold_to_be_collected = threshold
+        self.immunity_ticks = threshold
 
     def set_block(self, block_type):
         self.block_type = block_type
@@ -40,7 +40,7 @@ class Item_Drop(Entity):
     def execute_collide_with_player(self, player, player_inventory):
         """is executed when a player is touching an entity"""
         # step 1: make sure it isn't somehow collected already and has been dropped for long enough
-        if self.is_collected or self.ticks < self.tick_threshold_to_be_collected: return
+        if self.is_collected or self.ticks < self.immunity_ticks: return
         # step 2: give the block_type to the player's inventory
         self.is_collected = player_inventory.add_item(self.block_type)
 
@@ -75,7 +75,7 @@ class Item_Drop(Entity):
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
         if not player.inventory.can_add_item(self.block_type): return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
-        if self.ticks < self.tick_threshold_to_be_collected: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        if self.ticks < self.immunity_ticks: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
 
         can_travel_px = self.BLOCK_WIDTH * 1.5
         travel_speed = 3
@@ -101,6 +101,7 @@ class Item_Drop(Entity):
             "ticks_inc": self.ticks_inc,
             "is_left_facing": self.is_left_facing,
             "ticks": self.ticks,
+            "immunity_ticks": self.immunity_ticks,
             "block_type": self.block_type.str_name,
         }
     
@@ -111,10 +112,11 @@ class Item_Drop(Entity):
         x_vel = entity_dict["x_vel"]
         y_vel = entity_dict["y_vel"]
         ticks = entity_dict["ticks"]
+        immunity_ticks = entity_dict['immunity_ticks']
 
         str_to_block = get_str_to_block()
         block_type = str_to_block[entity_dict["block_type"]]
         
-        entity_obj = Item_Drop(grid, screen, player_x_pixel=x_pixel, player_y_pixel=y_pixel, x_vel=x_vel, y_vel=y_vel, BLOCK_WIDTH=block_width, ticks=ticks)
+        entity_obj = Item_Drop(grid, screen, player_x_pixel=x_pixel, player_y_pixel=y_pixel, x_vel=x_vel, y_vel=y_vel, BLOCK_WIDTH=block_width, ticks=ticks, immunity_ticks=immunity_ticks)
         entity_obj.set_block(block_type)
         return entity_obj

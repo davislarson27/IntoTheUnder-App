@@ -5,7 +5,7 @@ from play.overlay_menus.entity_health import Entity_Health
 
 
 class Entity:
-    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, energy=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True, ticks=0, survival_mode:bool=None):
+    def __init__(self, grid, screen, player_x_pixel, player_y_pixel, BLOCK_WIDTH, health=100, energy=100, player_speed=4, x_vel=0, y_vel=0, x_size=25, y_size=25, ticks_falling=0, ticks_inc=False, inventory_bar_height=100, health_bar_height=25, images=None, is_left_facing=True, player_spawn_x=None, player_spawn_y=None, world_details=None, can_take_fall_damage=True, ticks=0, survival_mode:bool=None, immunity_ticks=0):
         MAX_HEALTH = 100
         MAX_ENERGY = 100
         
@@ -47,13 +47,15 @@ class Entity:
 
         self.base_net_energy_change = -0.00417
 
+        self.world_details = world_details
+        self.ticks = ticks
+        self.immunity_ticks = immunity_ticks
+        
+        self.entity_chunk = self.compute_chunk_id()
+
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
 
-        self.entity_chunk = self.compute_chunk_id()
-
-        self.world_details = world_details
-        self.ticks = ticks
 
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
