@@ -15,8 +15,18 @@ class Item_Drop(Entity):
 
         self.tick_threshold_to_be_collected = 2
 
-    def set_random_subblock_location(self):
-        self.x = (random.random() * (self.BLOCK_WIDTH - self.x_size)) + self.x
+    def set_random_subblock_location(self, set_random_subblock_location=True):
+        if set_random_subblock_location:
+            self.x = self.x + (random.random() * (self.BLOCK_WIDTH - self.x_size))
+        else:
+            self.x = self.x - (self.x_size // 2) + ((random.random() - 0.5) * (self.BLOCK_WIDTH - self.x_size))
+
+    def set_initial_velocity(self, init_vel_x, init_vel_y):
+        self.dx = init_vel_x
+        self.y_vel = init_vel_y
+
+    def set_immunity_threshold(self, threshold):
+        self.tick_threshold_to_be_collected = threshold
 
     def set_block(self, block_type):
         self.block_type = block_type
@@ -29,12 +39,10 @@ class Item_Drop(Entity):
 
     def execute_collide_with_player(self, player, player_inventory):
         """is executed when a player is touching an entity"""
-        # step 0: make sure it isn't somehow collected already and has been dropped for long enough
+        # step 1: make sure it isn't somehow collected already and has been dropped for long enough
         if self.is_collected or self.ticks < self.tick_threshold_to_be_collected: return
-        # step 1: give the block_type to the player's inventory
+        # step 2: give the block_type to the player's inventory
         self.is_collected = player_inventory.add_item(self.block_type)
-        # # step 2: mark entity as collected
-        # self.is_collected = True
 
     def is_dead(self):
         return self.is_collected
@@ -48,7 +56,7 @@ class Item_Drop(Entity):
         self.ticks += 1
         
     def initialize_temp_movement_vars(self, physics):
-        dx = 0
+        dx = self.dx
         dy = 0
         cur_y_acceleration = physics.Y_ACCELERATION // 4
         cur_player_speed_x = self.player_speed
@@ -56,12 +64,18 @@ class Item_Drop(Entity):
         if cur_player_speed_y > 0: water_movement = True
         else: water_movement = False
 
+        if dx != 0 and (self.get_block_below_right() is not None or self.get_block_below_left() is not None or water_movement):
+            if dx > 0:
+                dx -= 1
+            elif dx < 0:
+                dx += 1
+
         return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
 
     def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
-
         if not player.inventory.can_add_item(self.block_type): return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        if self.ticks < self.tick_threshold_to_be_collected: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
 
         can_travel_px = self.BLOCK_WIDTH * 1.5
         travel_speed = 3
@@ -69,9 +83,9 @@ class Item_Drop(Entity):
         x_center, y_center = self.get_center_px()
         if abs(x_center - player_center_x) < can_travel_px and abs(y_center - player_center_y) < can_travel_px:
             if self.x > player_center_x:
-                dx = -travel_speed
+                dx -= travel_speed
             else:
-                dx = travel_speed
+                dx += travel_speed
                 
         return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
 

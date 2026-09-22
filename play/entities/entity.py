@@ -77,6 +77,14 @@ class Entity:
         """returns the player center in px"""
         return self.x + (self.x_size//2), self.y + (self.y_size//2)
 
+    def get_center_top_px(self):
+        """returns the player center in px"""
+        return self.x + (self.x_size//2), self.y
+
+    def get_numeric_entity_direction(self):
+        if self.is_left_facing: return -1
+        else: return 1
+    
     def is_touching(self, block_positions, Block_Type):
         if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
             return True

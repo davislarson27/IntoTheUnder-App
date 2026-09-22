@@ -346,7 +346,8 @@ class Grid:
         self.chunks_modified[entity.entity_chunk] = True
         self.chunks[entity.entity_chunk].entity_set.remove(entity)
 
-    def drop_block(self, drop_block_type, x_px, y_px):
+    def drop_block(self, drop_block_type, x_px, y_px, init_vel_x=0, init_vel_y=0, ticks_till_collectable=None, center_on_block=True):
+        """drops a block as a Item_Drop entity"""
         if drop_block_type is None:
             return
         
@@ -354,7 +355,10 @@ class Grid:
 
         item_drop = Item_Drop(self, self.screen, x_px, y_px, self.BLOCK_WIDTH, world_details=self.world_details)
         item_drop.set_block(drop_block_type)
-        item_drop.set_random_subblock_location()
+        item_drop.set_initial_velocity(init_vel_x, init_vel_y)
+        item_drop.set_random_subblock_location(center_on_block)
+        if ticks_till_collectable is not None: item_drop.set_immunity_threshold(ticks_till_collectable)
+
         self.insert_entity(item_drop)
 
     @classmethod

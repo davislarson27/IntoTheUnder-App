@@ -27,6 +27,9 @@ class Inventory:
         self.ticks_since_last_click = 0
         self.double_click_tick_threshold = 30
 
+        self.grid_reference = None
+        self.player_reference = None
+
         # ----------------------------------- helper functions ----------------------------------- #
 
         def triangle_points_in_rect(rect: pygame.Rect, direction: str, pad_px: int = 2): # creates arrows for scrolling through recipes
@@ -836,17 +839,29 @@ class Inventory:
         if cur_inventory_slot is None:
             return None
         return cur_inventory_slot.Block_Type
+    
+    def get_current_slot(self):
+        return self.expanded_inventory[floor(self.cur_position_index)]
         
     def set_cur_position(self, index):
         self.cur_position_index = floor(index)
+
+    def remove_block_from_slot(self, slot):
+        if slot.inventory_item is None: return
+
+        slot.inventory_item.remove_block()
+        if slot.inventory_item.count_of_items == 0:
+            slot.inventory_item = None
 
     def add_recipe(self, recipe):
         self.crafting_object.add_recipe(recipe)
 
     def set_grid_reference(self, grid):
+        self.grid_reference = grid
         self.crafting_object.set_grid_reference(grid)
     
     def set_player_reference(self, player):
+        self.player_reference = player
         self.crafting_object.set_player_reference(player)
     
 # ------------------------------------------------ mouse imput methods ------------------------------------------------ #
@@ -1068,7 +1083,7 @@ class Inventory:
 
         # 4. Blit
         self.screen.blit(text_surface, text_rect)
-    
+
     def draw_hot_bar_active(self):
         # draw background
         pygame.draw.rect(self.screen, self.hot_bar_background_color, self.inventory_background)
@@ -1184,7 +1199,7 @@ class Inventory:
 
     def get_recipe_menu(self):
         return self.crafting_object.crafting_recipes
-    
+
     def get_inventory_contents_generator(self):
         for slot in self.expanded_inventory:
             if slot.inventory_item is not None:
@@ -1246,7 +1261,7 @@ class Inventory:
 
     def sub_state_full_quit(self):
         return False
-    
+
     def onEsc(self):
         return None
 
@@ -1270,10 +1285,20 @@ class Inventory:
             else:
                 self.increment_cur_position(True)
 
+        # check for dropping an item
+        if input.q_keypress:
+            slot = self.get_current_slot()
+            if slot.inventory_item is None or slot.inventory_item.Block_Type is None: return
+            block_type = slot.inventory_item.Block_Type
+            x, y = self.player_reference.get_center_top_px()
+            init_vel_x = 6 * self.player_reference.get_numeric_entity_direction()
+            self.grid_reference.drop_block(block_type, x, y, init_vel_x=init_vel_x, init_vel_y=0, ticks_till_collectable=30, center_on_block=False)
+            self.remove_block_from_slot(slot)
+
         # check refueling
         self.fuel_side_pannel.run_passive()
-    
-           
+
+
 class Special_Slot_Polygon:
     def __init__(self, special_img_polygon, color, selected_color=None, outline_width=0):
         self.special_img_polygon = special_img_polygon

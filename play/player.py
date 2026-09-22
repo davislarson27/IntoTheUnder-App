@@ -57,3 +57,11 @@ class Player(Entity):
             "player_spawn_y": self.player_spawn_y,
             "can_take_fall_damage": self.can_take_fall_damage
         }
+
+    def get_position_for_dropping_inventory_items(self):
+        x, y = self.get_center_top_px()
+        if self.is_left_facing:
+            x -= self.BLOCK_WIDTH * 2
+        else:
+            x += self.BLOCK_WIDTH * 1.8
+        return x, y
