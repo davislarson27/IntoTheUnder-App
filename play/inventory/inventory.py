@@ -16,8 +16,6 @@ class Inventory:
     def __init__(self, screen, window, INVENTORY_HEIGHT, HEALTH_BAR_HEIGHT = 25, cur_position_index = 0):
         self.screen = screen
         self.window = window
-
-        self.grid_reference = None
         
         self.expanded_inventory = []
         self.active_slots = []
@@ -798,7 +796,7 @@ class Inventory:
 
 # -------------------------------------- interacting with blocks/recipes methods -------------------------------------- #
 
-    def add_item(self, item):
+    def add_item(self, item) -> bool:
         empty_slot = None
         for i in range(self.exp_inventory_size + self.items_in_hot_bar):
             if self.expanded_inventory[i].inventory_item != None and item == self.expanded_inventory[i].inventory_item.Block_Type and self.expanded_inventory[i].inventory_item.can_add():
@@ -812,7 +810,7 @@ class Inventory:
         
         return False
     
-    def can_add_item(self, item):
+    def can_add_item(self, item) -> bool:
         empty_slot = None
         for i in range(self.exp_inventory_size + self.items_in_hot_bar):
             if self.expanded_inventory[i].inventory_item != None and item == self.expanded_inventory[i].inventory_item.Block_Type and self.expanded_inventory[i].inventory_item.can_add():
@@ -843,6 +841,12 @@ class Inventory:
     def add_recipe(self, recipe):
         self.crafting_object.add_recipe(recipe)
 
+    def set_grid_reference(self, grid):
+        self.crafting_object.set_grid_reference(grid)
+    
+    def set_player_reference(self, player):
+        self.crafting_object.set_player_reference(player)
+    
 # ------------------------------------------------ mouse imput methods ------------------------------------------------ #
 
     def check_click(self, mouse, mx, my):

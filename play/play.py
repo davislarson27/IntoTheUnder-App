@@ -25,7 +25,8 @@ class Play:
         # set details
         self.grid, self.inventory, self.player, self.world_details = grid, inventory, player, world_details
         self.player.inventory = inventory
-        self.inventory.grid = grid
+        self.inventory.set_grid_reference(grid)
+        self.inventory.set_player_reference(self.player)
         self.background_grid = background_grid
         self.menu = menu
         self.screen = screen

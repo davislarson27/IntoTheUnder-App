@@ -107,11 +107,18 @@ class Crafting_Slots:
 
         self.crafting_recipes = User_Crafting_Recipes_List(screen=screen)
 
+        self.grid_reference = None
+        self.player_reference = None
+
     def close(self, inventory_object):
         for slot in self.crafting_input_slots:
             if slot.inventory_item is not None:
                 for i in range(slot.inventory_item.count_of_items):
-                    inventory_object.add_item(slot.inventory_item.Block_Type)
+                    block_type = slot.inventory_item.Block_Type
+                    added = inventory_object.add_item(block_type)
+                    if not added:
+                        player_x, player_y = self.player_reference.get_center_px()
+                        self.grid_reference.drop_block(block_type, player_x, player_y)
                 slot.inventory_item = None
             
         self.possible_crafting_recipes = []
@@ -120,7 +127,11 @@ class Crafting_Slots:
 
         if self.output_slot.inventory_item is not None:
             for i in range(self.output_slot.inventory_item.count_of_items):
-                inventory_object.add_item(self.output_slot.inventory_item.Block_Type)
+                block_type = self.output_slot.inventory_item.Block_Type
+                added = inventory_object.add_item(block_type)
+                if not added:
+                    player_x, player_y = self.player_reference.get_center_px()
+                    self.grid_reference.drop_block(block_type, player_x, player_y)
             self.output_slot.inventory_item = None
 
     def get_cur_recipe(self):
@@ -300,4 +311,10 @@ class Crafting_Slots:
 
     def add_recipe(self, recipe):
         self.crafting_recipes.add_recipe(recipe)
+    
+    def set_grid_reference(self, grid):
+        self.grid_reference = grid
+    
+    def set_player_reference(self, player):
+        self.player_reference = player
     
