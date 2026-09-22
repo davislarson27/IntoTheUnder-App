@@ -183,17 +183,19 @@ class Chunk:
                 print(f'error (probable): {block_type_str} is not a valid block type in this version')
 
         from play.entities.entities_export import get_str_to_entity
-
-        entities_dicts = grid_dict["entities"]
-        str_to_entity_dict = get_str_to_entity()
-        for dict_entity in entities_dicts:
-            try:
-                str_entity_type = dict_entity["entity_type"]
-                entity_type = str_to_entity_dict[str_entity_type]
-                entity = entity_type.fill_entity_object(dict_entity, return_grid, screen, BLOCK_WIDTH)
-                chunk.insert_entity(entity)
-            except:
-                print('failed to generate an entity during chunk loading')
+        try:
+            entities_dicts = grid_dict["entities"]
+            str_to_entity_dict = get_str_to_entity()
+            for dict_entity in entities_dicts:
+                try:
+                    str_entity_type = dict_entity["entity_type"]
+                    entity_type = str_to_entity_dict[str_entity_type]
+                    entity = entity_type.fill_entity_object(dict_entity, return_grid, screen, BLOCK_WIDTH)
+                    chunk.insert_entity(entity)
+                except:
+                    print('failed to generate an entity during chunk loading')
+        except:
+            print("likely missing entity list")
                 
         return chunk
     
