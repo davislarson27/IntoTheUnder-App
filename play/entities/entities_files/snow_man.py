@@ -31,6 +31,10 @@ class Snow_Man_Entity(Entity):
 
         self.damage_cooldown_ticks: int = 0
 
+        max_natural_speed = 1.25
+        self.x_acceleration = 0.25
+        self.friction_coeficient = abs(self.x_acceleration / max_natural_speed)
+
     def set_immunity_threshold(self, threshold):
         self.immunity_ticks = threshold
 
@@ -90,9 +94,9 @@ class Snow_Man_Entity(Entity):
                 else:
                     if self.ticks_till_action == 0:
                         if self.x > player_center_x:
-                            dx -= travel_speed
+                            applied_acceleration_x = -self.x_acceleration
                         else:
-                            dx += travel_speed
+                            applied_acceleration_x = self.x_acceleration
                     else:
                         self.ticks_till_action -= 1
             else:
