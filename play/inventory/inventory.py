@@ -1291,7 +1291,8 @@ class Inventory:
             if slot.inventory_item is None or slot.inventory_item.Block_Type is None: return
             block_type = slot.inventory_item.Block_Type
             x, y = self.player_reference.get_center_top_px()
-            init_vel_x = 6 * self.player_reference.get_numeric_entity_direction()
+            initial_speed_x = 6
+            init_vel_x = initial_speed_x * self.player_reference.get_numeric_entity_direction()
             self.grid_reference.drop_block(block_type, x, y+3, init_vel_x=init_vel_x, init_vel_y=0, ticks_till_collectable=30, center_on_block=False)
             self.remove_block_from_slot(slot)
 

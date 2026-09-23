@@ -14,7 +14,8 @@ class Entity:
         self.x = player_x_pixel
         self.y = player_y_pixel
         self.player_speed = player_speed
-        self.x_vel = x_vel
+        if x_vel is None: self.x_vel = 0
+        else: self.x_vel = x_vel
         self.y_vel = y_vel
         self.x_size = x_size
         self.y_size = y_size
@@ -36,6 +37,7 @@ class Entity:
 
         self.dx = 0
         self.y_remainder = 0
+        self.x_remainder = 0
         if player_spawn_x is None and world_details is not None:
             self.player_spawn_x = world_details.world_spawn_x
         else:
@@ -51,7 +53,13 @@ class Entity:
         self.ticks = ticks
         self.immunity_ticks = immunity_ticks
         
+        max_natural_speed = 4
+        self.x_acceleration = 2
+        self.friction_coeficient = abs(self.x_acceleration / max_natural_speed)
+
         self.entity_chunk = self.compute_chunk_id()
+
+        self.wants_to_move_left = is_left_facing
 
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
@@ -126,16 +134,25 @@ class Entity:
                 return True
         return False
 
+    def is_move_ok_x_helper(self, check_x):
+        if self.is_move_ok(floor(check_x / self.BLOCK_WIDTH), floor(self.y / self.BLOCK_WIDTH)):
+            if self.is_move_ok(floor(check_x / self.BLOCK_WIDTH), floor((self.y + self.y_size - 1) / self.BLOCK_WIDTH)):
+                return True
+        return False
+    
     def is_move_ok_x(self, x_change):
-        block_positions = self.get_block_positions(x_change, 0)
-        x_min, x_max = block_positions[0][0], block_positions[0][1]
-        y_min, y_max = block_positions[1][0], block_positions[1][1]
+        step = 1 if x_change > 0 else -1
+        for _ in range(abs(int(x_change))):
+            check_x = self.x + self.x_size if step > 0 else self.x + step
+            if self.is_move_ok_x_helper(check_x):
+                self.x += step
+            else:
+                self.x_vel = 0
+                return True
+        return False
 
-        for y in range(y_min, y_max + 1):
-            for x in range(x_min, x_max + 1):
-                if not self.is_move_ok(x, y):
-                    return False
-        return True
+    def get_reduced_vel_x(self, x_accel):
+        return self.x_vel + x_accel - (self.friction_coeficient * self.x_vel)
 
     def is_not_block_below(self):
         block_positions = self.get_block_positions(0, 1) #checks for block 1 pixel beneath player
@@ -159,23 +176,19 @@ class Entity:
                 return True
         return False
  
-    def get_direction(self, distance_move_x, player_screen_x, mouse_pos_x, is_interacting):
+    def get_direction(self, player_screen_x, mouse_pos_x, is_interacting):
         if is_interacting:
             if self.is_left_facing: # check for if the player is facing left and the mouse is on the right
                 if mouse_pos_x > player_screen_x + self.y_size:
                     self.is_left_facing = False
+                    self.wants_to_move_left = False
             else:
                 if mouse_pos_x < player_screen_x:
                     self.is_left_facing = True
+                    self.wants_to_move_left = True
         else:
-            distance_move_x
-            if self.is_left_facing:
-                if distance_move_x > 0:
-                    self.is_left_facing = False
-            else:
-                if distance_move_x < 0:
-                    self.is_left_facing = True
-    
+            self.is_left_facing = self.wants_to_move_left
+                
     def get_block_below(self, x_offset):
         """returns the block that is one px below the center of the entity's feet"""
         x, y = floor((self.x + x_offset) / self.BLOCK_WIDTH), floor((self.y + self.y_size + 1) / self.BLOCK_WIDTH)
@@ -298,33 +311,36 @@ class Entity:
     def initialize_temp_movement_vars(self, physics):
         dx = 0
         dy = 0
+        applied_acceleration_x = 0
         cur_y_acceleration = physics.Y_ACCELERATION
         cur_player_speed_x = self.player_speed
         cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible = self.get_player_physics(physics.Y_ACCELERATION)
         if cur_player_speed_y > 0: water_movement = True
         else: water_movement = False
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
     
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+    def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
 
-        # pathfind
+        # pathfind here
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
 
     # ----------------------------- runs player physics ----------------------------- #
 
     def move(self, input, physics, player=None): # returns assessed damage object
         # ---------------------- step 1: process input ---------------------- #
-        dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement = self.initialize_temp_movement_vars(physics)
+        dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement = self.initialize_temp_movement_vars(physics)
         
         # ---------------------- step 2: pathfind ---------------------- #
-        dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement = self.pathfind(input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player)
+        dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement = self.pathfind(input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player)
+        self.x_vel = self.get_reduced_vel_x(applied_acceleration_x)
 
         # ---------------------- step 2: move ---------------------- #
         # apply gravity and jumping
         dy += self.y_vel
+        dx += self.x_vel
 
         # check if motion is legal
         if water_movement:
@@ -336,35 +352,29 @@ class Entity:
         int_dy = int(self.y_remainder)
         self.y_remainder -= int_dy
 
-        prevel = abs(self.y_vel)
+        prevel_y = abs(self.y_vel)
         collided = self.is_move_ok_y(int_dy)
         damage_threshold_velocity = 21.5
 
         if collided:
-            if prevel > damage_threshold_velocity:
-                damage = (prevel - damage_threshold_velocity)
+            if prevel_y > damage_threshold_velocity:
+                damage = (prevel_y - damage_threshold_velocity)
                 damage *= physics.FALL_DAMAGE_BASE_MULTIPLIER
-                # print(f'damage = {damage}, prevel = {prevel}')
                 if self.can_take_fall_damage: # stops fall damage from spawning
                     self.health_bar.change_health(-damage)
                 else:
                     self.can_take_fall_damage = True
 
+        self.x_remainder += dx
+        int_dx = int(self.x_remainder)
+        self.x_remainder -= int_dx
 
-        x_move = abs(dx)
-        if dx < 0: x_direction = -1
-        else: x_direction = 1
-        while x_move >= 0:
-            if self.is_move_ok_x(x_move * x_direction):
-                self.x += (x_move * x_direction)
-                break
-            x_move -= 1
+        prevel_x = abs(self.x_vel)
+        collided = self.is_move_ok_x(int_dx)
+
 
         # increment gravity
         self.y_vel += cur_y_acceleration
-
-        self.dx = dx
-
 
 
     # ----------------------------- entity fill details ----------------------------- #

@@ -49,7 +49,7 @@ class Blob(Entity):
     #     # goal: move until you hit a block
     #     return
 
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+    def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
 
         # idea: have two parts: is_valid_path, then set_path
         # is_valid_path returns False if the path isn't set or doesn't work anymore
@@ -66,7 +66,7 @@ class Blob(Entity):
         if block_in_view:
             dx += cur_player_speed_x
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
 class Highly_Motivated_Blob(Entity):
     """he may be highly motivated, but maybe isn't the brightest"""
@@ -155,7 +155,7 @@ class Highly_Motivated_Blob(Entity):
     def go_to_target(self, cur_player_speed_x):
         return self.get_direction_to_target() * cur_player_speed_x
 
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+    def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if self.state.do_action():
             if self.state.state_type is State_Type.turn:
                 self.face_right = not self.face_right
@@ -175,7 +175,7 @@ class Highly_Motivated_Blob(Entity):
                             self.stuck_counter += 1
                             if self.stuck_counter >= self.stuck_threshold:
                                 self.set_next_action()
-                                return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+                                return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
                         else:
                             self.stuck_counter = 0
                         self.last_x = self.x
@@ -194,7 +194,7 @@ class Highly_Motivated_Blob(Entity):
             else: # get a new state if there isn't a good state
                 self.set_next_action()
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
 class Sheep(Entity):
 
@@ -260,7 +260,7 @@ class Sheep(Entity):
     def set_next_action(self, last_action=None):
         self.state = self.get_next_action(last_action)
 
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+    def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if self.state.do_action():
             if self.state.state_type is State_Type.turn:
                 self.face_right = not self.face_right
@@ -291,4 +291,4 @@ class Sheep(Entity):
             else: # get a new state if there isn't a good state
                 self.set_next_action()
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement

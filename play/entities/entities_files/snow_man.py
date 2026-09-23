@@ -64,6 +64,7 @@ class Snow_Man_Entity(Entity):
     def initialize_temp_movement_vars(self, physics):
         dx = 0
         dy = 0
+        applied_acceleration_x = 0
         cur_y_acceleration = physics.Y_ACCELERATION // 4
         cur_player_speed_x = self.player_speed
         cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible = self.get_player_physics(physics.Y_ACCELERATION)
@@ -72,10 +73,10 @@ class Snow_Man_Entity(Entity):
 
         if self.damage_cooldown_ticks > 0: self.damage_cooldown_ticks -= 1
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
 
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
-        if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+    def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+        if player is None: return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
         can_travel_px = self.BLOCK_WIDTH * 6
         travel_speed = 1
@@ -101,7 +102,7 @@ class Snow_Man_Entity(Entity):
             # now decide if it wants to move somewhere else
             self.ticks_till_action = None
                 
-        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
     # ---------------------------------------------- loading and saving methods ---------------------------------------------- #
     def to_dict(self):

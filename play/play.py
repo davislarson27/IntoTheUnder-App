@@ -511,7 +511,7 @@ class Play:
             if input.mouse.get_pressed()[0] or input.mouse.get_pressed()[2]: is_interacting = True
             else: is_interacting = False
             screen_x = self.player.x - self.camera_x
-            self.player.get_direction(self.player.dx, screen_x, input.virtual_mouse_x, is_interacting)
+            self.player.get_direction(screen_x, input.virtual_mouse_x, is_interacting)
 
             self.inventory.run_passive(self.last_input)
 

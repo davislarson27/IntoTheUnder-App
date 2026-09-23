@@ -15,6 +15,9 @@ class Item_Drop(Entity):
 
         if self.immunity_ticks == 0: self.immunity_ticks = 2
 
+        self.x_acceleration = 1
+        self.friction_coeficient = abs(6 / (self.BLOCK_WIDTH * 2.05))
+
     def set_random_subblock_location(self, set_random_subblock_location=True):
         if set_random_subblock_location:
             self.x = self.x + (random.random() * (self.BLOCK_WIDTH - self.x_size))
@@ -22,7 +25,7 @@ class Item_Drop(Entity):
             self.x = self.x - (self.x_size // 2) + ((random.random() - 0.5) * (self.BLOCK_WIDTH - self.x_size))
 
     def set_initial_velocity(self, init_vel_x, init_vel_y):
-        self.dx = init_vel_x
+        self.x_vel = init_vel_x
         self.y_vel = init_vel_y
 
     def set_immunity_threshold(self, threshold):
@@ -56,26 +59,27 @@ class Item_Drop(Entity):
         self.ticks += 1
         
     def initialize_temp_movement_vars(self, physics):
-        dx = self.dx
+        dx = 0
         dy = 0
+        applied_acceleration_x = 0
         cur_y_acceleration = physics.Y_ACCELERATION // 4
         cur_player_speed_x = self.player_speed
         cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible = self.get_player_physics(physics.Y_ACCELERATION)
         if cur_player_speed_y > 0: water_movement = True
         else: water_movement = False
 
-        if dx != 0 and (self.get_block_below_right() is not None or self.get_block_below_left() is not None or water_movement):
-            if dx > 0:
-                dx -= 1
-            elif dx < 0:
-                dx += 1
+        # if dx != 0 and (self.get_block_below_right() is not None or self.get_block_below_left() is not None or water_movement):
+        #     if dx > 0:
+        #         dx -= 1
+        #     elif dx < 0:
+        #         dx += 1
 
-        return dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
 
-    def pathfind(self, input, physics, dx, dy, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
-        if player is None: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
-        if not player.inventory.can_add_item(self.block_type): return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
-        if self.ticks < self.immunity_ticks: return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+    def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
+        if player is None: return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
+        if not player.inventory.can_add_item(self.block_type): return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
+        if self.ticks < self.immunity_ticks: return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
         can_travel_px = self.BLOCK_WIDTH * 1.5
         travel_speed = 3
@@ -87,7 +91,7 @@ class Item_Drop(Entity):
             else:
                 dx += travel_speed
                 
-        return dx, dy, cur_y_acceleration, cur_player_speed_y, water_movement
+        return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
     # ---------------------------------------------- loading and saving methods ---------------------------------------------- #
     def to_dict(self):
