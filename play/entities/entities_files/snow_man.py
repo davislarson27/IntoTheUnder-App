@@ -17,6 +17,9 @@ class Snow_Man_Entity(Entity):
 
         self.main_surface.blit(Snow_Man_Head.surfaces[key], (0, 0))
 
+        self.damage_overlay = self.main_surface.copy()
+        self.damage_overlay.fill((200, 10, 10, 150))
+
     def initialize_unique_entity_attrs(self):
         self.x_size: int = self.BLOCK_WIDTH
         self.y_size: int = int(self.BLOCK_WIDTH * 1.9)
@@ -37,7 +40,7 @@ class Snow_Man_Entity(Entity):
         self.x_acceleration = 0.25
         self.friction_coeficient = abs(self.x_acceleration / max_natural_speed)
 
-        self.vision_px = self.BLOCK_WIDTH * 8
+        self.vision_px = self.BLOCK_WIDTH * 7.5
 
     def set_immunity_threshold(self, threshold):
         self.immunity_ticks = threshold
@@ -64,10 +67,14 @@ class Snow_Man_Entity(Entity):
         print('you hit me! yay!')
 
     def draw(self, screen_x=0, screen_y=0):
-        draw_hit_box = self.main_surface.get_rect(
+        if self.is_hit_this_frame:
+            surf_to_draw = self.damage_overlay
+        else:
+            surf_to_draw = self.main_surface
+        draw_hit_box = surf_to_draw.get_rect(
             topleft=(self.x - screen_x, self.y - screen_y)
         )
-        self.screen.blit(self.main_surface, draw_hit_box)
+        self.screen.blit(surf_to_draw, draw_hit_box)
         self.ticks += 1
 
     def is_player_in_reaction_distance(self, x_center, player_center_x, y_center, player_center_y, can_travel_px):

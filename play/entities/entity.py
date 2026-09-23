@@ -298,6 +298,7 @@ class Entity:
 
     def take_damage(self, damage_amount):
         self.health_bar.change_health(-damage_amount)
+        self.is_hit_this_frame = True 
 
     def take_knockback(self, knockback_vel_x, knockback_vel_y):
         self.x_vel = knockback_vel_x
