@@ -287,6 +287,10 @@ class Entity:
     def take_damage(self, damage_amount):
         self.health_bar.change_health(-damage_amount)
 
+    def take_knockback(self, knockback_vel_x, knockback_vel_y):
+        self.x_vel = knockback_vel_x
+        self.y_vel = knockback_vel_y
+
     def execute_death(self, is_keep_inventory_active=False, inventory=None):
         if is_keep_inventory_active:
             return

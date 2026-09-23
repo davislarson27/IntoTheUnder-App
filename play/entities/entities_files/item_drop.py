@@ -68,12 +68,6 @@ class Item_Drop(Entity):
         if cur_player_speed_y > 0: water_movement = True
         else: water_movement = False
 
-        # if dx != 0 and (self.get_block_below_right() is not None or self.get_block_below_left() is not None or water_movement):
-        #     if dx > 0:
-        #         dx -= 1
-        #     elif dx < 0:
-        #         dx += 1
-
         return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement
 
     def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):

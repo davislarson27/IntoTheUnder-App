@@ -30,6 +30,8 @@ class Snow_Man_Entity(Entity):
         self.damage_cooldown_ticks_total: int = 30
 
         self.damage_cooldown_ticks: int = 0
+        self.x_speed_applied_to_target: int = 40
+        self.y_vel_applied_to_target: int = -12
 
         max_natural_speed = 1.25
         self.x_acceleration = 0.25
@@ -46,6 +48,12 @@ class Snow_Man_Entity(Entity):
 
     def execute_collide_with_player(self, player: Player, player_inventory):
         """is executed when a player is touching an entity"""
+        player_center_x, _ = player.get_center_px()
+        if self.x > player_center_x: # i may want to move this back into the vein that it only applies when damage is actually take -> hence an 'attack'
+            player.take_knockback(-self.x_speed_applied_to_target, self.y_vel_applied_to_target)
+        else:
+            player.take_knockback(self.x_speed_applied_to_target, self.y_vel_applied_to_target)
+        
         if self.damage_cooldown_ticks == 0:
             player.take_damage(self.damage_per_hit)
             self.damage_cooldown_ticks = self.damage_cooldown_ticks_total
@@ -83,7 +91,6 @@ class Snow_Man_Entity(Entity):
         if player is None: return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
         can_travel_px = self.BLOCK_WIDTH * 6
-        travel_speed = 1
         player_center_x, player_center_y = player.get_center_px()
         x_center, y_center = self.get_center_px()
 
