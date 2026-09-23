@@ -135,7 +135,7 @@ class Play:
             return None, None
         return out_of_bounds_x, out_of_bounds_y
 
-    def get_affected_block_pointer(self, player, pointer_x, pointer_y, allowBgInteract): #pointers (expected as 1, 0, or -1) give direction of arrow
+    def get_affected_block_pointer(self, player, pointer_x, pointer_y, allowBgInteract, fg_entities, return_for_entity_interaction=False): #pointers (expected as 1, 0, or -1) give direction of arrow
         # using vector raycasting
         start_x = player.x + floor(0.5 * player.x_size)
         start_y = player.y + floor(0.5 * player.y_size)
@@ -144,12 +144,19 @@ class Play:
         dx, dy = pointer_x - start_x, pointer_y - start_y        
         length = sqrt(dx*dx + dy*dy)
         if length == 0: # if the player's cursor is exactly in their center it will just return the player's center's block
-            if self.grid.get(self.pixel_to_grid(start_x, self.grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.grid.BLOCK_WIDTH)) is None:
-                return None, None, self.grid
+            check_px_x, check_px_y = self.pixel_to_grid(start_x, self.grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.grid.BLOCK_WIDTH)
+            # check for entities
+            for entity in fg_entities:
+                if entity.is_collided_with_pointer(check_px_x - self.camera_x, check_px_y - self.cur_camera_y):
+                    if entity.does_allow_pointer_interactions():
+                        if return_for_entity_interaction: return None, None, entity, self.grid
+
+            if self.grid.get(check_px_x, check_px_y) is None:
+                return None, None, None, self.grid
             elif allowBgInteract and self.background_grid.get(self.pixel_to_grid(start_x, self.background_grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.background_grid.BLOCK_WIDTH)) is None:
-                return None, None, self.background_grid
+                return None, None, None, self.background_grid
             else:
-                return self.pixel_to_grid(start_x, self.grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, self.grid.BLOCK_WIDTH), self.grid
+                return check_px_x, check_px_y, None, self.grid
         else:
             ux, uy = dx / length, dy / length
 
@@ -158,18 +165,25 @@ class Play:
         distrance_stepped_sq = 0
         step = 0
         while distrance_stepped_sq < reach_sq:
-            grid_x = floor((start_x + ux * step) / self.grid.BLOCK_WIDTH)
-            grid_y = floor((start_y + uy * step) / self.grid.BLOCK_WIDTH)
+            check_px_x = start_x + ux * step
+            check_px_y = start_y + uy * step
+            grid_x = floor((check_px_x) / self.grid.BLOCK_WIDTH)
+            grid_y = floor((check_px_y) / self.grid.BLOCK_WIDTH)
+
+            for entity in fg_entities:
+                if entity.is_collided_with_pointer(check_px_x - self.camera_x, check_px_y - self.cur_camera_y):
+                    if entity.does_allow_pointer_interactions():
+                        if return_for_entity_interaction: return None, None, entity, self.grid
 
             if self.grid.get(grid_x, grid_y) is not None and not issubclass(type(self.grid.get(grid_x, grid_y)), Water):
-                return grid_x, grid_y, self.grid
+                return grid_x, grid_y, None, self.grid
             elif allowBgInteract and self.background_grid.get(grid_x, grid_y) is not None and not issubclass(type(self.background_grid.get(grid_x, grid_y)), Water):
-                return grid_x, grid_y, self.background_grid
+                return grid_x, grid_y, None, self.background_grid
 
             distrance_stepped_sq = ((ux * step) * (ux * step)) + ((uy * step) * (uy * step))
             step += 0.025
 
-        return None, None, self.grid
+        return None, None, None, self.grid
 
     def get_affected_block_pointer_build(self, player, grid, pointer_x, pointer_y, inventory, build_mode=True, acknowledge_interactions=True): #pointers (expected as 1, 0, or -1) give direction of arrow
         # using vector raycasting
@@ -180,10 +194,9 @@ class Play:
         dx, dy = pointer_x - start_x, pointer_y - start_y
         length = sqrt(dx*dx + dy*dy)
         if length == 0: # if the player's cursor is exactly in their center it will just return the player's center's block
-            if grid.get(self.pixel_to_grid(start_x, grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, grid.BLOCK_WIDTH)) is None:
-                return None, None
-            else:
-                return self.pixel_to_grid(start_x, grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, grid.BLOCK_WIDTH)
+            check_px_x, check_px_y = self.pixel_to_grid(start_x, grid.BLOCK_WIDTH), self.pixel_to_grid(start_y, grid.BLOCK_WIDTH)            
+            if grid.get(check_px_x, check_px_y) is None: return None, None
+            else: return check_px_x, check_px_y
         else:
             ux, uy = dx / length, dy / length
 
@@ -309,7 +322,7 @@ class Play:
 
     # ---------------------------- main actions ---------------------------- #
 
-    def interact_with_grid(self, input):
+    def interact_with_grid(self, input, entities):
 
         self.grid.manage_chunks(self.camera_x, is_background=False) # this will become async
         self.background_grid.manage_chunks(self.camera_x, is_background=True) # this will become async
@@ -322,7 +335,10 @@ class Play:
         world_mouse_x = input.virtual_mouse_x + self.camera_x
         world_mouse_y = input.virtual_mouse_y + self.cur_camera_y
         
-        self.affected_x, self.affected_y, self.active_grid = self.get_affected_block_pointer(self.player, world_mouse_x, world_mouse_y, allow_bg_interactions)
+        self.affected_x, self.affected_y, entity, self.active_grid = self.get_affected_block_pointer(self.player, world_mouse_x, world_mouse_y, allow_bg_interactions, entities, return_for_entity_interaction=True)
+
+        if entity is not None and input.mouse_left_keypress:
+            entity.execute_collide_with_player_pointer(self.player, self.inventory)
 
         # set mining sprite grid
         self.mining_sprite.set_grid(self.active_grid)
@@ -369,9 +385,9 @@ class Play:
                     selected_block = self.active_grid.get(self.affected_x, self.affected_y)
                     selected_block.onDestroy(self.inventory)
 
-    def run_main_game(self, input):
+    def run_main_game(self, input, entities):
         # step 1: interact with blocks
-        self.interact_with_grid(input)
+        self.interact_with_grid(input, entities)
 
         # step 2: move player
         self.player.move(input, self.physics_rules)
@@ -496,24 +512,6 @@ class Play:
             self.sub_state = self.sub_state.run(input) # responsible for drawing
 
         else:
-            # run main game
-            return_class = self.run_main_game(input)
-            if return_class is not self: return return_class
-
-            # set camera variables
-            self.set_camera_offset()
-
-            # execute physics
-            self.grid.chunked_physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
-            self.background_grid.chunked_physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
-
-            # # get player icon direction using movement direction UNLESS they are actively interacting with a block
-            if input.mouse.get_pressed()[0] or input.mouse.get_pressed()[2]: is_interacting = True
-            else: is_interacting = False
-            screen_x = self.player.x - self.camera_x
-            self.player.get_direction(screen_x, input.virtual_mouse_x, is_interacting)
-
-            self.inventory.run_passive(self.last_input)
 
             # ------------------------------------- temp spawn using enter ------------------------------------- #
             if input.return_keypress:
@@ -539,6 +537,24 @@ class Play:
                 if entity.is_dead():
                     self.background_grid.remove_entity(entity)
 
+            # run main game
+            return_class = self.run_main_game(input, entities)
+            if return_class is not self: return return_class
+
+            # set camera variables
+            self.set_camera_offset()
+
+            # execute physics
+            self.grid.chunked_physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
+            self.background_grid.chunked_physics(self.camera_x, self.cur_camera_y, self.inventory.inventory_height)
+
+            # # get player icon direction using movement direction UNLESS they are actively interacting with a block
+            if input.mouse.get_pressed()[0] or input.mouse.get_pressed()[2]: is_interacting = True
+            else: is_interacting = False
+            screen_x = self.player.x - self.camera_x
+            self.player.get_direction(screen_x, input.virtual_mouse_x, is_interacting)
+
+            self.inventory.run_passive(self.last_input)
 
             # ------------- draw main game ------------- #
 

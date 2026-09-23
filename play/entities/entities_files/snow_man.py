@@ -58,6 +58,9 @@ class Snow_Man_Entity(Entity):
             player.take_damage(self.damage_per_hit)
             self.damage_cooldown_ticks = self.damage_cooldown_ticks_total
 
+    def execute_collide_with_player_pointer(self, player, player_inventory):
+        print('you hit me! yay!')
+
     def draw(self, screen_x=0, screen_y=0):
         draw_hit_box = self.main_surface.get_rect(
             topleft=(self.x - screen_x, self.y - screen_y)

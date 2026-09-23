@@ -61,6 +61,8 @@ class Entity:
 
         self.wants_to_move_left = is_left_facing
 
+        self.interact_in_pointer_interaction = True
+
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
 
@@ -266,8 +268,17 @@ class Entity:
     def is_collided_with(self, other_entity):
         return self.hit_box.colliderect(other_entity.hit_box)
     
+    def is_collided_with_pointer(self, x_px, y_px):
+        return self.hit_box.collidepoint(x_px, y_px)
+
     def execute_collide_with_player(self, player, player_inventory):
         return
+    
+    def execute_collide_with_player_pointer(self, player, player_inventory):
+        return
+    
+    def does_allow_pointer_interactions(self):
+        return self.interact_in_pointer_interaction
     
     def is_dead(self):
         return not self.is_alive()

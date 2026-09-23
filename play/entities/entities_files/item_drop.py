@@ -18,6 +18,8 @@ class Item_Drop(Entity):
         self.x_acceleration = 1
         self.friction_coeficient = abs(6 / (self.BLOCK_WIDTH * 2.05))
 
+        self.interact_in_pointer_interaction = False
+
     def set_random_subblock_location(self, set_random_subblock_location=True):
         if set_random_subblock_location:
             self.x = self.x + (random.random() * (self.BLOCK_WIDTH - self.x_size))
