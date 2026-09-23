@@ -268,12 +268,14 @@ class Play:
         # process entities
         entities = self.grid.get_entities(self.camera_x)
         for entity in entities:
+            entity.open_new_frame()
             entity.move(input, self.physics_rules)
             entity.set_hit_box(self.camera_x, self.cur_camera_y)
             if entity.is_dead():
                 self.grid.remove_entity(entity)
             bg_entities = self.background_grid.get_entities(self.camera_x)
             for entity in bg_entities:
+                entity.open_new_frame()
                 entity.move(input, self.physics_rules)
                 entity.set_hit_box(self.camera_x, self.cur_camera_y)
                 if entity.is_dead():
@@ -338,7 +340,8 @@ class Play:
         self.affected_x, self.affected_y, entity, self.active_grid = self.get_affected_block_pointer(self.player, world_mouse_x, world_mouse_y, allow_bg_interactions, entities, return_for_entity_interaction=True)
 
         if entity is not None and input.mouse_left_keypress:
-            entity.execute_collide_with_player_pointer(self.player, self.inventory)
+            self.player.hit_entity(entity)
+            # entity.execute_collide_with_player_pointer(self.player, self.inventory)
 
         # set mining sprite grid
         self.mining_sprite.set_grid(self.active_grid)
@@ -522,6 +525,7 @@ class Play:
             self.player.set_hit_box(self.camera_x, self.cur_camera_y)
             entities = self.grid.get_entities(self.camera_x)
             for entity in entities:
+                entity.open_new_frame()
                 entity.move(input, self.physics_rules, player=self.player)
                 entity.set_hit_box(self.camera_x, self.cur_camera_y)
                 if self.player.is_collided_with(entity): # check for collisions between the player and other entities
@@ -530,6 +534,7 @@ class Play:
                     self.grid.remove_entity(entity)
             bg_entities = self.background_grid.get_entities(self.camera_x)
             for entity in bg_entities:
+                entity.open_new_frame()
                 entity.move(input, self.physics_rules, player=self.player)
                 entity.set_hit_box(self.camera_x, self.cur_camera_y)
                 if self.player.is_collided_with(entity): # check for collisions between the player and other entities

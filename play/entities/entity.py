@@ -62,6 +62,7 @@ class Entity:
         self.wants_to_move_left = is_left_facing
 
         self.interact_in_pointer_interaction = True
+        self.is_hit_this_frame = False
 
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
@@ -310,6 +311,10 @@ class Entity:
         for block_type in inventory.get_inventory_contents_generator():
             self.grid.drop_block(block_type, self.x, self.y)
 
+    def print_health(self):
+        if self.health_bar is not None:
+            self.health_bar.print_health()
+
     @classmethod
     def spawn_new(cls, grid, screen, BLOCK_WIDTH, x_px, y_px, world_details=None):
         # step 1: initialize the entity
@@ -391,6 +396,8 @@ class Entity:
         # increment gravity
         self.y_vel += cur_y_acceleration
 
+    def open_new_frame(self):
+        self.is_hit_this_frame = False
 
     # ----------------------------- entity fill details ----------------------------- #
     

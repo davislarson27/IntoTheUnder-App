@@ -37,6 +37,8 @@ class Snow_Man_Entity(Entity):
         self.x_acceleration = 0.25
         self.friction_coeficient = abs(self.x_acceleration / max_natural_speed)
 
+        self.vision_px = self.BLOCK_WIDTH * 8
+
     def set_immunity_threshold(self, threshold):
         self.immunity_ticks = threshold
 
@@ -93,11 +95,11 @@ class Snow_Man_Entity(Entity):
     def pathfind(self, input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player=None):
         if player is None: return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
-        can_travel_px = self.BLOCK_WIDTH * 6
+        
         player_center_x, player_center_y = player.get_center_px()
         x_center, y_center = self.get_center_px()
 
-        if self.is_player_in_reaction_distance(x_center, player_center_x, y_center, player_center_y, can_travel_px):
+        if self.is_player_in_reaction_distance(x_center, player_center_x, y_center, player_center_y, self.vision_px):
             if self.saw_user_last_tick:
                 if self.ticks_till_action is None:
                     self.set_ticks_till_action()
@@ -150,6 +152,6 @@ class Snow_Man_Entity(Entity):
         saw_user_last_tick = entity_dict["saw_user_last_tick"]
         damage_cooldown_ticks = entity_dict["damage_cooldown_ticks"]
         
-        entity_obj = Snow_Man_Entity(grid, screen, player_x_pixel=x_pixel, player_y_pixel=y_pixel, x_vel=x_vel, y_vel=y_vel, BLOCK_WIDTH=block_width, health=health, ticks=ticks, immunity_ticks=immunity_ticks)
+        entity_obj = Snow_Man_Entity(grid, screen, player_x_pixel=x_pixel, player_y_pixel=y_pixel, x_vel=x_vel, y_vel=y_vel, BLOCK_WIDTH=block_width, health=health, ticks=ticks, immunity_ticks=immunity_ticks, survival_mode=True)
         entity_obj.set_logic_tick_counters(ticks_till_action, saw_user_last_tick, damage_cooldown_ticks)
         return entity_obj

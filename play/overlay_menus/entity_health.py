@@ -94,6 +94,9 @@ class Entity_Health:
         else: # nothing is drawn if it's not survival mode
             return 0
         
+    def print_health(self):
+        print(self.get_health())
+        
     # ------------------------------------------- drawing ------------------------------------------- #
     def rerender(self, margin, row_width):
 

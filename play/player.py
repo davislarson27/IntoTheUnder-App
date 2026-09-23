@@ -41,6 +41,16 @@ class Player(Entity):
 
         return dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement
 
+    def hit_entity(self, entity):
+        entity.take_damage(self.damage_per_hit)
+        # entity.print_health()
+
+    def initialize_unique_entity_attrs(self):
+        self.damage_per_hit: int = 50
+
+        self.x_speed_applied_to_target: int = 40
+        self.y_vel_applied_to_target: int = -12
+
     def to_dict(self):
         return {
             "player_x_pixel": self.x,
