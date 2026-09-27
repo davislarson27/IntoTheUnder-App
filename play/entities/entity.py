@@ -305,6 +305,9 @@ class Entity:
         self.x_vel = knockback_vel_x
         self.y_vel = knockback_vel_y
 
+    def process_collisions(self, collide_x: bool, collide_y: bool):
+        return
+
     def execute_death(self, is_keep_inventory_active=False, inventory=None):
         if is_keep_inventory_active:
             return
@@ -375,10 +378,10 @@ class Entity:
         self.y_remainder -= int_dy
 
         prevel_y = abs(self.y_vel)
-        collided = self.is_move_ok_y(int_dy)
+        collided_y = self.is_move_ok_y(int_dy)
         damage_threshold_velocity = 21.5
 
-        if collided:
+        if collided_y:
             if prevel_y > damage_threshold_velocity:
                 damage = (prevel_y - damage_threshold_velocity)
                 damage *= physics.FALL_DAMAGE_BASE_MULTIPLIER
@@ -392,11 +395,12 @@ class Entity:
         self.x_remainder -= int_dx
 
         prevel_x = abs(self.x_vel)
-        collided = self.is_move_ok_x(int_dx)
-
+        collided_x = self.is_move_ok_x(int_dx)
 
         # increment gravity
         self.y_vel += cur_y_acceleration
+
+        self.process_collisions(collided_x, collided_y)
 
     def open_new_frame(self):
         # self.hit_recorder_queue = [self.hit_recorder_queue[frame_num] for frame_num in range(1, len(self.hit_recorder_queue)-1)]
