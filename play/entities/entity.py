@@ -63,6 +63,7 @@ class Entity:
 
         self.interact_in_pointer_interaction = True
         self.is_hit_this_frame = False
+        self.is_hit_last_frame = False
 
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
@@ -398,6 +399,9 @@ class Entity:
         self.y_vel += cur_y_acceleration
 
     def open_new_frame(self):
+        # self.hit_recorder_queue = [self.hit_recorder_queue[frame_num] for frame_num in range(1, len(self.hit_recorder_queue)-1)]
+        # self.hit_recorder_queue.append(False)
+        self.is_hit_last_frame = self.is_hit_this_frame
         self.is_hit_this_frame = False
 
     # ----------------------------- entity fill details ----------------------------- #

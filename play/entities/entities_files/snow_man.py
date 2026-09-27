@@ -67,7 +67,7 @@ class Snow_Man_Entity(Entity):
         print('you hit me! yay!')
 
     def draw(self, screen_x=0, screen_y=0):
-        if self.is_hit_this_frame:
+        if self.is_hit_this_frame or self.is_hit_last_frame:
             surf_to_draw = self.damage_overlay
         else:
             surf_to_draw = self.main_surface

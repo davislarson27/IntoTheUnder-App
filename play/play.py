@@ -389,11 +389,11 @@ class Play:
                     selected_block.onDestroy(self.inventory)
 
     def run_main_game(self, input, entities):
-        # step 1: interact with blocks
-        self.interact_with_grid(input, entities)
-
-        # step 2: move player
+        # step 1: move player
         self.player.move(input, self.physics_rules)
+
+        # step 2: interact with blocks
+        self.interact_with_grid(input, entities)
 
         # step 3: check for energy changes
         self.player.manage_energy(self.grid)
@@ -490,7 +490,7 @@ class Play:
             return max
         else:
             return min
-    
+
     def straight_to_window_rendering(self):
         if self.sub_state is None:
             self.manage_window_overlay_rerenders()
