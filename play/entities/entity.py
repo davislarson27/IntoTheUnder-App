@@ -65,6 +65,8 @@ class Entity:
         self.is_hit_this_frame = False
         self.is_hit_last_frame = False
 
+        self.check_collisions_against_all: bool = False
+
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
 
@@ -289,7 +291,7 @@ class Entity:
         pass
     
     def initialize_unique_entity_attrs(self):
-        pass
+        return
 
     def compute_chunk_id(self):
         from world.grid import Grid

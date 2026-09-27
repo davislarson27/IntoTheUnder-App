@@ -471,6 +471,27 @@ class Play:
             else:
                 operate_menu(self.escape_menu)
 
+    def process_entities(self, entities_list, grid):
+        check_against_all_entities_list = []
+        for entity in entities_list:
+            entity.open_new_frame()
+            if entity.check_collisions_against_all: check_against_all_entities_list.append(entity)
+            entity.move(input, self.physics_rules, player=self.player)
+            entity.set_hit_box(self.camera_x, self.cur_camera_y)
+            if self.player.is_collided_with(entity): # check for collisions between the player and other entities
+                entity.execute_collide_with_player(self.player, self.inventory)
+            if entity.is_dead():
+                grid.remove_entity(entity)
+
+        for check_all_entity in check_against_all_entities_list:
+            for general_entity in entities_list:
+                if check_all_entity is general_entity: continue
+                if check_all_entity.is_collided_with(general_entity):
+                    check_all_entity.execute_collide_with_player(general_entity, None)
+                    if check_all_entity.is_dead(): grid.remove_entity(check_all_entity)
+                    if general_entity.is_dead(): grid.remove_entity(general_entity)
+
+
 
     # ---------------------------- interacting with main loop ---------------------------- #
 
@@ -523,24 +544,12 @@ class Play:
 
             # process entities
             self.player.set_hit_box(self.camera_x, self.cur_camera_y)
+
             entities = self.grid.get_entities(self.camera_x)
-            for entity in entities:
-                entity.open_new_frame()
-                entity.move(input, self.physics_rules, player=self.player)
-                entity.set_hit_box(self.camera_x, self.cur_camera_y)
-                if self.player.is_collided_with(entity): # check for collisions between the player and other entities
-                    entity.execute_collide_with_player(self.player, self.inventory)
-                if entity.is_dead():
-                    self.grid.remove_entity(entity)
+            self.process_entities(entities, self.grid)
+
             bg_entities = self.background_grid.get_entities(self.camera_x)
-            for entity in bg_entities:
-                entity.open_new_frame()
-                entity.move(input, self.physics_rules, player=self.player)
-                entity.set_hit_box(self.camera_x, self.cur_camera_y)
-                if self.player.is_collided_with(entity): # check for collisions between the player and other entities
-                    entity.execute_collide_with_player(self.player, self.inventory)
-                if entity.is_dead():
-                    self.background_grid.remove_entity(entity)
+            self.process_entities(bg_entities, self.background_grid)
 
             # run main game
             return_class = self.run_main_game(input, entities)

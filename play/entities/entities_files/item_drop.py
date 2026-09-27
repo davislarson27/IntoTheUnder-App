@@ -46,6 +46,7 @@ class Item_Drop(Entity):
         """is executed when a player is touching an entity"""
         # step 1: make sure it isn't somehow collected already and has been dropped for long enough
         if self.is_collected or self.ticks < self.immunity_ticks: return
+        if player_inventory is None: return
         # step 2: give the block_type to the player's inventory
         self.is_collected = player_inventory.add_item(self.block_type)
 
