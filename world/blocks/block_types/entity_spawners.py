@@ -8,6 +8,8 @@ class Snow_Ball(Entity_Spawner):
     place_as_block = False
     stored_entity = Snow_Ball_Projectile
 
+    str_name = "Snow Ball"
+
     @classmethod
     def place_entity(cls, entity, world_mouse_x, world_mouse_y, selected_grid, foreground_grid, background_grid, screen, block_width):
         x_px, y_px = entity.get_center_top_px()
