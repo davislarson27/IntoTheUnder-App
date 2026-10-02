@@ -1006,6 +1006,10 @@ class Inventory:
             inventory_height
         )
 
+        _f = font_manager.get()
+        hot_bar_font_size = max(10, int(full_inventory_item_size * self.percent_font_of_block_full_inventory))
+        self.hot_bar_font = pygame.font.Font(str(_f.PixeloidSans), hot_bar_font_size)
+
         self.passive_hot_bar_slots = []
         for i in range(self.items_in_hot_bar): # fills hot bar with positions
             hit_box = pygame.Rect(
@@ -1032,7 +1036,7 @@ class Inventory:
 
 # -------------------------------------------------- drawing methods -------------------------------------------------- #
 
-    def draw_item_in_slot(self, slot, surface=None):
+    def draw_item_in_slot(self, slot, surface=None, is_hot_bar=False):
         # now draw the item into the slot
         if surface is None:
             surface = self.screen
@@ -1049,7 +1053,8 @@ class Inventory:
                     is_grid_coordinates = False # set to draw by pixel
                 )
 
-                text_surface = self.full_inventory_font.render(f"x{item.count_of_items}", True, self.inventory_text_color)
+                font = self.hot_bar_font if is_hot_bar else self.full_inventory_font
+                text_surface = font.render(f"x{item.count_of_items}", True, self.inventory_text_color)
                 surface.blit(
                     text_surface,
                     (
@@ -1177,7 +1182,7 @@ class Inventory:
 
             # the actual item data lives on expanded_inventory; passive_hot_bar_slots only tracks window-space layout
             self.passive_hot_bar_slots[i].inventory_item = self.expanded_inventory[i].inventory_item
-            self.draw_item_in_slot(self.passive_hot_bar_slots[i], self.window)
+            self.draw_item_in_slot(self.passive_hot_bar_slots[i], self.window, is_hot_bar=True)
 
 # extra functions to be added (misc)
 
