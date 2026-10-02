@@ -34,6 +34,7 @@ class Input:
         self.return_keypress = False
         self.f3_keypress = False
         self.mouse_left_keypress = False
+        self.mouse_right_keypress = False
 
         # caps lock toggle
         self.caps_lock = False
@@ -56,6 +57,7 @@ class Input:
         self.return_keypress = False
         self.f3_keypress = False
         self.mouse_left_keypress = False
+        self.mouse_right_keypress = False
 
         # set event inputs
         for event in pygame.event.get():
@@ -81,6 +83,8 @@ class Input:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.mouse_left_keypress = True
+                if event.button == 3:
+                    self.mouse_right_keypress = True
 
             # get virtual mouse positions
             mx, my = pygame.mouse.get_pos()

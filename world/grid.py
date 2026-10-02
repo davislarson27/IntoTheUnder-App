@@ -344,7 +344,7 @@ class Grid:
 
     def remove_entity(self, entity):
         self.chunks_modified[entity.entity_chunk] = True
-        self.chunks[entity.entity_chunk].entity_set.remove(entity)
+        self.chunks[entity.entity_chunk].remove_entity(entity)
 
     def drop_block(self, drop_block_type, x_px, y_px, init_vel_x=0, init_vel_y=0, ticks_till_collectable=None, center_on_block=True):
         """drops a block as a Item_Drop entity"""

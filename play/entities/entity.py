@@ -33,8 +33,6 @@ class Entity:
         self.is_left_facing = is_left_facing
         self.can_take_fall_damage = can_take_fall_damage
 
-        self.hit_box = pygame.Rect(0, 0, self.x_size, self.y_size)
-
         self.dx = 0
         self.y_remainder = 0
         self.x_remainder = 0
@@ -66,10 +64,14 @@ class Entity:
         self.is_hit_last_frame = False
 
         self.check_collisions_against_all: bool = False
+        self.interact_width_projectiles: bool = True
+
+        self.apply_x_friction_in_air: bool = True
 
         self.initialize_drawing_vars()
         self.initialize_unique_entity_attrs()
 
+        self.hit_box = pygame.Rect(0, 0, self.x_size, self.y_size)
 
     # needs redone to account for widths and heights
     def is_move_ok(self, x, y):
@@ -101,6 +103,9 @@ class Entity:
         if self.is_left_facing: return -1
         else: return 1
     
+    def get_movement_velocities(self):
+        return self.x_vel, self.y_vel
+    
     def is_touching(self, block_positions, Block_Type):
         if issubclass(type(self.grid.get(block_positions[0][0], block_positions[1][1])), Block_Type):
             return True
@@ -120,7 +125,7 @@ class Entity:
 
         elif self.is_touching(self.get_block_positions(), Iron_Ladder):
             return 0, self.player_speed, self.player_speed, False  # no gravity, can move freely
-
+        
         return default_y_acceleration, self.player_speed, 0, True
 
     def is_move_ok_y_helper(self, check_y):
@@ -157,8 +162,11 @@ class Entity:
                 return True
         return False
 
-    def get_reduced_vel_x(self, x_accel):
-        return self.x_vel + x_accel - (self.friction_coeficient * self.x_vel)
+    def get_reduced_vel_x(self, x_accel, apply_friction=True):
+        x_vel = self.x_vel + x_accel
+        if apply_friction:
+            return x_vel - (self.friction_coeficient * self.x_vel)
+        return x_vel
 
     def is_not_block_below(self):
         block_positions = self.get_block_positions(0, 1) #checks for block 1 pixel beneath player
@@ -307,7 +315,7 @@ class Entity:
         self.x_vel = knockback_vel_x
         self.y_vel = knockback_vel_y
 
-    def process_collisions(self, collide_x: bool, collide_y: bool):
+    def process_grid_collisions(self, collide_x: bool, collide_y: bool):
         return
 
     def execute_death(self, is_keep_inventory_active=False, inventory=None):
@@ -362,7 +370,8 @@ class Entity:
         
         # ---------------------- step 2: pathfind ---------------------- #
         dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_y, water_movement = self.pathfind(input, physics, dx, dy, applied_acceleration_x, cur_y_acceleration, cur_player_speed_x, cur_player_speed_y, jump_is_possible, water_movement, player)
-        self.x_vel = self.get_reduced_vel_x(applied_acceleration_x)
+        apply_friction = self.apply_x_friction_in_air or not self.is_not_block_below()
+        self.x_vel = self.get_reduced_vel_x(applied_acceleration_x, apply_friction=apply_friction)
 
         # ---------------------- step 2: move ---------------------- #
         # apply gravity and jumping
@@ -402,13 +411,15 @@ class Entity:
         # increment gravity
         self.y_vel += cur_y_acceleration
 
-        self.process_collisions(collided_x, collided_y)
+        self.process_grid_collisions(collided_x, collided_y)
 
     def open_new_frame(self):
         # self.hit_recorder_queue = [self.hit_recorder_queue[frame_num] for frame_num in range(1, len(self.hit_recorder_queue)-1)]
         # self.hit_recorder_queue.append(False)
         self.is_hit_last_frame = self.is_hit_this_frame
         self.is_hit_this_frame = False
+
+        self.ticks += 1
 
     # ----------------------------- entity fill details ----------------------------- #
     

@@ -2,7 +2,6 @@ import pygame
 import random
 
 from ..entity import Entity
-from world.blocks.block_export import get_str_to_block
 
 class Item_Drop(Entity):
     def initialize_drawing_vars(self):
@@ -18,7 +17,8 @@ class Item_Drop(Entity):
         self.x_acceleration = 1
         self.friction_coeficient = abs(6 / (self.BLOCK_WIDTH * 2.05))
 
-        self.interact_in_pointer_interaction = False
+        self.interact_in_pointer_interaction: bool = False
+        self.interact_width_projectiles: bool = False
 
     def set_random_subblock_location(self, set_random_subblock_location=True):
         if set_random_subblock_location:
@@ -59,7 +59,6 @@ class Item_Drop(Entity):
         )
         cur_surface = pygame.transform.rotate(self.main_surface, -self.ticks)
         self.screen.blit(cur_surface, draw_hit_box)
-        self.ticks += 1
         
     def initialize_temp_movement_vars(self, physics):
         dx = 0
@@ -115,6 +114,7 @@ class Item_Drop(Entity):
         ticks = entity_dict["ticks"]
         immunity_ticks = entity_dict['immunity_ticks']
 
+        from world.blocks.block_export import get_str_to_block
         str_to_block = get_str_to_block()
         block_type = str_to_block[entity_dict["block_type"]]
         

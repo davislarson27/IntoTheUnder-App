@@ -410,3 +410,11 @@ class Explosives(Block): # this is a container for all blocks that explode (help
             self.draw_manual(self.screen, draw_x, draw_y, self.block_width, True, False, self.pass_through)
         else:
             self.draw_manual(self.screen, draw_x, draw_y, self.block_width, False, False, self.pass_through)
+
+class Entity_Spawner(Block):
+    place_as_block = False
+    stored_entity = None
+
+    @classmethod
+    def place_entity(cls, entity, world_mouse_x, world_mouse_y, selected_grid, foreground_grid, background_grid):
+        return

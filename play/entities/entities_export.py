@@ -1,5 +1,6 @@
 from .entities_files.passive_entities import *
 from .entities_files.item_drop import *
+from .entities_files.projectiles import *
 from .entities_files.snow_man import *
 
 """this file pulls together all of the entity files into one to be exported"""
@@ -7,6 +8,7 @@ from .entities_files.snow_man import *
 def get_entities_list():
     return [
         Item_Drop,
+        Snow_Ball_Projectile,
         Snow_Man_Entity,
     ]
 

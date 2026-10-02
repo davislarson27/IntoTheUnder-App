@@ -554,6 +554,14 @@ class User_Crafting_Recipes_List:
             output=Ingredient(Wood_Ladder, 4),
             category=Recipe_Category.Utility
         ),
+        Crafting_Recipe(
+            "Snow Ball",
+            [
+                Ingredient(Snow_Block, 1),
+            ],
+            output=Ingredient(Snow_Ball, 5),
+            category=Recipe_Category.Utility
+        ),
     ]
 
     basic_additional_possible_recipes = [

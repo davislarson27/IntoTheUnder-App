@@ -360,6 +360,10 @@ class Play:
             self.build_held_time = 0
             self.build_mode = False
 
+        Block_Type = self.inventory.get_current()
+        if input.mouse_right_keypress and issubclass(Block_Type, Entity_Spawner) and not Block_Type.place_as_block: # this allows entities to be placed relative to the player and the pointer
+            Block_Type.place_entity(self.player, world_mouse_x, world_mouse_y, self.active_grid, self.grid, self.background_grid, self.screen, self.BLOCK_WIDTH)
+            self.inventory.build_from_current()
 
         if self.affected_x is not None:
             if input.mouse.get_pressed()[2]:
@@ -373,9 +377,13 @@ class Play:
                     # check to see if the block can be built
                     if build_affected_x is not None and not self.player.reject_block_placement(build_affected_x, build_affected_y):
                         # now build the block
-                        Block_Type = self.inventory.get_current()
-                        if Block_Type is not None and not issubclass(Block_Type, Item):
-                            if issubclass(Block_Type, MutliBlock):
+                        if Block_Type is not None:
+                            if issubclass(Block_Type, Item):
+                                pass
+                            # elif issubclass(Block_Type, Entity_Spawner) and Block_Type.place_as_block: # for spawning entities like a selected block
+                            #     # code to spawn these needs to be added
+                            #     self.inventory.build_from_current()
+                            elif issubclass(Block_Type, MutliBlock):
                                 if Block_Type.BuildMulti(self.active_grid, build_affected_x, build_affected_y) == True:
                                     self.inventory.build_from_current()
                             else:
@@ -473,25 +481,36 @@ class Play:
 
     def process_entities(self, entities_list, grid):
         check_against_all_entities_list = []
+        dead_entities = set()
+
         for entity in entities_list:
+            if entity in dead_entities: continue
             entity.open_new_frame()
             if entity.check_collisions_against_all: check_against_all_entities_list.append(entity)
             entity.move(input, self.physics_rules, player=self.player)
+
+        for entity in entities_list:
             entity.set_hit_box(self.camera_x, self.cur_camera_y)
             if self.player.is_collided_with(entity): # check for collisions between the player and other entities
                 entity.execute_collide_with_player(self.player, self.inventory)
             if entity.is_dead():
-                grid.remove_entity(entity)
+                dead_entities.add(entity)
 
         for check_all_entity in check_against_all_entities_list:
+            if check_all_entity in dead_entities: continue
             for general_entity in entities_list:
+                if general_entity in dead_entities: continue
                 if check_all_entity is general_entity: continue
                 if check_all_entity.is_collided_with(general_entity):
                     check_all_entity.execute_collide_with_player(general_entity, None)
-                    if check_all_entity.is_dead(): grid.remove_entity(check_all_entity)
-                    if general_entity.is_dead(): grid.remove_entity(general_entity)
+                    if check_all_entity.is_dead():
+                        dead_entities.add(check_all_entity)
+                    if general_entity.is_dead():
+                        dead_entities.add(general_entity)
 
-
+        for entity in dead_entities: # actually remove dead entities
+            if entity.is_dead():
+                grid.remove_entity(entity)
 
     # ---------------------------- interacting with main loop ---------------------------- #
 
