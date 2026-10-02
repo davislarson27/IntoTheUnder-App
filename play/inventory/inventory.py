@@ -771,21 +771,27 @@ class Inventory:
 
         # get inventory contents
         for i in range(len(inventory_items)):
-            slot = inventory_items[i]
-            if slot is not None:
-                block_type = str_to_block[slot[0]]
-                block_count = slot[1]
-                inventory.expanded_inventory[i].inventory_item = Inventory_Item(block_type, block_count)
+            try:
+                slot = inventory_items[i]
+                if slot is not None:
+                    block_type = str_to_block[slot[0]]
+                    block_count = slot[1]
+                    inventory.expanded_inventory[i].inventory_item = Inventory_Item(block_type, block_count)
+            except:
+                print(f"failed to load in inventory slot number {i}")
 
         enduring_chest_items = inventory_dict["enduring_chest"]
 
         # get enduring chest contents
         for i in range(len(enduring_chest_items)):
-            slot = enduring_chest_items[i]
-            if slot is not None:
-                block_type = str_to_block[slot[0]]
-                block_count = slot[1]
-                inventory.enduring_chest_side_pannel.chest_slots[i].inventory_item = Inventory_Item(block_type, block_count)
+            try:
+                slot = enduring_chest_items[i]
+                if slot is not None:
+                    block_type = str_to_block[slot[0]]
+                    block_count = slot[1]
+                    inventory.enduring_chest_side_pannel.chest_slots[i].inventory_item = Inventory_Item(block_type, block_count)
+            except:
+                print(f"failed to load in enduring chest slot number {i}")
 
         # fill discovered recieps list
         inventory.setRecipesFromDict(inventory_dict["crafting_recipes"])
