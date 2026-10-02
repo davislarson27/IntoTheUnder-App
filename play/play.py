@@ -361,7 +361,7 @@ class Play:
             self.build_mode = False
 
         Block_Type = self.inventory.get_current()
-        if input.mouse_right_keypress and issubclass(Block_Type, Entity_Spawner) and not Block_Type.place_as_block: # this allows entities to be placed relative to the player and the pointer
+        if input.mouse_right_keypress and Block_Type is not None and issubclass(Block_Type, Entity_Spawner) and not Block_Type.place_as_block: # this allows entities to be placed relative to the player and the pointer
             Block_Type.place_entity(self.player, world_mouse_x, world_mouse_y, self.active_grid, self.grid, self.background_grid, self.screen, self.BLOCK_WIDTH)
             self.inventory.build_from_current()
 
