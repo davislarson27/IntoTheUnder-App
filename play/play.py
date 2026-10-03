@@ -387,7 +387,8 @@ class Play:
                                 if Block_Type.BuildMulti(self.active_grid, build_affected_x, build_affected_y) == True:
                                     self.inventory.build_from_current()
                             else:
-                                self.active_grid.set(build_affected_x, build_affected_y, Block_Type)
+                                rotation_deg = Block_Type.get_rotation_deg(build_affected_x, build_affected_y,self.affected_x, self.affected_y)
+                                self.active_grid.set(build_affected_x, build_affected_y, Block_Type, rotation_deg=rotation_deg)
                                 self.inventory.build_from_current()
             
             elif input.mouse.get_pressed()[0]:

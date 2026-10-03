@@ -96,7 +96,7 @@ class Grid:
         chunk_id, x = self.get_chunk_x(global_x)
         return self.chunks[chunk_id].get(x, y)
     
-    def set(self, global_x, y, block, pass_through=None, stored_inventory_items=None, anchor_x=None, anchor_y=None, tick_threshold=None):
+    def set(self, global_x, y, block, pass_through=None, stored_inventory_items=None, anchor_x=None, anchor_y=None, tick_threshold=None, rotation_deg=0):
         if not self.in_bounds(global_x, y):
             return
         chunk_id, x = self.get_chunk_x(global_x)
@@ -105,7 +105,7 @@ class Grid:
         chunk = self.chunks[chunk_id]
         x_offset = chunk.get_x_offset(chunk_id)
         anchor_x_local = anchor_x - x_offset if anchor_x is not None else None
-        chunk.set(x, y, block, pass_through=pass_through, stored_inventory_items=stored_inventory_items, x_offset=x_offset, grid=self, anchor_x=anchor_x_local, anchor_y=anchor_y, tick_threshold=tick_threshold)
+        chunk.set(x, y, block, pass_through=pass_through, stored_inventory_items=stored_inventory_items, x_offset=x_offset, grid=self, anchor_x=anchor_x_local, anchor_y=anchor_y, tick_threshold=tick_threshold, rotation_deg=rotation_deg)
 
         self.chunks_modified[chunk_id] = True
     

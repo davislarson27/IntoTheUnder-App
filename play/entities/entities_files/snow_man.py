@@ -11,9 +11,9 @@ class Snow_Man_Entity(Entity):
         self.main_surface = pygame.Surface((self.BLOCK_WIDTH, int(self.BLOCK_WIDTH * 1.9)), pygame.SRCALPHA)
         self.main_surface.fill((225, 235, 245))
 
-        key = (Snow_Man_Head, self.BLOCK_WIDTH, False, False)
+        key = (Snow_Man_Head, self.BLOCK_WIDTH, False, False, 0)
         if key not in Snow_Man_Head.surfaces:
-            Snow_Man_Head.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=False)
+            Snow_Man_Head.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=False, rotate_deg=0)
 
         self.main_surface.blit(Snow_Man_Head.surfaces[key], (0, 0))
 

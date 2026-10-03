@@ -36,9 +36,9 @@ class Item_Drop(Entity):
     def set_block(self, block_type):
         self.block_type = block_type
 
-        key = (block_type, self.BLOCK_WIDTH, False, False)
+        key = (block_type, self.BLOCK_WIDTH, False, False, 0)
         if key not in block_type.surfaces:
-            block_type.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=False)
+            block_type.draw_to_surface(self.BLOCK_WIDTH, being_mined=False, use_alt_drawing=False, rotate_deg=0)
 
         self.main_surface = pygame.transform.smoothscale(block_type.surfaces[key], (self.x_size, self.x_size))
 

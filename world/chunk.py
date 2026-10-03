@@ -41,7 +41,7 @@ class Chunk:
     def set_manual(self, x, y, value):
         self.array[y][x] = value
         
-    def set(self, x, y, block, pass_through=None, stored_inventory_items=None, x_offset=0, grid=None, anchor_x=None, anchor_y=None, tick_threshold=None):
+    def set(self, x, y, block, pass_through=None, stored_inventory_items=None, x_offset=0, grid=None, anchor_x=None, anchor_y=None, tick_threshold=None, rotation_deg=0):
             if not self.in_bounds(x, y):
                 return
             if block is None:
@@ -53,7 +53,7 @@ class Chunk:
                 if grid is not None:
                     cur_grid = grid
                 global_anchor_x = anchor_x + x_offset if anchor_x is not None else None
-                self.array[y][x] = block(cur_grid, self.screen, x+x_offset, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items, anchor_x=global_anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold)
+                self.array[y][x] = block(cur_grid, self.screen, x+x_offset, y, self.BLOCK_WIDTH, pass_through, stored_inventory_items=stored_inventory_items, anchor_x=global_anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold, rotation_deg=rotation_deg)
 
     def is_filled(self, x, y):
         return self.array[y, x] != None
@@ -119,8 +119,21 @@ class Chunk:
             for x in range(self.width):
                 cur_block = self.get(x, y)
                 if cur_block is not None:
-                    blocks_in_grid.append([cur_block.str_name, x, y, cur_block.pass_through, cur_block.get_stored_inventory_items(), cur_block.ticks_till_physics, cur_block.tick_threshold, cur_block.anchor_x, cur_block.anchor_y])
-        
+                    blocks_in_grid.append(
+                        [
+                            cur_block.str_name,
+                            x,
+                            y,
+                            cur_block.pass_through,
+                            cur_block.get_stored_inventory_items(),
+                            cur_block.ticks_till_physics,
+                            cur_block.tick_threshold,
+                            cur_block.anchor_x,
+                            cur_block.anchor_y,
+                            cur_block.rotation_deg
+                        ]
+                    )
+
         # store entities
         entities = []
         for entity in self.entity_set:
@@ -168,6 +181,9 @@ class Chunk:
                 anchor_x = block[7]
                 anchor_y = block[8]
 
+                if len(block) > 9: rotation_deg = block[9]
+                else: rotation_deg = 0
+
                 chunk.set_manual(x, y, block_type(
                     return_grid,
                     screen,
@@ -179,7 +195,9 @@ class Chunk:
                     ticks_till_physics=ticks_till_physics,
                     tick_threshold=tick_threshold,
                     anchor_x=anchor_x,
-                    anchor_y=anchor_y)
+                    anchor_y=anchor_y,
+                    rotation_deg=rotation_deg
+                    )
                 )
             
             except (KeyError):

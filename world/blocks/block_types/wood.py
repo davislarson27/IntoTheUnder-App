@@ -12,6 +12,8 @@ class Log(Block):
     str_name = "Log"
     ticks_to_mine = 50
 
+    get_rotation_deg_function = Block.get_rotation_using_rotation
+
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
         if being_mined:
@@ -128,6 +130,8 @@ class Spruce_Log(Block):
 
     str_name = "Spruce Log"
     ticks_to_mine = 50
+
+    get_rotation_deg_function = Block.get_rotation_using_rotation
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):
@@ -246,6 +250,8 @@ class Mahogany_Log(Block):
 
     str_name = "Mahogany Log"
     ticks_to_mine = 50
+
+    get_rotation_deg_function = Block.get_rotation_using_rotation
 
     @staticmethod
     def draw_manual(screen, x, y, block_width, being_mined=False, is_grid_coordinates=True, use_alt_drawing=False):

@@ -32,7 +32,21 @@ class Block:
 
     surfaces = {} # key = (cls, block_width, being_mined, use_alt_drawing)
 
-    def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, tick_threshold=None, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None):
+    @staticmethod
+    def get_rotation_using_rotation(build_x, build_y, selected_x, selected_y):
+        if selected_x > build_x:
+            return 270
+        elif selected_x < build_x:
+            return 90
+        return 0
+
+    @staticmethod
+    def get_rotation_deg_ignoring_position(build_x, build_y, selected_x, selected_y):
+        return 0
+    
+    get_rotation_deg_function = get_rotation_deg_ignoring_position
+
+    def __init__(self, grid, screen, grid_x, grid_y, block_width, pass_through=False, ticks_till_physics=0, tick_threshold=None, stored_inventory_items=None, special_value=True, anchor_x=None, anchor_y=None, rotation_deg=0):
         self.grid = grid
         self.screen = screen
         self.x = grid_x
@@ -49,17 +63,21 @@ class Block:
             self.stored_inventory_items = []
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
+        self.rotation_deg = rotation_deg
 
         self.is_initialized = True
 
         self.special_init()
 
     @classmethod
-    def draw_to_surface(cls, block_width, being_mined=False, use_alt_drawing=False):
+    def draw_to_surface(cls, block_width, being_mined=False, use_alt_drawing=False, rotate_deg=0):
         surface = pygame.Surface((block_width, block_width), pygame.SRCALPHA).convert_alpha()
         cls.draw_manual(surface, 0, 0, block_width, is_grid_coordinates=False, being_mined=being_mined, use_alt_drawing=use_alt_drawing)
-        
-        cls.surfaces[(cls, block_width, being_mined, use_alt_drawing)] = surface
+
+        if rotate_deg != 0:
+            surface = pygame.transform.rotate(surface, rotate_deg)
+
+        cls.surfaces[(cls, block_width, being_mined, use_alt_drawing, rotate_deg)] = surface
 
     def interaction(self, player):
         return False
@@ -102,12 +120,12 @@ class Block:
 
         use_alt_drawing = self.use_alt_drawing()
 
-        key = (type(self), self.block_width, being_mined, use_alt_drawing)
+        key = (type(self), self.block_width, being_mined, use_alt_drawing, self.rotation_deg)
         if key in self.surfaces:
             self.screen.blit(self.surfaces[key], (draw_x, draw_y))
 
         else:
-            self.draw_to_surface(self.block_width, being_mined=being_mined, use_alt_drawing=use_alt_drawing)
+            self.draw_to_surface(self.block_width, being_mined=being_mined, use_alt_drawing=use_alt_drawing, rotate_deg=self.rotation_deg)
             self.screen.blit(self.surfaces[key], (draw_x, draw_y))
 
         self.drawDependentDetails(
@@ -145,6 +163,10 @@ class Block:
 
     def special_init(self):
         pass
+    
+    @classmethod
+    def get_rotation_deg(cls, build_x, build_y, selected_x, selected_y):
+        return cls.get_rotation_deg_function(build_x, build_y, selected_x, selected_y)
     
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
