@@ -14,11 +14,11 @@ class Col_Structures:
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def set_to_chunk(self, x, y, block_type, pass_through=None, stored_inventory_items=None, anchor_x=None, anchor_y=None, tick_threshold=None):
-        self.chunk.set(x, y, block_type, x_offset=self.x_offset, pass_through=pass_through, stored_inventory_items=stored_inventory_items, grid=self.grid, anchor_x=anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold)
+    def set_to_chunk(self, x, y, block_type, pass_through=None, stored_inventory_items=None, anchor_x=None, anchor_y=None, tick_threshold=None, rotation_deg=0):
+        self.chunk.set(x, y, block_type, x_offset=self.x_offset, pass_through=pass_through, stored_inventory_items=stored_inventory_items, grid=self.grid, anchor_x=anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold, rotation_deg=rotation_deg)
 
-    def set_to_grid(self, x, y, block_type, pass_through=None, stored_inventory_items=None, anchor_x=None, anchor_y=None, tick_threshold=None):
-        self.grid.set(x, y, block_type, pass_through=pass_through, stored_inventory_items=stored_inventory_items, anchor_x=anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold)
+    def set_to_grid(self, x, y, block_type, pass_through=None, stored_inventory_items=None, anchor_x=None, anchor_y=None, tick_threshold=None, rotation_deg=0):
+        self.grid.set(x, y, block_type, pass_through=pass_through, stored_inventory_items=stored_inventory_items, anchor_x=anchor_x, anchor_y=anchor_y, tick_threshold=tick_threshold, rotation_deg=rotation_deg)
 
     def get_random_float(self, hash_string: str) -> float:
         return int(hashlib.sha256(f"{self.struct_seed}_{hash_string}".encode()).hexdigest(), 16) / (2**256)
@@ -69,7 +69,7 @@ class Col_Cactus_Structure(Col_Structures):
         else:
             self.cactus_height = 2
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         if col_num == 0:
             for y in range(ground_y-self.cactus_height, ground_y):
                 set_to_func(self.start_x, y, Cactus)
@@ -95,7 +95,7 @@ class Col_Snow_Man_Structure(Col_Structures):
 
         self.height = 2
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, Snow_Block)
         set_to_func(self.start_x, ground_y-2, Snow_Man_Head)
 
@@ -137,7 +137,7 @@ class Col_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         x = self.start_x + col_num
         if col_num == 0 or col_num == self.width - 1:
             for y in range(self.leaves_start_elev-2, self.leaves_start_elev+1):
@@ -189,7 +189,7 @@ class Col_Snow_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         # add leaves
         x = self.start_x + col_num
         if col_num == 0 or col_num == self.width - 1:
@@ -249,7 +249,7 @@ class Col_Spruce_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         # add leaves
         if col_num == 0 or col_num == self.width - 1:
             x = self.start_x + col_num
@@ -315,7 +315,7 @@ class Col_Mahogany_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         # add leaves
         if col_num == 0 or col_num == self.width - 1:
             x = self.start_x + col_num
@@ -386,7 +386,7 @@ class Col_Thick_Mahogany_Tree(Col_Structures):
         normalized = value / (2**256)
         return int(normalized * 1000) + 200 # ticks will be between 200 and 1200
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         # add leaves
         if col_num == 0 or col_num == self.width - 1:
             x = self.start_x + col_num
@@ -443,7 +443,7 @@ class Col_Puddle(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y, Water)
 
     @classmethod
@@ -465,7 +465,7 @@ class Col_Wild_Flower_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, Wild_Flower)
 
     @classmethod
@@ -487,7 +487,7 @@ class Col_White_Lily_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, White_Lily)
 
     @classmethod
@@ -509,7 +509,7 @@ class Col_Forget_Me_Not_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, Forget_Me_Not)
 
     @classmethod
@@ -531,7 +531,7 @@ class Col_Rose_Struct(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, Rose)
 
     @classmethod
@@ -553,7 +553,7 @@ class Col_Watermellon_Patch(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, Watermellon)
 
     @classmethod
@@ -575,7 +575,7 @@ class Col_Small_Bush(Col_Structures):
         self.chunk = chunk
         self.x_offset = x_offset
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         set_to_func(self.start_x, ground_y-1, Leaves, pass_through=True)
     
     @classmethod
@@ -607,7 +607,7 @@ class Col_Recipe_Burrow(Col_Structures):
             self.is_reversed = True
             self.use_start_y = end_y
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         x = self.start_x + col_num
         adjusted_col_num = self.get_adjusted_col_num(col_num)
         if adjusted_col_num >= 0 and adjusted_col_num < 2: # add the floor & ceiling
@@ -727,7 +727,7 @@ class Col_Recipe_Cave(Col_Structures):
             Loot_Odds(Diamond, 2, 0.00045),
         ])
 
-    def _set_fg_col(self, col_num, ground_y, biome, set_to_func):
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
         x = col_num + self.start_x
         if col_num == 0 or col_num == self.width - 1: # left or right side
             for y in range(self.depth, self.depth+self.height):
@@ -757,6 +757,52 @@ class Col_Recipe_Cave(Col_Structures):
         x = col_num + self.start_x
         for y in range(self.depth, self.depth+self.height):
             set_to_func(x, y, Spruce_Planks)
+    
+    @classmethod
+    def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
+        return start_x
+
+    @classmethod
+    def get_width(cls, structure_odds):
+        return cls.width
+
+
+class Col_Fallen_Tree(Col_Structures):
+    width = 5
+    def __init__(self, structure_odds, start_x, start_y, end_y, grid, chunk, x_offset):
+        self.start_x = start_x
+        self.global_x = start_x + x_offset
+        self.start_y = start_y
+        self.end_y = end_y
+        self.struct_seed = structure_odds
+        self.grid = grid
+        self.chunk = chunk
+        self.x_offset = x_offset
+
+        self.is_reversed = True
+        self.use_start_y = start_y
+        if self.start_y < self.end_y:
+            self.is_reversed = False
+            self.use_start_y = end_y
+
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
+        x = self.start_x + col_num
+        adjusted_col_num = self.get_adjusted_col_num(col_num)
+
+        if self.is_reversed: rotate_angle = 90
+        else: rotate_angle = 270
+
+        if adjusted_col_num == 0: # add the floor & ceiling
+            y = ground_y - 1
+            set_to_func(x, y, Log)
+        elif adjusted_col_num > 1:
+            y = self.use_start_y - 1
+            set_to_func(x, y, Log, rotation_deg=rotate_angle)
+
+    def get_adjusted_col_num(self, col_num):
+        if self.is_reversed:
+            return self.width - col_num - 1
+        return col_num
     
     @classmethod
     def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:

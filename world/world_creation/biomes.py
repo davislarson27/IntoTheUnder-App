@@ -194,6 +194,7 @@ class Rain_Forest(Biome):
         Structure_Identifier(Col_White_Lily_Struct, 0.0025),
         Structure_Identifier(Col_Forget_Me_Not_Struct, 0.0025),
         Structure_Identifier(Col_Rose_Struct, 0.0042),
+        Structure_Identifier(Col_Fallen_Tree, 0.001),
     ]
     bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Col_Mahogany_Tree, 0.136),
@@ -241,6 +242,7 @@ class Forest(Biome):
         Structure_Identifier(Col_White_Lily_Struct, 0.007),
         Structure_Identifier(Col_Forget_Me_Not_Struct, 0.007),
         Structure_Identifier(Col_Rose_Struct, 0.007),
+        Structure_Identifier(Col_Fallen_Tree, 0.004),
     ]
     bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Col_Tree, 0.1),
@@ -265,6 +267,7 @@ class Montane_Forest(Biome): # at some point get more gravel to appear here near
         Structure_Identifier(Col_Spruce_Tree, 0.0003),
         Structure_Identifier(Col_White_Lily_Struct, 0.014),
         Structure_Identifier(Col_Rose_Struct, 0.0014),
+        Structure_Identifier(Col_Fallen_Tree, 0.0014),
     ]
     bg_chunk_structures = [ # make sure that odds combined do not add up even close to 100 or the whole area will be covered
         Structure_Identifier(Col_Tree, 0.019)

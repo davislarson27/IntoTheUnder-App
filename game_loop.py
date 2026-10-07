@@ -28,9 +28,9 @@ from components.launch_load_screen import Launch_Load_Screen
 
 # pyinstaller command line
 r"""
-mac: python3 -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" --icon "game_files/image_files/ITU-Icon.icns" --add-data "game_files:game_files" intotheunder.py
+mac: python3 -m PyInstaller --clean --noconfirm --windowed --name "Into The Under" --icon "game_files/image_files/ITU-Icon.icns" --add-data "game_files:game_files" intotheunder.py
 
-windows: py -m PyInstaller --clean --noconfirm --windowed --name "IntoTheUnder" --icon "game_files\image_files\ITU-Icon.ico" --add-data "game_files;game_files" intotheunder.py
+windows: py -m PyInstaller --clean --noconfirm --windowed --name "Into The Under" --icon "game_files\image_files\ITU-Icon.ico" --add-data "game_files;game_files" intotheunder.py
 
 """
 
