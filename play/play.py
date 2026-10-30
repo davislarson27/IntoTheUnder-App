@@ -557,10 +557,10 @@ class Play:
 
         else:
 
-            # ------------------------------------- temp spawn using enter ------------------------------------- #
-            if input.return_keypress:
-                Snow_Man_Entity.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, self.BLOCK_WIDTH * 30, self.world_details)
-            # ------------------------------------- end spawn using enter ------------------------------------- #
+            # # ------------------------------------- temp spawn using enter ------------------------------------- #
+            # if input.return_keypress:
+            #     Snow_Man_Entity.spawn_new(self.grid, self.screen, self.BLOCK_WIDTH, self.player.x, self.BLOCK_WIDTH * 30, self.world_details)
+            # # ------------------------------------- end spawn using enter ------------------------------------- #
 
             # process entities
             self.player.set_hit_box(self.camera_x, self.cur_camera_y)

@@ -41,6 +41,7 @@ class Biome: # generic template, fall back in case nothing is claimed for some r
     ]
     underground_fg_chunk_structures = [
         Structure_Identifier(Col_Recipe_Cave, 0.0015),
+        Structure_Identifier(Col_Level_2_Entrance, 0.05),
     ]
 
 

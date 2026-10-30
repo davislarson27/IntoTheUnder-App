@@ -811,3 +811,46 @@ class Col_Fallen_Tree(Col_Structures):
     @classmethod
     def get_width(cls, structure_odds):
         return cls.width
+
+
+class Col_Level_2_Entrance(Col_Structures):
+    width = 5
+    def __init__(self, structure_odds, start_x, start_y, end_y, grid, chunk, x_offset):
+        self.start_x = start_x
+        self.global_x = start_x + x_offset
+        self.start_y = start_y
+        self.end_y = end_y
+        self.struct_seed = structure_odds
+        self.grid = grid
+        self.chunk = chunk
+        self.x_offset = x_offset
+
+        self.height = 3
+        self.depth = 120 - self.height - 1
+
+    def _set_fg_col(self, col_num, ground_y, biome, set_to_func, rotate_deg=0):
+        x = col_num + self.start_x
+        # for y in range(self.depth, self.depth+self.height):
+        #     set_to_func(x, y, None)
+
+        if col_num == 1 or col_num == 3: # left or right side
+            for y in range(self.depth+2, self.depth+5):
+                set_to_func(x, y, Stone_Bricks)
+
+        elif col_num == 0 or col_num == 4:
+            set_to_func(x, self.depth+3, Stone_Bricks) # Gold_Stone_Bricks
+
+        elif col_num == 2:
+            for y in range(self.depth+2, self.depth+5):
+                set_to_func(x, y, None)
+
+    def _set_bg_col(self, col_num, fg_ground_y, biome, set_to_func):
+        return
+    
+    @classmethod
+    def get_x_for_start_y(cls, start_x: int, structure_odds: float) -> int:
+        return start_x
+
+    @classmethod
+    def get_width(cls, structure_odds):
+        return cls.width

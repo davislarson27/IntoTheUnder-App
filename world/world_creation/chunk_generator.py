@@ -18,6 +18,12 @@ class Chunk_Generator:
         self.screen = screen
         self.directory = directory
 
+        self.under_layer_1_end_elev = 120
+        self.under_layer_2_end_elev = 150
+
+        self.under_layer_1_ceiling_default_height = 7
+        self.under_layer_1_floor_default_height = 7
+
         self.terrain_heights_by_x = []
         self.bg_terrain_heights_by_x = []
         self.biomes_by_x = []
@@ -43,7 +49,17 @@ class Chunk_Generator:
         self.cave_tunnel_seed = make_seed(self.seed, 'cave_tunnel_seed')
         self.cave_cavern_seed = make_seed(self.seed, 'cave_cavern_seed')
 
+        self.border_block_under_1_top_seed = make_seed(self.seed, 'border_block_under_1_top_seed')
+        self.border_block_under_1_bottom_seed = make_seed(self.seed, 'border_block_under_1_bottom_seed')
         self.border_block_seed = make_seed(self.seed, 'border_block_seed')
+
+        self.under_layer_1_top_elev_seed = make_seed(self.seed, 'under_layer_1_top_elev_seed')
+        self.under_layer_1_top_hill_seed = make_seed(self.seed, 'under_layer_1_top_hill_seed')
+        self.under_layer_1_top_micro_variation_seed = make_seed(self.seed, 'under_layer_1_top_micro_variation_seed')
+        self.under_layer_1_floor_elev_seed = make_seed(self.seed, 'under_layer_1_floor_elev_seed')
+        self.under_layer_1_floor_hill_seed = make_seed(self.seed, 'under_layer_1_floor_hill_seed')
+        self.under_layer_1_floor_micro_variation_seed = make_seed(self.seed, 'under_layer_1_floor_micro_variation_seed')
+
 
         self.biome_priority_order = [Volcano, Mountain, Lake, Ravine, Desert, Tundra, Glacier, Rain_Forest, Spruce_Forest, Forest, Montane_Forest, Plains]
 
@@ -177,7 +193,6 @@ class Chunk_Generator:
         return int(self.world_details.ground_level + base_altitude_level + mountain + hill + terVar)
     
     def get_bg_terrain_height(self, x):
-        # large = pnoise1( x * freq, base=seed % crunch value) * amp
         base_altitude_level = self.get_base_elevation(x)
 
         mountain = self.get_mountain_elevation(x) // 3 # keeps some of the mountain noise but stops it from following them  all the way up
@@ -189,6 +204,26 @@ class Chunk_Generator:
 
         return int(self.world_details.ground_level + base_altitude_level + mountain + hill + terVar)
     
+    def get_under_layer_1_ceiling_height(self, x):
+        base_altitude_level = self.get_under_layer_1_ceil_elevation(x)
+
+        hill = pnoise1(x * (1 / self.hill_freq), base=(self.under_layer_1_top_hill_seed) % 256) # more rolling hills
+        hill *= abs(hill) * self.hill_amp
+
+        terVar  = pnoise1(x * (1 / self.terrain_variation_freq),  base=(self.under_layer_1_top_micro_variation_seed) % 256) * self.terrain_variation_amp
+
+        return int(self.under_layer_1_end_elev + self.under_layer_1_ceiling_default_height + base_altitude_level + hill + terVar)
+
+    def get_under_layer_1_floor_height(self, x):
+        base_altitude_level = self.get_under_layer_1_ceil_elevation(x)
+
+        hill = pnoise1(x * (1 / self.hill_freq), base=(self.under_layer_1_floor_hill_seed) % 256) # more rolling hills
+        hill *= abs(hill) * self.hill_amp
+
+        terVar  = pnoise1(x * (1 / self.terrain_variation_freq),  base=(self.under_layer_1_floor_micro_variation_seed) % 256) * self.terrain_variation_amp
+
+        return self.under_layer_2_end_elev - self.under_layer_1_floor_default_height - int(base_altitude_level + hill + terVar)
+
     def lake_depth_value(self, x):
         # mountain = self.get_mountain_elevation(x)
         mountain = 0
@@ -205,6 +240,20 @@ class Chunk_Generator:
 
         return elevation
     
+    def get_under_layer_1_ceil_elevation(self, x): # includes moutains and base elevation
+        elevation  = pnoise1(x * (1 / self.elevation_freq),  base=(self.under_layer_1_top_elev_seed) % 256)
+        elevation *= abs(elevation)
+        elevation *= self.elevation_amp # amplitutde
+
+        return elevation
+
+    def get_under_layer_1_floor_elevation(self, x): # includes moutains and base elevation
+        elevation  = pnoise1(x * (1 / self.elevation_freq),  base=(self.under_layer_1_floor_elev_seed) % 256)
+        elevation *= abs(elevation)
+        elevation *= self.elevation_amp # amplitutde
+
+        return elevation
+
     def get_mountain_elevation(self, x):
         mountain  = pnoise1(x * (1 / self.mountain_freq),  base=(self.mountain_seed) % 256)
         mountain *= (abs(mountain) * abs(mountain) * abs(mountain)) * abs(mountain)
@@ -255,8 +304,9 @@ class Chunk_Generator:
     def get_humidity(self, x):
         return pnoise1(x * 0.005,  base=(self.humidity_seed) % 256) * 20
     
-    def get_border_block_depth(self, x):
-        depth  = pnoise1(x * (1 / self.border_block_freq),  base=(self.border_block_seed) % 256) * self.border_block_amp
+    def get_border_block_depth(self, x, seed:int|None=None):
+        if seed is None: seed = self.border_block_seed
+        depth = pnoise1(x * (1 / self.border_block_freq),  base=(seed) % 256) * self.border_block_amp
         return abs(int(depth))
 
     def get_biome_pregen(self, x):
@@ -451,6 +501,9 @@ class Chunk_Generator:
         fg_chunk = Chunk(Chunk.chunk_width, self.world_details.world_height, self.world_details.block_width, self.screen)
         global_x_start = fg_chunk.get_x_offset(chunk_id)
 
+        general_generation_height_limit = self.under_layer_1_end_elev
+        if fg_chunk.height < self.under_layer_1_end_elev: general_generation_height_limit = fg_chunk.height
+
         # helper functions
         def _generate_ores_at_x(x, biome, ground_elevation, chunk, x_offset):
             for ore in self.ores:
@@ -490,12 +543,13 @@ class Chunk_Generator:
                 structure.set_fg_col(structure_region_container.col_num, region.get_elevation(x, chunk_id), region.get_biome(x, chunk_id))
                 x+=1
 
-        def _generate_border_blocks_at(x, chunk, x_offset):
-            base_y = chunk.height - 1
-            chunk.set(x, base_y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
-            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+        def _generate_border_blocks_at(x, chunk, x_offset, height, top_seed, bottom_seed=None):
+            chunk.set(x, height, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
+            for y in range(height - self.get_border_block_depth(x+x_offset, top_seed), height):
+                chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the top block to a border block
+            if bottom_seed is None: return
+            for y in range(height, height+1+self.get_border_block_depth(x, bottom_seed)):
                 chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
-
 
         # generate the foreground chunk
         for x in range(fg_chunk.width): # this will loop through the grid and let me go x by x
@@ -513,14 +567,14 @@ class Chunk_Generator:
                     fg_chunk.set(x, y, layer.block, x_offset=global_x_start, grid=grid)
                 cur_depth_down += variation
                 layer_num+=1
-            for y in range(cur_depth_down, fg_chunk.height):
+            for y in range(cur_depth_down, general_generation_height_limit):
                 fg_chunk.set(x, y, biome.sub_layer, x_offset=global_x_start, grid=grid)
 
             # generate ores at cur x
             _generate_ores_at_x(x, biome, ground_elevation, fg_chunk, global_x_start)
 
             # generate caves
-            for y in range(self.get_terrain_height_pregen(x+global_x_start)+2, fg_chunk.height):
+            for y in range(self.get_terrain_height_pregen(x+global_x_start)+2, general_generation_height_limit):
                 if type(fg_chunk.get(x, y)) is Water:
                     continue
                 if self.is_cave(x+global_x_start, y):
@@ -530,11 +584,20 @@ class Chunk_Generator:
                             block_set = Saltpeter
                     fg_chunk.set(x, y, block_set, x_offset=global_x_start, grid=grid)
 
-            _generate_border_blocks_at(x, fg_chunk, global_x_start)
+            # generate under layer 1
+            for y in range(self.under_layer_1_end_elev, self.get_under_layer_1_ceiling_height(x)):
+                fg_chunk.set(x, y, Rock, x_offset=global_x_start, grid=grid)
+            for y in range(self.get_under_layer_1_floor_height(x), self.under_layer_2_end_elev):
+                fg_chunk.set(x, y, Rock, x_offset=global_x_start, grid=grid)
+
+            _generate_border_blocks_at(x, fg_chunk, global_x_start, self.under_layer_1_end_elev-1, self.border_block_under_1_top_seed, self.border_block_under_1_bottom_seed) # gets the region between the top and layer 2
 
             # generate structures
             _generate_structures(global_x_start, fg_chunk, region.get_structure)
             if not grid.is_menu_grid: _generate_structures(global_x_start, fg_chunk, region.get_underground_structure)
+
+        for x in range(fg_chunk.width):
+            _generate_border_blocks_at(x, fg_chunk, global_x_start, fg_chunk.height-1, self.border_block_seed) # gets the bottom of the world
 
         return fg_chunk
 
@@ -592,7 +655,7 @@ class Chunk_Generator:
         def _generate_border_blocks_at(x, chunk, x_offset):
             base_y = chunk.height - 1
             chunk.set(x, base_y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
-            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+            for y in range(base_y - self.get_border_block_depth(x+x_offset), base_y+1):
                 chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
 
         # generate the foreground chunk
@@ -614,12 +677,12 @@ class Chunk_Generator:
             for y in range(cur_depth_down, fg_chunk.height):
                 fg_chunk.set(x, y, biome.sub_layer, x_offset=global_x_start, grid=grid)
 
-            _generate_border_blocks_at(x, fg_chunk, global_x_start)
-
         # generate structures
         _generate_structures(global_x_start, fg_chunk)
         _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_bg_structure_for_fg)
         if not grid.is_menu_grid: _generate_bg_for_fg_structures(global_x_start, fg_chunk, region.get_underground_bg_structure_for_fg)
 
-        return fg_chunk
+        for x in range(fg_chunk.width):
+            _generate_border_blocks_at(x, fg_chunk, global_x_start)
 
+        return fg_chunk
