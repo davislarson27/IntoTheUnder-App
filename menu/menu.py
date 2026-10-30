@@ -245,6 +245,8 @@ class Menu:
         self.survival_mode = self.default_survival_mode
         self.default_recipe_progression = True
         self.recipe_progression = self.default_recipe_progression
+        self.default_experimental_features_on = False
+        self.experimental_features_on = self.default_experimental_features_on
 
         # options screen - seed input and size selector
         self.seed_label_dimentions = pygame.Rect(
@@ -295,6 +297,8 @@ class Menu:
         self.cw_survival_off       = empty()
         self.cw_recipe_prog_on    = empty()
         self.cw_recipe_prog_off   = empty()
+        self.cw_experimental_on   = empty()
+        self.cw_experimental_off  = empty()
         self.cw_create_btn    = empty()
         self.cw_cancel_btn    = empty()
 
@@ -1123,6 +1127,8 @@ class Menu:
                    self.keep_inventory, "cw_keep_inv_on", "cw_keep_inv_off", locked=keep_inv_locked)
         toggle_row(top + mb_h * 5.5, self._draw_book_icon, "Recipe Progression",
                    self.recipe_progression, "cw_recipe_prog_on", "cw_recipe_prog_off")
+        toggle_row(top + mb_h * 8.0, self._draw_bulb_icon, "Experimental Features",
+                   self.experimental_features_on, "cw_experimental_on", "cw_experimental_off")
 
     def returnToLast(self):
         if self.return_to is None:
@@ -1156,6 +1162,7 @@ class Menu:
                 self.keep_inventory = self.default_keep_inventory
                 self.survival_mode = self.default_survival_mode
                 self.recipe_progression = self.default_recipe_progression
+                self.experimental_features_on = self.default_experimental_features_on
                 self.world_name = self.create_world_name()
                 self.new_world_name_text_box.open_text_box(self.world_name)
                 self.world_seed_text_box.open_text_box(self.custom_seed)
@@ -1333,6 +1340,10 @@ class Menu:
                     self.recipe_progression = True
                 elif hit(self.cw_recipe_prog_off):
                     self.recipe_progression = False
+                elif hit(self.cw_experimental_on):
+                    self.experimental_features_on = True
+                elif hit(self.cw_experimental_off):
+                    self.experimental_features_on = False
 
         # footer links work on every screen that renders the footer (not create world)
         if self.draw_function.__func__ is not self.draw_create_world_menu.__func__:
@@ -1402,6 +1413,7 @@ class Menu:
             ground_level=self.world_generation_settings.ground_level,
             max_chunks_left=chunks_left,
             max_chunks_right=chunks_right,
+            experimental_features_on=self.experimental_features_on,
         )
 
         # if self.world_size_options[self.selected_world_size] == 'Infinite':
@@ -1517,6 +1529,7 @@ class Menu:
         self.keep_inventory = self.default_keep_inventory
         self.survival_mode = self.default_survival_mode
         self.recipe_progression = self.default_recipe_progression
+        self.experimental_features_on = self.default_experimental_features_on
 
     # ------------------------ functions interacting with the main loop ------------------------ #
 
