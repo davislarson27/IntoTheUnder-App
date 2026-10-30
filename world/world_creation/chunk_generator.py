@@ -493,7 +493,7 @@ class Chunk_Generator:
         def _generate_border_blocks_at(x, chunk, x_offset):
             base_y = chunk.height - 1
             chunk.set(x, base_y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
-            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+            for y in range(base_y - self.get_border_block_depth(x+x_offset), base_y+1):
                 chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
 
 
@@ -592,7 +592,7 @@ class Chunk_Generator:
         def _generate_border_blocks_at(x, chunk, x_offset):
             base_y = chunk.height - 1
             chunk.set(x, base_y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
-            for y in range(base_y - self.get_border_block_depth(x), base_y+1):
+            for y in range(base_y - self.get_border_block_depth(x+x_offset), base_y+1):
                 chunk.set(x, y, Border_Block, x_offset=x_offset, grid=grid) # sets the bottom block to a border block
 
         # generate the foreground chunk
