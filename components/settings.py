@@ -13,7 +13,8 @@ class Settings:
                 "physics_chunks_beyond_screen": 2,
             },
             "world_gen_settings": {
-                "default_world_size": 2
+                "default_world_size": 2,
+                "allow_experimental_settings": False,
             },
             "visual_settings": {
 
@@ -34,6 +35,10 @@ class Settings:
         # set values of settings
         self.physics_chunks_beyond_screen = in_game_settings["physics_chunks_beyond_screen"]
         self.default_world_size = world_gen_settings["default_world_size"]
+        if "allow_experimental_settings" in world_gen_settings:
+            self.allow_experimental_settings = world_gen_settings["allow_experimental_settings"]
+        else:
+            self.allow_experimental_settings = self.default_settings_values_dict["world_gen_settings"]["allow_experimental_settings"]
 
     def get_dict_data(self, settings_file):
         return json.load(settings_file)
@@ -44,7 +49,8 @@ class Settings:
                 "physics_chunks_beyond_screen": self.physics_chunks_beyond_screen,
             },
             "world_gen_settings": {
-                "default_world_size": self.default_world_size
+                "default_world_size": self.default_world_size,
+                "allow_experimental_settings": self.allow_experimental_settings,
             },
             "visual_settings": {
 

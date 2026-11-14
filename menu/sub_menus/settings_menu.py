@@ -59,14 +59,19 @@ class Settings_Menu:
         self.chunk_options     = ["0", "1", "2", "3", "4", "5"]
         self.world_size_options = ["Mini", "Limited", "Infinite"]
         self.world_size_to_value = {"Mini": 0, "Limited": 1, "Infinite": 2}
+        self.allow_experimental_features_options = {"Enabled": True, "Disabled": False}
 
         chunk_val = self.settings_obj.physics_chunks_beyond_screen
         self.selected_chunks = chunk_val if 0 <= chunk_val <= 5 else 2
 
         self.selected_world_size = self.settings_obj.default_world_size
 
+        self.experimental_option_labels = ["Enabled", "Disabled"]
+        self.selected_experimental = 0 if self.settings_obj.allow_experimental_settings else 1
+
         self.chunk_rects = []
         self.size_rects  = []
+        self.experimental_rects = []
 
     # ------------------------------------------------------------------ #
 
@@ -94,6 +99,12 @@ class Settings_Menu:
                 if r.collidepoint((mx, my)):
                     self.selected_world_size = i
                     self.settings_obj.default_world_size = self.world_size_to_value[self.world_size_options[i]]
+                    self._write_settings()
+                    break
+            for i, r in enumerate(self.experimental_rects):
+                if r.collidepoint((mx, my)):
+                    self.selected_experimental = i
+                    self.settings_obj.allow_experimental_settings = self.allow_experimental_features_options[self.experimental_option_labels[i]]
                     self._write_settings()
                     break
 
@@ -208,6 +219,28 @@ class Settings_Menu:
             ts = self.btn_font.render(label, True, (255, 255, 255))
             self.screen.blit(ts, ts.get_rect(center=r.center))
 
+        y += sh + self.mh * 1.5
+        self.screen.blit(
+            self.sublabel_font.render("EXPERIMENTAL FEATURES", True, self.sublabel_col),
+            (left, int(y)))
+        y += self.mh * 0.9
+        ew = w / len(self.experimental_option_labels)
+        eh = int(self.mh * 2)
+        self.experimental_rects = []
+        for i, label in enumerate(self.experimental_option_labels):
+            bw = int(ew - (4 if i < len(self.experimental_option_labels) - 1 else 0))
+            r = pygame.Rect(int(left + i * ew), int(y), bw, eh)
+            self.experimental_rects.append(r)
+            if i == self.selected_experimental:
+                pygame.draw.rect(self.screen, self.accent, r)
+                pygame.draw.rect(self.screen, self.accent_bright, r, width=2)
+            elif r.collidepoint((mx, my)):
+                pygame.draw.rect(self.screen, self.btn_hov_col, r)
+            else:
+                pygame.draw.rect(self.screen, self.btn_col, r)
+            ts = self.btn_font.render(label, True, (255, 255, 255))
+            self.screen.blit(ts, ts.get_rect(center=r.center))
+
     def _draw_visual_tab(self, cx, y):
         surf = self.body_font.render("coming soon", True, self.body_col)
         self.screen.blit(surf, surf.get_rect(centerx=cx, top=y))
@@ -224,4 +257,3 @@ class Settings_Menu:
 
     def straight_to_window_rendering(self):
         return
-

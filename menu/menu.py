@@ -1127,8 +1127,14 @@ class Menu:
                    self.keep_inventory, "cw_keep_inv_on", "cw_keep_inv_off", locked=keep_inv_locked)
         toggle_row(top + mb_h * 5.5, self._draw_book_icon, "Recipe Progression",
                    self.recipe_progression, "cw_recipe_prog_on", "cw_recipe_prog_off")
-        toggle_row(top + mb_h * 8.0, self._draw_bulb_icon, "Experimental Features",
-                   self.experimental_features_on, "cw_experimental_on", "cw_experimental_off")
+
+        if self.settings_data.allow_experimental_settings:
+            toggle_row(top + mb_h * 8.0, self._draw_bulb_icon, "Experimental Features",
+                       self.experimental_features_on, "cw_experimental_on", "cw_experimental_off")
+        else:
+            self.experimental_features_on = False
+            self.cw_experimental_on = pygame.Rect(0, 0, 0, 0)
+            self.cw_experimental_off = pygame.Rect(0, 0, 0, 0)
 
     def returnToLast(self):
         if self.return_to is None:
